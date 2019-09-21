@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/macros.html.twig' as macros %}
+{% block title %}Bot check{% endblock %}
+{% block body %}
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-header">Check if the bot is connected to your server</div>
+        <div class="card-body">
+            {{
+            macros.linkbutton(
+                path('user_guild_bot_check', {guildId: guild.id}),
+                'Check if the bot is connected!',
+                'success',
+                'plus'
+            )
+            }}
+        </div>
+    </div>
+</div>
+{% endblock %}

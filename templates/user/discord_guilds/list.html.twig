@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/macros.html.twig' as macros %}
+{% block title %}Discord Servers{% endblock %}
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">Your Discord Servers</div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                    {% for guild in guilds %}
+                        <tr>
+                            <td>
+                                {% if guild.icon is not null %}
+                                <img class="avatar rounded-circle"
+                                     src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png"
+                                     width="32" height="32" alt="{{ guild.name }}"/>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ guild.name }}
+                            </td>
+                            <td>
+                                {% if guild.isActive() %}
+                                    <span class="badge badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                {% if not guild.isActive() %}
+                                {{
+                                macros.linkbutton(
+                                    path('user_guild_bot_check', {guildId: guild.id}),
+                                    'Create guild from server',
+                                    'success',
+                                    'plus'
+                                )
+                                }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if app.user.getActiveGuildMemberships()|length < 1 %}
+                    You are not the owner of any Discord servers.
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

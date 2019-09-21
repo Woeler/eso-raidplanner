@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/macros.html.twig' as macros %}
+{% block title %}{{ event.name }}{% endblock %}
+{% block body %}
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">Event: {{ event.name }}</div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                    {% for attendee in event.attendees %}
+                        <tr>
+                            <td style="vertical-align: middle">{{ attendee.user.username }}</td>
+                            <td style="vertical-align: middle">{{ attendee.getClassName() }}</td>
+                            <td style="vertical-align: middle">{{ attendee.getRoleName() }}</td>
+                            <td style="vertical-align: middle">
+                                {% for set in attendee.sets %}
+                                    <a href="https://eso-sets.com/set/{{ set.slug }}" target="_blank">{{ set.name }}</a><br>
+                                {% endfor %}
+                            </td>
+                            <td style="vertical-align: middle"><i class="fa fa-clock" title="{{ app.user.toUserTimeString(attendee.createdAt) }}"></i></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">My attendance</div>
+            <div class="card-body">
+                {% if attending %}
+                    <div class="alert alert-success">You are attending this event.</div>
+                {% endif %}
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                {{ form_end(form) }}
+                {% if attending %}
+                    {{
+                    macros.linkbutton(
+                        path('guild_event_unattend', {guildId: guild.id, eventId: event.id}),
+                        'I\'m no longer attending',
+                        'danger',
+                        'times'
+                    )
+                    }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="mt-3"></div>
+
+        <div class="card">
+            <div class="card-header">Details</div>
+            <div class="card-body">
+                {% if event.description is not null %}
+                    <strong>Description:</strong> {{ event.description }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

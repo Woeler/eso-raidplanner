@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+{% if app.user is not null and app.user.darkmode %}
+    <html lang="en" data-theme="dark">
+{% else %}
+    <html lang="en">
+{% endif %}
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %} - ESO Raidplanner</title>
+{#    <link rel="shortcut icon" href="{{ asset('build/images/favicon.ico') }}">#}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600">
+    {{ encore_entry_link_tags('app') }}
+</head>
+<body>
+<div id="app">
+    <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <strong>ESORaidplanner</strong><small>.com</small>
+            </a>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <!-- Left Side Of Navbar -->
+                <ul class="navbar-nav mr-auto">
+                    {{ knp_menu_render('main-default', {'template':'menu/navbar.html.twig'}) }}
+                </ul>
+
+                <!-- Right Side Of Navbar -->
+                <ul class="navbar-nav ml-auto">
+                    <!-- Authentication Links -->
+                    {{ knp_menu_render('main-profile', {'template':'menu/navbar.html.twig'}) }}
+                </ul>
+            </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainnavigation" aria-controls="mainnavigation" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                {# flash messages on this page are NOT escaped !#}
+                {% if app.request.hasPreviousSession %}
+                    {% for key, flashMassages in app.session.flashBag.all %}
+                        <div class="content-section content-section-none">
+                            <div class="alert-pagegroup">
+                                {% block flashMessages %}
+                                    {% for flashMassage in flashMassages %}
+                                        <div class="alert alert-{{ key }} alert-dismissible fade show" role="alert">
+                                            <div class="alert-inner">
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                {{ flashMassage | raw }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                {% endblock %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                {% block body %}{% endblock %}
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="text-center">
+            <small><a href="https://github.com/Woeler" target="_blank">Contribute</a> | <a href="{{ url('terms_of_use') }}">Terms of Use</a> | <a href="{{ url('privacy_policy') }}">Privacy Policy</a> | <a href="https://discord.gg/alcasthq" target="_blank">Discord</a> | <a href="https://woeler.tech" target="_blank">Support ESO Raidplanner</a></small><br>
+            <small>© 2019 <a href="https://woeler.tech" target="_blank">Woeler</a></small>
+        </div>
+    </footer>
+    <br>
+</div>
+{{ encore_entry_script_tags('app') }}
+<script src="{{ asset('bundles/tetranzselect2entity/js/select2entity.js') }}"></script>
+</body>

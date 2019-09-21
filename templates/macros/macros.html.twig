@@ -1,0 +1,6 @@
+{% macro linkbutton(link, label, class = 'default', icon = null) %}
+    <a href="{{ link }}" class="btn btn-{{ class }}">
+        {% if icon %}<span class="btn-icon"><i class="fa fa-{{ icon }}"></i></span>{% endif %}
+        <span class="btn-text">{{ label }}</span>
+    </a>
+{% endmacro %}

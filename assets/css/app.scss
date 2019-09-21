@@ -1,0 +1,64 @@
+@import '~bootstrap/scss/bootstrap';
+@import '~@fortawesome/fontawesome-free/css/all.css';
+@import '~select2/dist/css/select2.min.css';
+@import 'darkmode';
+
+.node-js {
+  color: #215732;
+}
+.php {
+  color: #8892be;
+}
+.laravel {
+  color: #f55247;
+}
+.discord {
+  color: #7289DA;
+}
+.yarn {
+  color: #2188b6;
+}
+.jira {
+  color: #0052CC;
+}
+.bootstrap {
+  color: #080135;
+}
+.javascript {
+  color: #F0DB4F;
+}
+.amazon-bg {
+  background-color: #ff9900;
+  border-color: #ff9900;
+  color: white;
+}
+.patreon-bg {
+  background-color: #f96854;
+  border-color: #f96854;
+  color: white;
+}
+.paypal-bg {
+  background-color: #3b7bbf;
+  border-color: #3b7bbf;
+  color: white;
+}
+.twitter-bg {
+  background-color: #1da1f2;
+  border-color: #1da1f2;
+  color: white;
+}
+.discord-bg {
+  background-color: #7289DA;
+  border-color: #7289DA;
+  color: white;
+}
+.github-bg {
+  background-color: black;
+  border-color: black;
+  color: white;
+}
+/* Remove the top border when a table is missing the header */
+.table > tbody > tr:first-child > th,
+.table > tbody > tr:first-child > td {
+  border: none;
+}
