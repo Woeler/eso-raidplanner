@@ -64,11 +64,15 @@ class FetchSetsCommand extends Command
 
         foreach ($sets as $set) {
             $entity = $this->armorSetRepository->find($set['id']);
+            if (empty($set['id'])) {
+                continue;
+            }
             if (null === $entity) {
                 $entity = new ArmorSet();
+                $entity->setId($set['id']);
             }
 
-            $entity->setId($set['id'])
+            $entity
                 ->setName($set['name'])
                 ->setSlug($set['slug']);
 

@@ -72,7 +72,7 @@ class EventAttendee
 
     /**
      * @ORM\ManyToMany(targetEntity="ArmorSet")
-     * @var Collection
+     * @var Collection|ArmorSet[]
      */
     private $sets;
 

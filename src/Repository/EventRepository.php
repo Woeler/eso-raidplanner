@@ -10,6 +10,7 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -24,5 +25,19 @@ class EventRepository extends ServiceEntityRepository
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Event::class);
+    }
+
+    /**
+     * @param DateTime $dateTime
+     * @return Event[]
+     */
+    public function findFutureEvents(DateTime $dateTime)
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.start > :now')
+            ->setParameter('word', $dateTime->format('Y-m-d H:i:s'))
+            ->orderBy('e.start', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

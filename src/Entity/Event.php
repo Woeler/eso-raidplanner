@@ -152,7 +152,7 @@ class Event
     }
 
     /**
-     * @return mixed
+     * @return DiscordGuild
      */
     public function getGuild()
     {

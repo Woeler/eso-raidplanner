@@ -77,12 +77,20 @@ class DiscordGuild
      */
     private $events;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Reminder", mappedBy="guild")
+     * @var Collection|Reminder[]
+     */
+    private $reminders;
+
     public function __construct()
     {
         $this->active = false;
         $this->botActive = false;
         $this->members = new ArrayCollection();
         $this->discordChannels = new ArrayCollection();
+        $this->reminders = new ArrayCollection();
+        $this->events = new ArrayCollection();
     }
 
     /**
@@ -282,5 +290,13 @@ class DiscordGuild
     public function getDiscordChannels(): Collection
     {
         return $this->discordChannels;
+    }
+
+    /**
+     * @return Reminder[]|Collection
+     */
+    public function getReminders()
+    {
+        return $this->reminders;
     }
 }
