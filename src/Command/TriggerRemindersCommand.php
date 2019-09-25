@@ -23,7 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class TriggerRemindersCommand extends Command
 {
-    protected static $defaultName = 'TriggerRemindersCommand';
+    protected static $defaultName = 'reminders:trigger';
 
     /**
      * @var DiscordBotService
@@ -73,13 +73,17 @@ class TriggerRemindersCommand extends Command
             $reminders = $event->getGuild()->getReminders();
 
             $diff = $now->diff($event->getStart());
-            $output->writeln($diff->i);
+            $minutes = $diff->i + (60 * $diff->h) + (24 * 60 * $diff->d) + 1;
+            $output->writeln($minutes);
 
             foreach ($reminders as $reminder) {
-                if ($diff->i === $reminder->getMinutesToTrigger()) {
+                if ($minutes === $reminder->getMinutesToTrigger()) {
                     $this->reminderService->setEvent($event);
                     $message = $this->reminderService->getDiscordMessage($reminder);
                     $channel = $reminder->getChannel();
+                    if (null === $channel) {
+                        continue;
+                    }
                     try {
                         $this->discordBotService->sendMessage($channel->getId(), $message);
                         $channel->setError(DiscordChannel::ERROR_NONE);

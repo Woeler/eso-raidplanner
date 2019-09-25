@@ -13,6 +13,7 @@ use App\Controller\Checks\GuildMemberCheckController;
 use App\Entity\User;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventRepository;
+use App\Repository\ReminderRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -56,6 +57,9 @@ class GuildMemberSubscriber implements EventSubscriberInterface
         'deleteEvent',
         'settings',
         'syncDiscordChannels',
+        'createReminder',
+        'updateReminder',
+        'deleteReminder',
     ];
 
     /**
@@ -72,14 +76,21 @@ class GuildMemberSubscriber implements EventSubscriberInterface
      */
     private $eventRepository;
 
+    /**
+     * @var ReminderRepository
+     */
+    private $reminderRepository;
+
     public function __construct(
         TokenStorageInterface $tokenStorage,
         DiscordGuildRepository $discordGuildRepository,
-        EventRepository $eventRepository
+        EventRepository $eventRepository,
+        ReminderRepository $reminderRepository
     ) {
         $this->tokenStorage = $tokenStorage;
         $this->discordGuildRepository = $discordGuildRepository;
         $this->eventRepository = $eventRepository;
+        $this->reminderRepository = $reminderRepository;
     }
 
     /**
@@ -115,6 +126,15 @@ class GuildMemberSubscriber implements EventSubscriberInterface
                 $guildEvent = $this->eventRepository->find($eventId);
                 if (null === $guildEvent || $guild->getId() !== $guildEvent->getGuild()->getId()) {
                     throw new NotFoundHttpException('This event/guild combination was not found');
+                }
+            }
+
+            $reminderId = $event->getRequest()->attributes->get('reminderId');
+
+            if (null !== $reminderId) {
+                $guildReminder = $this->reminderRepository->find($reminderId);
+                if (null === $guildReminder || $guild->getId() !== $guildReminder->getGuild()->getId()) {
+                    throw new NotFoundHttpException('This reminder/guild combination was not found');
                 }
             }
 

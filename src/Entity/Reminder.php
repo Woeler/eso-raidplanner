@@ -78,7 +78,7 @@ class Reminder
     /**
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -97,7 +97,7 @@ class Reminder
     /**
      * @return DiscordChannel
      */
-    public function getChannel(): DiscordChannel
+    public function getChannel(): ?DiscordChannel
     {
         return $this->channel;
     }
@@ -116,7 +116,7 @@ class Reminder
     /**
      * @return DiscordGuild
      */
-    public function getGuild(): DiscordGuild
+    public function getGuild(): ?DiscordGuild
     {
         return $this->guild;
     }
@@ -135,7 +135,7 @@ class Reminder
     /**
      * @return string
      */
-    public function getText(): string
+    public function getText(): ?string
     {
         return $this->text;
     }
@@ -154,7 +154,7 @@ class Reminder
     /**
      * @return int
      */
-    public function getMinutesToTrigger(): int
+    public function getMinutesToTrigger(): ?int
     {
         return $this->minutesToTrigger;
     }

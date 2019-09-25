@@ -13,11 +13,14 @@ use App\Controller\Checks\GuildMemberCheckController;
 use App\Entity\DiscordChannel;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
+use App\Entity\Reminder;
 use App\Exception\UnexpectedDiscordApiResponseException;
+use App\Form\ReminderType;
 use App\Repository\DiscordChannelRepository;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventAttendeeRepository;
 use App\Repository\EventRepository;
+use App\Repository\ReminderRepository;
 use App\Service\DiscordBotService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -289,5 +292,90 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
         }
 
         return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
+    }
+
+    /**
+     * @Route("/{guildId}/reminder/create", name="reminder_create")
+     *
+     * @param int $guildId
+     * @param Request $request
+     * @return Response
+     */
+    public function createReminder(int $guildId, Request $request): Response
+    {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $reminder = new Reminder();
+        $form = $this->createForm(ReminderType::class, $reminder, ['guild' => $guild]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $reminder->setGuild($guild);
+            $this->entityManager->persist($reminder);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Reminder '.$reminder->getName().' created.');
+
+            return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
+        }
+
+        return $this->render(
+            'reminder/form.html.twig',
+            [
+                'form' => $form->createView(),
+                'guild' => $guild,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/{guildId}/reminder/{reminderId}/update", name="reminder_update")
+     *
+     * @param int $guildId
+     * @param int $reminderId
+     * @param Request $request
+     * @param ReminderRepository $reminderRepository
+     * @return Response
+     */
+    public function updateReminder(int $guildId, int $reminderId, Request $request, ReminderRepository $reminderRepository): Response
+    {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $reminder = $reminderRepository->find($reminderId);
+        $form = $this->createForm(ReminderType::class, $reminder, ['guild' => $guild]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($reminder);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Reminder '.$reminder->getName().' updated.');
+
+            return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
+        }
+
+        return $this->render(
+            'reminder/form.html.twig',
+            [
+                'form' => $form->createView(),
+                'guild' => $guild,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/{guildId}/reminder/{reminderId}/delete", name="reminder_delete")
+     *
+     * @param string $guildId
+     * @param int $reminderId
+     * @param Request $request
+     * @param ReminderRepository $reminderRepository
+     * @return Response
+     */
+    public function deleteReminder(string $guildId, int $reminderId, Request $request, ReminderRepository $reminderRepository): Response
+    {
+        $reminder = $reminderRepository->find($reminderId);
+
+        $this->entityManager->remove($reminder);
+        $this->entityManager->flush();
+        $this->addFlash('success', 'Reminder was deleted.');
+
+        return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
     }
 }

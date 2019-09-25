@@ -35,7 +35,7 @@ class EventRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder('e')
             ->andWhere('e.start > :now')
-            ->setParameter('word', $dateTime->format('Y-m-d H:i:s'))
+            ->setParameter('now', $dateTime->format('Y-m-d H:i:s'))
             ->orderBy('e.start', 'ASC')
             ->getQuery()
             ->getResult();

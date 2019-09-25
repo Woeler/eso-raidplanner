@@ -20,6 +20,16 @@ class ReminderService
      */
     private $event;
 
+    /**
+     * @var string
+     */
+    private $appUrl;
+
+    public function __construct(string $appUrl)
+    {
+        $this->appUrl = $appUrl;
+    }
+
     public function setEvent(Event $event): self
     {
         $this->event = $event;
@@ -31,12 +41,12 @@ class ReminderService
     {
         $embeds = new DiscordEmbedsMessage();
         $embeds->setTitle('Reminder for '.$this->event->getName());
-        $embeds->setUrl('');
-        $embeds->setDescription($this->processText($notification->t));
+        $embeds->setUrl($this->appUrl.'/guild/'.$this->event->getGuild()->getId().'/event/'.$this->event->getId());
+        $embeds->setDescription($this->processText($notification->getText()));
         $embeds->setColor(9660137);
-        $embeds->setAuthorName('ESO Raidplanner');
-        $embeds->setAuthorIcon('https://esoraidplanner.com/favicon/appicon.jpg');
-        $embeds->setAuthorUrl('https://esoraidplanner.com');
+        $embeds->setAuthorName($this->event->getGuild()->getName());
+        $embeds->setAuthorIcon('https://cdn.discordapp.com/icons/'.$this->event->getGuild()->getId().'/'.$this->event->getGuild()->getIcon().'.png');
+        $embeds->setAuthorUrl($this->appUrl.'/guild/'.$this->event->getGuild()->getId());
         $embeds->setFooterIcon('https://esoraidplanner.com/favicon/appicon.jpg');
         $embeds->setFooterText('ESO Raidplanner by Woeler');
 
