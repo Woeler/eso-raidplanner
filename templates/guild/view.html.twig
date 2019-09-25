@@ -6,7 +6,10 @@
         <div class="card">
             <div class="card-header">
                 <img class="avatar rounded-circle" src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32" height="32"/>
-                 {{ guild.name }} - Events
+                <a href="{{ path('guild_view', {'guildId': guild.id}) }}">
+                    {{ guild.name }}
+                </a>
+                 - Events
             </div>
             <div class="card-body">
                 <table class="table">
@@ -76,10 +79,18 @@
                     }}
                     {{
                     macros.linkbutton(
-                        path('home'),
+                        path('guild_members', {'guildId': guild.id}),
                         'Members list',
                         'info btn-block',
                         'users'
+                    )
+                    }}
+                    {{
+                    macros.linkbutton(
+                        path('guild_reminder_list', {guildId: guild.id}),
+                        'Reminder Messages',
+                        'info btn-block',
+                        'envelope'
                     )
                     }}
                     {{

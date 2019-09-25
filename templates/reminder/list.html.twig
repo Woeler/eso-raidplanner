@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/macros.html.twig' as macros %}
+{% block title %}{{ guild.name }}{% endblock %}
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="float-right">
+                    {{
+                    macros.linkbutton(
+                        path('guild_reminder_create', {guildId: guild.id}),
+                        'Create Reminder',
+                        'success',
+                        'plus'
+                    )
+                    }}
+                </div>
+                <img class="avatar rounded-circle" src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32" height="32"/>
+                <a href="{{ path('guild_view', {'guildId': guild.id}) }}">
+                    {{ guild.name }}
+                </a>
+                - Reminders
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Reminder name</th>
+                            <th>Discord channel</th>
+                            <th>Minutes before event starts</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for reminder in guild.reminders %}
+                        <tr>
+                            <td style="vertical-align: middle">{{ reminder.name }}</td>
+                            <td style="vertical-align: middle">{{ reminder.channel.name }}</td>
+                            <td style="vertical-align: middle">{{ reminder.minutesToTrigger }}</td>
+                            <td>
+                                {{
+                                macros.linkbutton(
+                                    path('guild_reminder_update', {guildId: guild.id, reminderId: reminder.id}),
+                                    '',
+                                    'info',
+                                    'edit'
+                                )
+                                }}
+                                {{
+                                macros.linkbutton(
+                                    path('guild_reminder_delete', {guildId: guild.id, reminderId: reminder.id}),
+                                    '',
+                                    'danger',
+                                    'trash'
+                                )
+                                }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

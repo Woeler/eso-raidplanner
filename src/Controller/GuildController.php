@@ -13,6 +13,7 @@ use App\Controller\Checks\GuildMemberCheckController;
 use App\Entity\DiscordChannel;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
+use App\Entity\GuildMembership;
 use App\Entity\Reminder;
 use App\Exception\UnexpectedDiscordApiResponseException;
 use App\Form\ReminderType;
@@ -20,7 +21,9 @@ use App\Repository\DiscordChannelRepository;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventAttendeeRepository;
 use App\Repository\EventRepository;
+use App\Repository\GuildMembershipRepository;
 use App\Repository\ReminderRepository;
+use App\Repository\UserRepository;
 use App\Service\DiscordBotService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -91,6 +94,22 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     {
         return $this->render(
             'guild/settings.html.twig',
+            [
+                'guild' => $this->discordGuildRepository->findOneBy(['id' => $guildId]),
+            ]
+        );
+    }
+
+    /**
+     * @Route("/{guildId}/members", name="members")
+     *
+     * @param string $guildId
+     * @return Response
+     */
+    public function members(string $guildId): Response
+    {
+        return $this->render(
+            'guild/members.html.twig',
             [
                 'guild' => $this->discordGuildRepository->findOneBy(['id' => $guildId]),
             ]
@@ -249,6 +268,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
             [
                 'form' => $form->createView(),
                 'guild' => $guild,
+                'update' => true,
             ]
         );
     }
@@ -314,7 +334,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
             $this->entityManager->flush();
             $this->addFlash('success', 'Reminder '.$reminder->getName().' created.');
 
-            return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
+            return $this->redirectToRoute('guild_reminder_list', ['guildId' => $guildId]);
         }
 
         return $this->render(
@@ -347,7 +367,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
             $this->entityManager->flush();
             $this->addFlash('success', 'Reminder '.$reminder->getName().' updated.');
 
-            return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
+            return $this->redirectToRoute('guild_reminder_list', ['guildId' => $guildId]);
         }
 
         return $this->render(
@@ -376,6 +396,78 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
         $this->entityManager->flush();
         $this->addFlash('success', 'Reminder was deleted.');
 
-        return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
+        return $this->redirectToRoute('guild_reminder_list', ['guildId' => $guildId]);
+    }
+
+    /**
+     * @Route("/{guildId}/reminders", name="reminder_list")
+     *
+     * @param string $guildId
+     * @return Response
+     */
+    public function reminders(string $guildId): Response
+    {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+
+        return $this->render(
+            'reminder/list.html.twig',
+            [
+                'guild' => $guild,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/{guildId}/member/{userId}/promote", name="member_promote")
+     *
+     * @param string $guildId
+     * @param string $userId
+     * @param UserRepository $userRepository
+     * @param GuildMembershipRepository $guildMembershipRepository
+     * @return Response
+     */
+    public function promoteToAdmin(string $guildId, string $userId, UserRepository $userRepository, GuildMembershipRepository $guildMembershipRepository): Response
+    {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $user = $userRepository->findOneBy(['discordId' => $userId]);
+
+        if (null === $user || $guild->isAdmin($user)) {
+            return $this->redirectToRoute('guild_members', ['guildId' => $guildId]);
+        }
+
+        $membership = $guildMembershipRepository->findOneBy(['user' => $user, 'guild' => $guild]);
+        $membership->setRole(GuildMembership::ROLE_ADMIN);
+        $this->entityManager->persist($membership);
+        $this->entityManager->flush();
+        $this->addFlash('success', $user->getUsername().' was promoted to admin.');
+
+        return $this->redirectToRoute('guild_members', ['guildId' => $guildId]);
+    }
+
+    /**
+     * @Route("/{guildId}/member/{userId}/demote", name="member_demote")
+     *
+     * @param string $guildId
+     * @param string $userId
+     * @param UserRepository $userRepository
+     * @param GuildMembershipRepository $guildMembershipRepository
+     * @return Response
+     */
+    public function demoteToMember(string $guildId, string $userId, UserRepository $userRepository, GuildMembershipRepository $guildMembershipRepository): Response
+    {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $user = $userRepository->findOneBy(['discordId' => $userId]);
+
+        if (null === $user || !$guild->isAdmin($user)) {
+            return $this->redirectToRoute('guild_members', ['guildId' => $guildId]);
+        }
+
+        $membership = $guildMembershipRepository->findOneBy(['user' => $user, 'guild' => $guild]);
+        $membership->setRole(GuildMembership::ROLE_MEMBER);
+        $this->entityManager->persist($membership);
+        $this->entityManager->flush();
+        $this->addFlash('success', $user->getUsername().' was demoted to member.');
+
+        return $this->redirectToRoute('guild_members', ['guildId' => $guildId]);
     }
 }

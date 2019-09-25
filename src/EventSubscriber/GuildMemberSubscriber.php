@@ -43,6 +43,7 @@ class GuildMemberSubscriber implements EventSubscriberInterface
         'view',
         'viewEvent',
         'eventUnattend',
+        'members',
     ];
 
     /**
@@ -69,6 +70,8 @@ class GuildMemberSubscriber implements EventSubscriberInterface
      * @var array
      */
     private $ownerActions = [
+        'demoteToMember',
+        'promoteToAdmin',
     ];
 
     /**

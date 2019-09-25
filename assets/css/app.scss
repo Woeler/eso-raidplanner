@@ -62,3 +62,33 @@
 .table > tbody > tr:first-child > td {
   border: none;
 }
+
+body {
+  background-image: url("../images/bg.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+
+/* Footer at bottom */
+html{ height:100%; }
+body{ min-height:100%; padding:0; margin:0; position:relative; }
+
+/* Trick: */
+body {
+  position: relative;
+}
+
+body::after {
+  content: '';
+  display: block;
+  height: 90px; /* Set same as footer's height */
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 90px;
+}

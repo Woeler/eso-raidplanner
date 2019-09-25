@@ -16,7 +16,7 @@ Encore
         corejs: 3
     })
     .enableSassLoader(function(sassOptions) {}, {
-        resolveUrlLoader: false
+        //resolveUrlLoader: false
     })
     .enablePostCssLoader((options) => {
         options.config = {

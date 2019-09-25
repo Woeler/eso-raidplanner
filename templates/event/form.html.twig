@@ -3,7 +3,18 @@
 {% block body %}
     <div class="col-md-12">
         <div class="card">
-            <div class="card-header">Create an event</div>
+            <div class="card-header">
+                <img class="avatar rounded-circle" src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32" height="32"/>
+                <a href="{{ path('guild_view', {'guildId': guild.id}) }}">
+                    {{ guild.name }}
+                </a>
+                -
+                {% if update is defined %}
+                    Update event
+                {% else %}
+                    Create an event
+                {% endif %}
+            </div>
             <div class="card-body">
                 {{ form_start(form) }}
                 {{ form_widget(form) }}

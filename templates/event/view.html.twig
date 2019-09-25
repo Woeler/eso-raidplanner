@@ -4,13 +4,19 @@
 {% block body %}
     <div class="col-md-8">
         <div class="card">
-            <div class="card-header">Event: {{ event.name }}</div>
+            <div class="card-header">
+                <img class="avatar rounded-circle" src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32" height="32"/>
+                <a href="{{ path('guild_view', {'guildId': guild.id}) }}">
+                    {{ guild.name }}
+                </a>
+                - Event: {{ event.name }}
+            </div>
             <div class="card-body">
                 <table class="table">
                     <tbody>
                     {% for attendee in event.attendees %}
                         <tr>
-                            <td style="vertical-align: middle">{{ attendee.user.username }}</td>
+                            <td style="vertical-align: middle"><strong>{{ attendee.user.username }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small></td>
                             <td style="vertical-align: middle">{{ attendee.getClassName() }}</td>
                             <td style="vertical-align: middle">{{ attendee.getRoleName() }}</td>
                             <td style="vertical-align: middle">

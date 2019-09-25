@@ -22,6 +22,12 @@ class GuildMembership
 
     public const ROLE_ADMIN = 2;
 
+    public const ROLES = [
+        self::ROLE_BANNED => 'Banned',
+        self::ROLE_MEMBER => 'Member',
+        self::ROLE_ADMIN => 'Admin',
+    ];
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -118,6 +124,11 @@ class GuildMembership
     public function getRole()
     {
         return $this->role;
+    }
+
+    public function getRoleString(): string
+    {
+        return self::ROLES[$this->role];
     }
 
     /**

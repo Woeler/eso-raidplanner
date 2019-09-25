@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/macros.html.twig' as macros %}
+{% block title %}{{ guild.name }}{% endblock %}
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <img class="avatar rounded-circle"
+                     src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32"
+                     height="32"/>
+                <a href="{{ path('guild_view', {'guildId': guild.id}) }}">
+                    {{ guild.name }}
+                </a>
+                - Members
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                    {% for member in guild.members %}
+                        <tr>
+                            <td style="vertical-align: middle">
+                                <strong>{{ member.user.username }}</strong><small>#{{ member.user.discordDiscriminator }}</small>
+                            </td>
+                            <td style="vertical-align: middle">
+                                {% if guild.owner.id ==  member.user.id %}
+                                    Owner
+                                {% else %}
+                                    {{ member.getRoleString() }}
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                {% if app.user.id == guild.owner.id %}
+                                    {% if guild.owner.id !=  member.user.id %}
+                                        {% if guild.isAdmin(member.user) %}
+                                            {{ macros.linkbutton(
+                                                path('guild_member_demote', {'guildId': guild.id, 'userId': member.user.discordId}),
+                                                'Demote',
+                                                'warning',
+                                                'arrow-down'
+                                            ) }}
+                                        {% else %}
+                                            {{ macros.linkbutton(
+                                                path('home'),
+                                                'Promote',
+                                                'success',
+                                                'arrow-up'
+                                            ) }}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}
