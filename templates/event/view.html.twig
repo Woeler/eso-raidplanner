@@ -17,8 +17,8 @@
                     {% for attendee in event.attendees %}
                         <tr>
                             <td style="vertical-align: middle"><strong>{{ attendee.user.username }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small></td>
-                            <td style="vertical-align: middle">{{ attendee.getClassName() }}</td>
-                            <td style="vertical-align: middle">{{ attendee.getRoleName() }}</td>
+                            <td style="vertical-align: middle"><img src="{{ asset(attendee.getClassIcon()) }}" alt="{{ attendee.getClassName() }}" title="{{ attendee.getClassName() }}" width="30px"/></td>
+                            <td style="vertical-align: middle"><img src="{{ asset(attendee.getRoleIcon()) }}" alt="{{ attendee.getRoleName() }}" title="{{ attendee.getRoleName() }}" width="30px"/></td>
                             <td style="vertical-align: middle">
                                 {% for set in attendee.sets %}
                                     <a href="https://eso-sets.com/set/{{ set.slug }}" target="_blank">{{ set.name }}</a><br>

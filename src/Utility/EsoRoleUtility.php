@@ -51,17 +51,17 @@ class EsoRoleUtility
     {
         switch ($roleId) {
             case self::ROLE_TANK:
-                return 'Tank';
+                return 'build/images/roles/tank.png';
             case self::ROLE_HEALER:
-                return 'Healer';
+                return 'build/images/roles/healer.png';
             case self::ROLE_MAGICKA_DD:
-                return 'Magicka Damage Dealer';
+                return 'build/images/roles/dd.png';
             case self::ROLE_STAMINA_DD:
-                return 'Stamina Damage Dealer';
+                return 'build/images/roles/dd.png';
             case self::ROLE_OTHER:
-                return 'Other';
+                return 'build/images/roles/other.png';
             default:
-                return 'Unknown';
+                return 'build/images/roles/unknown.png';
         }
     }
 

@@ -25,6 +25,7 @@ use App\Repository\GuildMembershipRepository;
 use App\Repository\ReminderRepository;
 use App\Repository\UserRepository;
 use App\Service\DiscordBotService;
+use App\Service\GuildLoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,17 +56,23 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
      * @var EventAttendeeRepository
      */
     private $eventAttendeeRepository;
+    /**
+     * @var GuildLoggerService
+     */
+    private $guildLoggerService;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,
         EntityManagerInterface $entityManager,
         EventRepository $eventRepository,
-        EventAttendeeRepository $eventAttendeeRepository
+        EventAttendeeRepository $eventAttendeeRepository,
+        GuildLoggerService $guildLoggerService
     ) {
         $this->discordGuildRepository = $discordGuildRepository;
         $this->entityManager = $entityManager;
         $this->eventRepository = $eventRepository;
         $this->eventAttendeeRepository = $eventAttendeeRepository;
+        $this->guildLoggerService = $guildLoggerService;
     }
 
     /**
@@ -76,10 +83,13 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
      */
     public function view(string $guildId): Response
     {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $upcomingEvents = $this->eventRepository->findFutureEventsForGuild($guild);
         return $this->render(
             'guild/view.html.twig',
             [
-                'guild' => $this->discordGuildRepository->findOneBy(['id' => $guildId]),
+                'guild' => $guild,
+                'events' => $upcomingEvents,
             ]
         );
     }
@@ -190,6 +200,9 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
                 ->setEvent($event);
             $this->entityManager->persist($attendee);
             $this->entityManager->flush();
+            if (!$attending) {
+                $this->guildLoggerService->eventAttending($event->getGuild(), $event, $attendee);
+            }
             $this->addFlash('success', 'Event attendance updated.');
 
             return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
@@ -226,6 +239,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
             $event->setGuild($guild);
             $this->entityManager->persist($event);
             $this->entityManager->flush();
+            $this->guildLoggerService->eventCreated($guild, $event);
             $this->addFlash('success', 'Event '.$event->getName().' created.');
 
             return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
@@ -258,6 +272,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->persist($event);
             $this->entityManager->flush();
+            $this->guildLoggerService->eventCreated($guild, $event);
             $this->addFlash('success', 'Event '.$event->getName().' updated.');
 
             return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
@@ -285,6 +300,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     {
         $event = $this->eventRepository->find($eventId);
 
+        $this->guildLoggerService->eventDeleted($event->getGuild(), $event);
         $this->entityManager->remove($event);
         $this->entityManager->flush();
         $this->addFlash('success', 'Event was deleted.');

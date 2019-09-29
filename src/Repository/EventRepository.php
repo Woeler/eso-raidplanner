@@ -9,8 +9,11 @@
 
 namespace App\Repository;
 
+use App\Entity\DiscordGuild;
 use App\Entity\Event;
+use App\Entity\User;
 use DateTime;
+use DateTimeZone;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -36,6 +39,40 @@ class EventRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('e')
             ->andWhere('e.start > :now')
             ->setParameter('now', $dateTime->format('Y-m-d H:i:s'))
+            ->orderBy('e.start', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param DiscordGuild $guild
+     * @return Event[]
+     */
+    public function findFutureEventsForGuild(DiscordGuild $guild): array
+    {
+        $dateTime = new DateTime('now', new DateTimeZone('UTC'));
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.start > :now')
+            ->andWhere('e.guild = :guild')
+            ->setParameter('now', $dateTime->format('Y-m-d H:i:s'))
+            ->setParameter('guild', $guild)
+            ->orderBy('e.start', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param User $user
+     * @return Event[]
+     */
+    public function findFutureEventsForUser(User $user): array
+    {
+        $dateTime = new DateTime('now', new DateTimeZone('UTC'));
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.start > :now')
+            ->andWhere('e.guild IN (:guilds)')
+            ->setParameter('now', $dateTime->format('Y-m-d H:i:s'))
+            ->setParameter('guilds', $user->getDiscordGuilds())
             ->orderBy('e.start', 'ASC')
             ->getQuery()
             ->getResult();

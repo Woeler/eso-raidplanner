@@ -64,19 +64,19 @@ class EsoClassUtility
     {
         switch ($classId) {
             case self::CLASS_DRAGONKNIGHT:
-                return 'dragonknight.png';
+                return 'build/images/classes/dragonknight.png';
             case self::CLASS_SORCERER:
-                return 'Sorcerer.png';
+                return 'build/images/classes/sorcerer.png';
             case self::CLASS_NIGHTBLADE:
-                return 'nightblade.png';
+                return 'build/images/classes/nightblade.png';
             case self::CLASS_WARDEN:
-                return 'warden.png';
+                return 'build/images/classes/warden.png';
             case self::CLASS_NECROMANCER:
-                return 'necromancer.png';
+                return 'build/images/classes/necromancer.png';
             case self::CLASS_TEMPLAR:
-                return 'templar.png';
+                return 'build/images/classes/templar.png';
             default:
-                return 'unknown.png';
+                return 'build/images/classes/unknown.png';
         }
     }
 

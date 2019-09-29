@@ -83,6 +83,13 @@ class DiscordGuild
      */
     private $reminders;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\DiscordChannel")
+     * @ORM\JoinColumn(name="log_channel", referencedColumnName="id", nullable=true)
+     * @var DiscordChannel
+     */
+    private $logChannel;
+
     public function __construct()
     {
         $this->active = false;
@@ -299,4 +306,23 @@ class DiscordGuild
     {
         return $this->reminders;
     }
+
+    /**
+     * @return DiscordChannel
+     */
+    public function getLogChannel(): ?DiscordChannel
+    {
+        return $this->logChannel;
+    }
+
+    /**
+     * @param DiscordChannel $logChannel
+     * @return DiscordGuild
+     */
+    public function setLogChannel(?DiscordChannel $logChannel): DiscordGuild
+    {
+        $this->logChannel = $logChannel;
+        return $this;
+    }
+
 }

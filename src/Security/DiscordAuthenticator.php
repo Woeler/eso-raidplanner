@@ -242,10 +242,17 @@ class DiscordAuthenticator extends SocialAuthenticator
             $this->em->persist($newGuild);
         }
 
+        // ToDo: Check which guilds should be removed
+
         $this->em->flush();
     }
 
-    private function apiRequest($url, $token)
+    /**
+     * @param string $url
+     * @param string $token
+     * @return \stdClass
+     */
+    private function apiRequest(string $url, string $token)
     {
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
@@ -255,6 +262,6 @@ class DiscordAuthenticator extends SocialAuthenticator
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $response = curl_exec($ch);
 
-        return json_decode($response);
+        return json_decode($response, false);
     }
 }

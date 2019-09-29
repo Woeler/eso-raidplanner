@@ -18,7 +18,7 @@ trait HasEsoClass
         return EsoClassUtility::getClassName($this->getClass());
     }
 
-    public function getClasIcon(): string
+    public function getClassIcon(): string
     {
         return EsoClassUtility::getClassIcon($this->getClass());
     }

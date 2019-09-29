@@ -2,48 +2,14 @@
 {% import 'macros/macros.html.twig' as macros %}
 {% block title %}Home{% endblock %}
 {% block body %}
-    {% if is_granted('ROLE_USER') %}
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">Upcoming events</div>
-                <div class="card-body">
-                </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                Welcome to ESORaidplanner
+            </div>
+            <div class="card-body">
+
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">Your guilds</div>
-                <div class="card-body">
-                    {% if app.user.getActiveGuildMemberships()|length < 1 %}
-                        You seem to have no active guilds. Turn one of your Discord servers into an active guild? Click here!
-                    {% else %}
-                        <table class="table">
-                            <tbody>
-                            {% for guild in app.user.getActiveGuildMemberships() %}
-                                <tr>
-                                    <td>
-                                        {% if guild.guild.icon is not null %}
-                                            <img class="avatar rounded-circle"
-                                                 src="https://cdn.discordapp.com/icons/{{ guild.guild.discordId }}/{{ guild.guild.icon }}.png"
-                                                 width="32" height="32"/>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ guild.guild.name }}</td>
-                                    <td>
-                                        {{ macros.linkbutton(
-                                            path('guild_view', {guildId: guild.guild.id}),
-                                            '',
-                                            'secondary',
-                                            'eye'
-                                        ) }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    {% endif %}
+    </div>
 {% endblock %}

@@ -397,4 +397,12 @@ class User implements UserInterface
 
         return $dateTime->format('F jS H:i');
     }
+
+    /**
+     * @return string
+     */
+    public function getDiscordMention(): string
+    {
+        return '<@'.$this->getDiscordId().'>';
+    }
 }

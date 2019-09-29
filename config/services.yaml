@@ -43,6 +43,12 @@ services:
       arguments:
         $botToken: '%env(DISCORD_BOT_TOKEN)%'
 
+    App\Service\GuildLoggerService:
+      class: App\Service\GuildLoggerService
+      public: true
+      arguments:
+        $appUrl: '%env(APP_URL)%'
+
     App\Service\ReminderService:
       class: App\Service\ReminderService
       public: true
