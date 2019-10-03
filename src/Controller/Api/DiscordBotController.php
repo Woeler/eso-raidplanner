@@ -9,6 +9,7 @@
 
 namespace App\Controller\Api;
 
+use App\Controller\Checks\TalksWithDiscordBotController;
 use App\Entity\EventAttendee;
 use App\Exception\UnexpectedDiscordApiResponseException;
 use App\Repository\DiscordGuildRepository;
@@ -30,7 +31,7 @@ use Woeler\DiscordPhp\Message\DiscordTextMessage;
 /**
  * @Route("/api/discord", name="api_discord_")
  */
-class DiscordBotController extends AbstractController
+class DiscordBotController extends AbstractController implements TalksWithDiscordBotController
 {
     /**
      * @var DiscordBotService
