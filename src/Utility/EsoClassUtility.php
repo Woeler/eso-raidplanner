@@ -32,6 +32,15 @@ class EsoClassUtility
         self::CLASS_TEMPLAR,
     ];
 
+    private const ALIASES = [
+        self::CLASS_DRAGONKNIGHT => ['dragonknight', 'dk', 'd'],
+        self::CLASS_SORCERER => ['sorcerer', 'sorc', 's'],
+        self::CLASS_NIGHTBLADE => ['nightblade', 'nb'],
+        self::CLASS_WARDEN => ['warden', 'w'],
+        self::CLASS_NECROMANCER => ['necromancer', 'necro'],
+        self::CLASS_TEMPLAR => ['templar', 'temp', 't'],
+    ];
+
     /**
      * @param int $classId
      * @return string
@@ -80,6 +89,9 @@ class EsoClassUtility
         }
     }
 
+    /**
+     * @return array
+     */
     public static function toArray(): array
     {
         $array = [];
@@ -88,5 +100,23 @@ class EsoClassUtility
         }
 
         return $array;
+    }
+
+    /**
+     * @param string $alias
+     * @return int|null
+     */
+    public static function getClassIdByAlias(string $alias): ?int
+    {
+        $alias = strtolower(trim($alias));
+        foreach (self::ALIASES as $id => $aliases) {
+            foreach ($aliases as $al) {
+                if ($alias === $al) {
+                    return $id;
+                }
+            }
+        }
+
+        return null;
     }
 }

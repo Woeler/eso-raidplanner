@@ -39,8 +39,10 @@ class DiscordBotService
     public function sendMessage(string $channelId, AbstractDiscordMessage $content): void
     {
         $message = $content->formatForDiscord();
-        $message['embed'] = $message['embeds'][0];
-        unset($message['embeds']);
+        if (isset($message['embeds'])) {
+            $message['embed'] = $message['embeds'][0];
+            unset($message['embeds']);
+        }
         $this->request('https://discordapp.com/api/channels/' . $channelId . '/messages', 'POST', $message);
     }
 

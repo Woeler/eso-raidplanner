@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+/*
+ * This file is part of the ESO Raidplanner project.
+ * @copyright ESO Raidplanner.
+ *
+ * For the full license, see the license file distributed with this code.
+ */
+
 namespace DoctrineMigrations;
 
 use Doctrine\DBAL\Schema\Schema;
@@ -20,7 +27,7 @@ final class Version20191003131316 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE armor_set (id INT NOT NULL, name VARCHAR(255) NOT NULL, slug VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
         $this->addSql('CREATE TABLE discord_guild (id VARCHAR(255) NOT NULL, owner_id INT DEFAULT NULL, log_channel VARCHAR(255) DEFAULT NULL, icon VARCHAR(255) DEFAULT NULL, name VARCHAR(255) NOT NULL, active TINYINT(1) NOT NULL, bot_active TINYINT(1) NOT NULL, INDEX IDX_7539ABA87E3C61F9 (owner_id), UNIQUE INDEX UNIQ_7539ABA89A34B6D0 (log_channel), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
@@ -48,7 +55,7 @@ final class Version20191003131316 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf('mysql' !== $this->connection->getDatabasePlatform()->getName(), 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE event_attendee_armor_set DROP FOREIGN KEY FK_D716C1D1537E6F87');
         $this->addSql('ALTER TABLE discord_channel DROP FOREIGN KEY FK_E664AA1C5F2131EF');

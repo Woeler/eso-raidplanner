@@ -29,6 +29,14 @@ class EsoRoleUtility
         self::ROLE_OTHER,
     ];
 
+    private const ALIASES = [
+        self::ROLE_TANK => ['tank', 't'],
+        self::ROLE_HEALER => ['healer', 'heals', 'heal', 'h'],
+        self::ROLE_MAGICKA_DD => ['mdd', 'magdd', 'magicka', 'm'],
+        self::ROLE_STAMINA_DD => ['sdd', 'stamdd', 'stamina', 's'],
+        self::ROLE_OTHER => ['other', 'pvp', 'o'],
+    ];
+
     public static function getRoleName(int $roleId): string
     {
         switch ($roleId) {
@@ -73,5 +81,23 @@ class EsoRoleUtility
         }
 
         return $array;
+    }
+
+    /**
+     * @param string $alias
+     * @return int|null
+     */
+    public static function getRoleIdByAlias(string $alias): ?int
+    {
+        $alias = strtolower(trim($alias));
+        foreach (self::ALIASES as $id => $aliases) {
+            foreach ($aliases as $al) {
+                if ($alias === $al) {
+                    return $id;
+                }
+            }
+        }
+
+        return null;
     }
 }

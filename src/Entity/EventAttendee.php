@@ -26,11 +26,11 @@ class EventAttendee
     use HasEsoClass;
     use HasEsoRole;
 
-    public const STATUS_GOING = 1;
+    public const STATUS_ATTENDING = 1;
 
-    public const STATUS_MAYBE = 2;
+    public const STATUS_RESERVE = 2;
 
-    public const STATUS_NOT_GOING = 3;
+    public const STATUS_CONFIRMED = 3;
 
     /**
      * @ORM\Id()
@@ -92,7 +92,7 @@ class EventAttendee
 
     public function __construct()
     {
-        $this->status = 1;
+        $this->status = self::STATUS_ATTENDING;
         $this->sets = new ArrayCollection();
     }
 
@@ -224,7 +224,7 @@ class EventAttendee
      */
     public function setSets(array $sets)
     {
-        $this->sets = $sets;
+        $this->sets = new ArrayCollection($sets);
 
         return $this;
     }
