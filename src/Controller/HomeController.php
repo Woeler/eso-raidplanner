@@ -26,9 +26,10 @@ class HomeController extends AbstractController
             return $this->render('home.html.twig');
         }
 
-        return $this->render('home_logged_in.html.twig',
+        return $this->render(
+            'home_logged_in.html.twig',
             [
-                'events' => $eventRepository->findFutureEventsForUser($this->getUser())
+                'events' => $eventRepository->findFutureEventsForUser($this->getUser()),
             ]
         );
     }

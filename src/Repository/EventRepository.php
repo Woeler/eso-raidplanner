@@ -51,6 +51,7 @@ class EventRepository extends ServiceEntityRepository
     public function findFutureEventsForGuild(DiscordGuild $guild): array
     {
         $dateTime = new DateTime('now', new DateTimeZone('UTC'));
+
         return $this->createQueryBuilder('e')
             ->andWhere('e.start > :now')
             ->andWhere('e.guild = :guild')
@@ -68,6 +69,7 @@ class EventRepository extends ServiceEntityRepository
     public function findFutureEventsForUser(User $user): array
     {
         $dateTime = new DateTime('now', new DateTimeZone('UTC'));
+
         return $this->createQueryBuilder('e')
             ->andWhere('e.start > :now')
             ->andWhere('e.guild IN (:guilds)')

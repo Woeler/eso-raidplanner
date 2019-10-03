@@ -322,7 +322,7 @@ class DiscordGuild
     public function setLogChannel(?DiscordChannel $logChannel): DiscordGuild
     {
         $this->logChannel = $logChannel;
+
         return $this;
     }
-
 }

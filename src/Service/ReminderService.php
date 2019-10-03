@@ -11,6 +11,7 @@ namespace App\Service;
 
 use App\Entity\Event;
 use App\Entity\Reminder;
+use App\Utility\EsoRoleUtility;
 use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 
 class ReminderService
@@ -49,6 +50,18 @@ class ReminderService
         $embeds->setAuthorUrl($this->appUrl.'/guild/'.$this->event->getGuild()->getId());
         $embeds->setFooterIcon('https://esoraidplanner.com/favicon/appicon.jpg');
         $embeds->setFooterText('ESO Raidplanner by Woeler');
+        if ($notification->isDetailedInfo()) {
+            foreach (EsoRoleUtility::toArray() as $roleId => $roleName) {
+                $attendees = $this->event->getAttendeesByRole($roleId);
+                if (0 < count($attendees)) {
+                    $text = '';
+                    foreach ($attendees as $attendee) {
+                        $text .= $attendee->getUser()->getDiscordMention().PHP_EOL;
+                    }
+                    $embeds->addField($roleName, $text, true);
+                }
+            }
+        }
 
         return $embeds;
     }

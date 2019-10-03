@@ -57,6 +57,17 @@ class Reminder
     private $minutesToTrigger;
 
     /**
+     * @ORM\Column(type="boolean")
+     * @var bool
+     */
+    private $detailedInfo;
+
+    public function __construct()
+    {
+        $this->detailedInfo = false;
+    }
+
+    /**
      * @return int
      */
     public function getId(): int
@@ -166,6 +177,25 @@ class Reminder
     public function setMinutesToTrigger(int $minutesToTrigger): Reminder
     {
         $this->minutesToTrigger = $minutesToTrigger;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDetailedInfo(): bool
+    {
+        return $this->detailedInfo;
+    }
+
+    /**
+     * @param bool $detailedInfo
+     * @return Reminder
+     */
+    public function setDetailedInfo(bool $detailedInfo): Reminder
+    {
+        $this->detailedInfo = $detailedInfo;
 
         return $this;
     }

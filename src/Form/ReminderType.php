@@ -14,6 +14,7 @@ use App\Entity\Reminder;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -41,6 +42,15 @@ class ReminderType extends AbstractType
                                 ->orderBy('u.name', 'ASC');
                         },
                     ]
+            )
+            ->add(
+                'detailedInfo',
+                ChoiceType::class,
+                [
+                    'required' => true,
+                    'choices' => ['Yes' => 1, 'No' => 0],
+                    'label' => 'Include attendee list in message',
+                ]
             )
             ->add('submit', SubmitType::class, [
                 'label' => 'Save',

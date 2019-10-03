@@ -1,8 +1,13 @@
 <?php
 
+/*
+ * This file is part of the ESO Raidplanner project.
+ * @copyright ESO Raidplanner.
+ *
+ * For the full license, see the license file distributed with this code.
+ */
 
 namespace App\Service;
-
 
 use App\Entity\DiscordChannel;
 use App\Entity\DiscordGuild;
@@ -17,6 +22,7 @@ class GuildLoggerService
      * @var DiscordBotService
      */
     private $discordBotService;
+
     /**
      * @var string
      */
@@ -30,7 +36,7 @@ class GuildLoggerService
 
     private function sendMessage(AbstractDiscordMessage $message, ?DiscordChannel $channel): void
     {
-        if ($channel === null) {
+        if (null === $channel) {
             return;
         }
 

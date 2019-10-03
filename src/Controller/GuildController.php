@@ -56,6 +56,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
      * @var EventAttendeeRepository
      */
     private $eventAttendeeRepository;
+
     /**
      * @var GuildLoggerService
      */
@@ -85,6 +86,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
         $upcomingEvents = $this->eventRepository->findFutureEventsForGuild($guild);
+
         return $this->render(
             'guild/view.html.twig',
             [

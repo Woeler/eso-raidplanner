@@ -217,6 +217,17 @@ class Event
     }
 
     /**
+     * @param int $roleId
+     * @return Collection|EventAttendee[]
+     */
+    public function getAttendeesByRole(int $roleId): Collection
+    {
+        return $this->attendees->filter(static function (EventAttendee $attendee) use ($roleId) {
+            return $attendee->getRole() === $roleId;
+        });
+    }
+
+    /**
      * @param mixed $attendees
      * @return Event
      */
