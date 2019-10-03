@@ -38,3 +38,4 @@ yarn-error.log
 /bin/phpunit
 /bin/simple-phpunit
 /bin/var-dump-server
+/.env
