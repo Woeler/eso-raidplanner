@@ -11,7 +11,6 @@ namespace App\Security;
 
 use App\Entity\DiscordGuild;
 use App\Entity\User;
-use App\Repository\DiscordGuildRepository;
 use App\Repository\GuildMembershipRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -142,31 +141,34 @@ class DiscordAuthenticator extends SocialAuthenticator
      */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
+        /** @var AccessToken $credentials */
         $discordUser = $this->getDiscordClient()
             ->fetchUserFromToken($credentials);
 
         $email = $discordUser->getEmail();
 
         // 1) have they logged in with Facebook before? Easy!
-        $existingUser = $this->em->getRepository(User::class)
-            ->findOneBy(['discordId' => $discordUser->getId()]);
-        if ($existingUser) {
-            $this->updateGuilds($existingUser, $credentials);
-
-            return $existingUser;
-        }
-
-        // 2) do we have a matching user by email?
         $user = $this->em->getRepository(User::class)
-            ->findOneBy(['email' => $email]) ?? new User();
+            ->findOneBy(['discordId' => $discordUser->getId()]);
+        if ($user) {
+            $user->setDiscordToken($credentials->getToken())
+                ->setDiscordRefreshToken($credentials->getRefreshToken());
+        } else {
 
-        // 3) Maybe you just want to "register" them by creating
-        // a User object
-        $user->setDiscordId($discordUser->getId())
-            ->setEmail($discordUser->getEmail())
-            ->setAvatar($discordUser->getAvatarHash())
-            ->setDiscordDiscriminator($discordUser->getDiscriminator())
-            ->setUsername($discordUser->getUsername());
+            // 2) do we have a matching user by email?
+            $user = $this->em->getRepository(User::class)
+                    ->findOneBy(['email' => $email]) ?? new User();
+
+            // 3) Maybe you just want to "register" them by creating
+            // a User object
+            $user->setDiscordId($discordUser->getId())
+                ->setEmail($discordUser->getEmail())
+                ->setAvatar($discordUser->getAvatarHash())
+                ->setDiscordDiscriminator($discordUser->getDiscriminator())
+                ->setUsername($discordUser->getUsername())
+                ->setDiscordToken($credentials->getToken())
+                ->setDiscordRefreshToken($credentials->getRefreshToken());
+        }
 
         $this->em->persist($user);
         $this->em->flush();
@@ -247,6 +249,8 @@ class DiscordAuthenticator extends SocialAuthenticator
             if ($guild->owner) {
                 $newGuild->setOwner($user)
                     ->makeAdmin($user);
+            } else {
+                $newGuild->addMember($user);
             }
 
             $this->em->persist($newGuild);

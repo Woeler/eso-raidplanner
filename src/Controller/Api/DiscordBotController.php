@@ -63,6 +63,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      * @var EntityManagerInterface
      */
     private $entityManager;
+
     /**
      * @var GuildLoggerService
      */

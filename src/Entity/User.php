@@ -96,6 +96,18 @@ class User implements UserInterface
      */
     private $darkmode;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @var string
+     */
+    private $discordToken;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     * @var string
+     */
+    private $discordRefreshToken;
+
     public function __construct()
     {
         $this->clock = 24;
@@ -264,6 +276,44 @@ class User implements UserInterface
     public function setDarkmode($darkmode)
     {
         $this->darkmode = $darkmode;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDiscordToken(): string
+    {
+        return $this->discordToken;
+    }
+
+    /**
+     * @param string $discordToken
+     * @return User
+     */
+    public function setDiscordToken(string $discordToken): User
+    {
+        $this->discordToken = $discordToken;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDiscordRefreshToken(): string
+    {
+        return $this->discordRefreshToken;
+    }
+
+    /**
+     * @param string $discordRefreshToken
+     * @return User
+     */
+    public function setDiscordRefreshToken(string $discordRefreshToken): User
+    {
+        $this->discordRefreshToken = $discordRefreshToken;
 
         return $this;
     }

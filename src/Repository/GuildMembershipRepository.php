@@ -9,7 +9,6 @@
 
 namespace App\Repository;
 
-use App\Entity\DiscordGuild;
 use App\Entity\GuildMembership;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -32,7 +31,7 @@ class GuildMembershipRepository extends ServiceEntityRepository
     public function whereNotIn(User $user, Collection $guilds): array
     {
         return $this->createQueryBuilder('e')
-            ->andWhere('e.id NOT IN (:guilds)')
+            ->andWhere('e.guild NOT IN (:guilds)')
             ->andWhere('e.user = :user')
             ->setParameter('guilds', $guilds)
             ->setParameter('user', $user)

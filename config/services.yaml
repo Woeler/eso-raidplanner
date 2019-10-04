@@ -43,6 +43,10 @@ services:
       arguments:
         $botToken: '%env(DISCORD_BOT_TOKEN)%'
 
+    App\Service\DiscordOauthService:
+      class: App\Service\DiscordOauthService
+      public: true
+
     App\Service\GuildLoggerService:
       class: App\Service\GuildLoggerService
       public: true
@@ -60,3 +64,6 @@ services:
       public: true
       arguments:
         $pmgToken: '%env(BEAST_TOKEN)%'
+
+    GuzzleHttp\Client:
+      class: GuzzleHttp\Client

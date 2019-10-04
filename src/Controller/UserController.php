@@ -10,11 +10,15 @@
 namespace App\Controller;
 
 use App\Entity\DiscordChannel;
+use App\Entity\DiscordGuild;
 use App\Exception\UnexpectedDiscordApiResponseException;
 use App\Form\User;
 use App\Repository\DiscordChannelRepository;
 use App\Repository\DiscordGuildRepository;
+use App\Repository\GuildMembershipRepository;
 use App\Service\DiscordBotService;
+use App\Service\DiscordOauthService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -80,6 +84,53 @@ class UserController extends AbstractController
         $guilds = $this->getUser()->getDiscordGuilds();
 
         return $this->render('user/discord_guilds/list.html.twig', ['guilds' => $guilds]);
+    }
+
+    /**
+     * @Route("/guilds/refresh", name="guilds_refresh")
+     *
+     * @param Request $request
+     * @param DiscordOauthService $discordOauthService
+     * @param GuildMembershipRepository $guildMembershipRepository
+     * @return Response
+     */
+    public function refreshDiscordGuilds(Request $request, DiscordOauthService $discordOauthService, GuildMembershipRepository $guildMembershipRepository): Response
+    {
+        $guilds = $discordOauthService->getGuilds();
+        $user = $this->getUser();
+        $existingGuilds = new ArrayCollection();
+
+        foreach ($guilds as $guild) {
+            $newGuild = $this->entityManager->getRepository(DiscordGuild::class)
+                ->findOneBy(['id' => $guild->id]);
+            if (null === $newGuild) {
+                $newGuild = new DiscordGuild();
+            }
+            $newGuild
+                ->setName($guild->name)
+                ->setDiscordId($guild->id)
+                ->setIcon($guild->icon);
+            if ($guild->owner) {
+                $newGuild->setOwner($user)
+                    ->makeAdmin($user);
+            } else {
+                $newGuild->addMember($user);
+            }
+
+            $this->entityManager->persist($newGuild);
+            $existingGuilds->add($newGuild);
+        }
+        $this->entityManager->flush();
+
+        foreach ($guildMembershipRepository->whereNotIn($user, $existingGuilds) as $membership) {
+            $this->entityManager->remove($membership);
+        }
+
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Guilds updated.');
+
+        return $this->redirectToRoute('user_guilds');
     }
 
     /**
