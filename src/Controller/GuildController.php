@@ -26,6 +26,7 @@ use App\Repository\ReminderRepository;
 use App\Repository\UserRepository;
 use App\Service\DiscordBotService;
 use App\Service\GuildLoggerService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -144,6 +145,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
         try {
             $channels = $discordBotService->getChannels($guild->getId());
+            $existingChannels = new ArrayCollection();
 
             foreach ($channels as $channel) {
                 if (DiscordChannel::CHANNEL_TYPE_TEXT !== $channel['type']) {
@@ -166,6 +168,12 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
                 }
 
                 $this->entityManager->persist($discordChannel);
+                $existingChannels->add($discordChannel);
+            }
+            $this->entityManager->flush();
+
+            foreach ($discordChannelRepository->whereNotIn($guild, $existingChannels) as $channel) {
+                $this->entityManager->remove($channel);
             }
             $this->entityManager->flush();
 

@@ -17,6 +17,7 @@ use App\Repository\EventAttendeeRepository;
 use App\Repository\EventRepository;
 use App\Repository\UserRepository;
 use App\Service\DiscordBotService;
+use App\Service\GuildLoggerService;
 use App\Utility\EsoClassUtility;
 use App\Utility\EsoRoleUtility;
 use Doctrine\ORM\EntityManagerInterface;
@@ -62,6 +63,10 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      * @var EntityManagerInterface
      */
     private $entityManager;
+    /**
+     * @var GuildLoggerService
+     */
+    private $guildLoggerService;
 
     public function __construct(
         DiscordBotService $discordBotService,
@@ -69,7 +74,8 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         EventRepository $eventRepository,
         EventAttendeeRepository $eventAttendeeRepository,
         UserRepository $userRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        GuildLoggerService $guildLoggerService
     ) {
         $this->discordBotService = $discordBotService;
         $this->discordGuildRepository = $discordGuildRepository;
@@ -77,6 +83,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         $this->eventAttendeeRepository = $eventAttendeeRepository;
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
+        $this->guildLoggerService = $guildLoggerService;
     }
 
     /**
@@ -229,6 +236,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
             $user->getDiscordMention().' you are now attending '.$event->getName().' as a '.EsoClassUtility::getClassName($class).' '.EsoRoleUtility::getRoleName($role),
             $request->get('channelId')
         );
+        $this->guildLoggerService->eventAttending($guild, $event, $attendee);
     }
 
     /**

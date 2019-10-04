@@ -11,6 +11,9 @@ namespace App\Security;
 
 use App\Entity\DiscordGuild;
 use App\Entity\User;
+use App\Repository\DiscordGuildRepository;
+use App\Repository\GuildMembershipRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\Provider\DiscordClient;
@@ -42,11 +45,17 @@ class DiscordAuthenticator extends SocialAuthenticator
      */
     private $router;
 
-    public function __construct(ClientRegistry $clientRegistry, EntityManagerInterface $em, RouterInterface $router)
+    /**
+     * @var GuildMembershipRepository
+     */
+    private $guildMembershipRepository;
+
+    public function __construct(ClientRegistry $clientRegistry, EntityManagerInterface $em, RouterInterface $router, GuildMembershipRepository $guildMembershipRepository)
     {
         $this->clientRegistry = $clientRegistry;
         $this->em = $em;
         $this->router = $router;
+        $this->guildMembershipRepository = $guildMembershipRepository;
     }
 
     /**
@@ -222,6 +231,7 @@ class DiscordAuthenticator extends SocialAuthenticator
     private function updateGuilds(User $user, AccessToken $token)
     {
         $guilds = $this->apiRequest('https://discordapp.com/api/users/@me/guilds', $token->getToken());
+        $existingGuilds = new ArrayCollection();
 
         foreach ($guilds as $guild) {
             $newGuild = $this->em->getRepository(DiscordGuild::class)
@@ -240,9 +250,12 @@ class DiscordAuthenticator extends SocialAuthenticator
             }
 
             $this->em->persist($newGuild);
+            $existingGuilds->add($newGuild);
         }
 
-        // ToDo: Check which guilds should be removed
+        foreach ($this->guildMembershipRepository->whereNotIn($user, $existingGuilds) as $membership) {
+            $this->em->remove($membership);
+        }
 
         $this->em->flush();
     }
