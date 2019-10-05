@@ -16,6 +16,7 @@ use App\Entity\EventAttendee;
 use App\Entity\GuildMembership;
 use App\Entity\Reminder;
 use App\Exception\UnexpectedDiscordApiResponseException;
+use App\Form\DiscordGuildType;
 use App\Form\ReminderType;
 use App\Repository\DiscordChannelRepository;
 use App\Repository\DiscordGuildRepository;
@@ -101,14 +102,28 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
      * @Route("/{guildId}/settings", name="settings")
      *
      * @param string $guildId
+     * @param Request $request
      * @return Response
      */
-    public function settings(string $guildId): Response
+    public function settings(string $guildId, Request $request): Response
     {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $form = $this->createForm(DiscordGuildType::class, $guild, ['guild' => $guild]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($guild);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Guild settings updated.');
+
+            return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
+        }
+
         return $this->render(
             'guild/settings.html.twig',
             [
-                'guild' => $this->discordGuildRepository->findOneBy(['id' => $guildId]),
+                'guild' => $guild,
+                'form' => $form->createView(),
             ]
         );
     }
