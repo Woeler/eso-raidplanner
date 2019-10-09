@@ -158,7 +158,7 @@ class MenuBuilder
                     'label' => $user->getUsername(),
                     'uri' => '#',
                     'extras' => [
-                        'image' => 'https://cdn.discordapp.com/avatars/216023025055825920/a_4b169c8bbf9946525dc5c838e9bff2b1.png',
+                        'image' => 'https://cdn.discordapp.com/avatars/'.$user->getDiscordId().'/'.($user->getAvatar() ?? 'unknown').'.png',
                     ],
                 ]
             );
@@ -172,19 +172,17 @@ class MenuBuilder
                     ],
                 ]
             );
-            if (0 < count($user->getDiscordGuilds())) {
-                $menu['username']->addChild(
-                    'discord_guilds',
-                    [
-                        'route' => 'user_guilds',
-                        'label' => 'Your Discord Servers',
-                        'extras' => [
-                            'icon' => 'discord',
-                            'fab' => true,
-                        ],
-                    ]
-                );
-            }
+            $menu['username']->addChild(
+                'discord_guilds',
+                [
+                    'route' => 'user_guilds',
+                    'label' => 'Your Discord Servers',
+                    'extras' => [
+                        'icon' => 'discord',
+                        'fab' => true,
+                    ],
+                ]
+            );
             $menu['username']->addChild(
                 'logout',
                 [
