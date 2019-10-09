@@ -43,7 +43,7 @@
                 <div class="card-header">Your guilds</div>
                 <div class="card-body">
                     {% if app.user.getActiveGuildMemberships()|length < 1 %}
-                        You seem to have no active guilds. Turn one of your Discord servers into an active guild? Click here!
+                        You seem to have no active guilds. Turn one of your Discord servers into an active guild? <a href="{{ path('user_guilds') }}">Click here</a>!
                     {% else %}
                         <table class="table">
                             <tbody>
