@@ -15,6 +15,7 @@ use App\Entity\User;
 use DateTime;
 use DateTimeZone;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -69,12 +70,16 @@ class EventRepository extends ServiceEntityRepository
     public function findFutureEventsForUser(User $user): array
     {
         $dateTime = new DateTime('now', new DateTimeZone('UTC'));
+        $guilds = new ArrayCollection();
+        foreach ($user->getGuildMemberships() as $membership) {
+            $guilds->add($membership->getGuild());
+        }
 
         return $this->createQueryBuilder('e')
             ->andWhere('e.start > :now')
             ->andWhere('e.guild IN (:guilds)')
             ->setParameter('now', $dateTime->format('Y-m-d H:i:s'))
-            ->setParameter('guilds', $user->getDiscordGuilds())
+            ->setParameter('guilds', $guilds)
             ->orderBy('e.start', 'ASC')
             ->getQuery()
             ->getResult();

@@ -348,7 +348,7 @@ class User implements UserInterface
     }
 
     /**
-     * @return Collection
+     * @return Collection|GuildMembership[]
      */
     public function getGuildMemberships(): Collection
     {
