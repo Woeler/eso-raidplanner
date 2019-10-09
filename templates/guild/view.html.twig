@@ -65,30 +65,34 @@
             <div class="card">
                 <div class="card-header">Actions</div>
                 <div class="card-body">
-                    {{ macros.linkbutton(
-                        path('guild_event_create', {guildId: guild.id}),
-                        'Create Event',
-                        'success btn-block',
-                        'plus'
-                    ) }}
+                    {% if guild.isAdmin(app.user) %}
+                        {{ macros.linkbutton(
+                            path('guild_event_create', {guildId: guild.id}),
+                            'Create Event',
+                            'success btn-block',
+                            'plus'
+                        ) }}
+                    {% endif %}
                     {{ macros.linkbutton(
                         path('guild_members', {'guildId': guild.id}),
                         'Members list',
                         'info btn-block',
                         'users'
                     ) }}
-                    {{ macros.linkbutton(
-                        path('guild_reminder_list', {guildId: guild.id}),
-                        'Reminder Messages',
-                        'info btn-block',
-                        'envelope'
-                    ) }}
-                    {{ macros.linkbutton(
-                        path('home'),
-                        'Recurring Events',
-                        'info btn-block',
-                        'calendar-week'
-                    ) }}
+                    {% if guild.isAdmin(app.user) %}
+                        {{ macros.linkbutton(
+                            path('guild_reminder_list', {guildId: guild.id}),
+                            'Reminder Messages',
+                            'info btn-block',
+                            'envelope'
+                        ) }}
+                        {{ macros.linkbutton(
+                            path('home'),
+                            'Recurring Events',
+                            'info btn-block',
+                            'calendar-week'
+                        ) }}
+                    {% endif %}
                     {% if guild.owner.discordId == app.user.discordId %}
                         {{ macros.linkbutton(
                             path('guild_settings', {guildId: guild.id}),
