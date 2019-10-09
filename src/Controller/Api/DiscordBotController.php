@@ -257,6 +257,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
 
         $attendee = $this->eventAttendeeRepository->findOneBy(['user' => $user, 'event' => $event]);
         if (null !== $attendee) {
+            $this->guildLoggerService->eventUnattending($guild, $event, $attendee);
             $this->entityManager->remove($attendee);
             $this->entityManager->flush();
         }

@@ -6,12 +6,15 @@
     <div class="card">
         <div class="card-header">Check if the bot is connected to your server</div>
         <div class="card-body">
+            <a href="https://discordapp.com/oauth2/authorize?&client_id={{ clientId }}&scope=bot&permissions=248896" target="_blank" class="btn btn-info">
+                <span class="btn-icon"><i class="fa fa-plus"></i></span>        <span class="btn-text">Add the bot</span>
+            </a>
             {{
             macros.linkbutton(
                 path('user_guild_bot_check', {guildId: guild.id}),
                 'Check if the bot is connected!',
                 'success',
-                'plus'
+                'sync'
             )
             }}
         </div>

@@ -191,6 +191,6 @@ class UserController extends AbstractController
             $this->addFlash('danger', 'The bot could not properly fetch data from your server. Does it have the correct rights?');
         }
 
-        return $this->render('user/discord_guilds/bot_check.html.twig', ['guild' => $guild]);
+        return $this->render('user/discord_guilds/bot_check.html.twig', ['guild' => $guild, 'clientId' => $this->container->getParameter('discord.bot.clientid')]);
     }
 }
