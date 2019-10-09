@@ -40,7 +40,7 @@
                                             ) }}
                                         {% else %}
                                             {{ macros.linkbutton(
-                                                path('home'),
+                                                path('guild_member_promote', {'guildId': guild.id, 'userId': member.user.discordId}),
                                                 'Promote',
                                                 'success',
                                                 'arrow-up'
