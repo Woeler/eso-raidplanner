@@ -5,11 +5,13 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <img class="avatar rounded-circle" src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32" height="32"/>
+                <img class="avatar rounded-circle"
+                     src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32"
+                     height="32"/>
                 <a href="{{ path('guild_view', {'guildId': guild.id}) }}">
                     {{ guild.name }}
                 </a>
-                 - Events
+                - Events
             </div>
             <div class="card-body">
                 <table class="table">
@@ -19,7 +21,7 @@
                         <th>Attendees</th>
                         <th>Date/Time</th>
                         {% if guild.isAdmin(app.user) %}
-                        <th class="text-right">Actions</th>
+                            <th class="text-right">Actions</th>
                         {% endif %}
                     </tr>
                     </thead>
@@ -29,34 +31,28 @@
                             <td style="vertical-align: middle">{{ event.name }}</td>
                             <td style="vertical-align: middle">{{ event.attendees|length }}</td>
                             <td style="vertical-align: middle">{{ app.user.toUserTimeString(event.start) }}</td>
-                            {% if guild.isAdmin(app.user) %}
-                                <td class="text-right">
-                                    {{
-                                    macros.linkbutton(
-                                        path('guild_event_view', {guildId: guild.id, eventId: event.id}),
-                                        '',
-                                        'secondary',
-                                        'eye'
-                                    )
-                                    }}
-                                    {{
-                                    macros.linkbutton(
+                            <td class="text-right">
+                                {{ macros.linkbutton(
+                                    path('guild_event_view', {guildId: guild.id, eventId: event.id}),
+                                    '',
+                                    'secondary',
+                                    'eye'
+                                ) }}
+                                {% if guild.isAdmin(app.user) %}
+                                    {{ macros.linkbutton(
                                         path('guild_event_update', {guildId: guild.id, eventId: event.id}),
                                         '',
                                         'info',
                                         'edit'
-                                    )
-                                    }}
-                                    {{
-                                    macros.linkbutton(
+                                    ) }}
+                                    {{ macros.linkbutton(
                                         path('guild_event_delete', {guildId: guild.id, eventId: event.id}),
                                         '',
                                         'danger',
                                         'trash'
-                                    )
-                                    }}
-                                </td>
-                            {% endif %}
+                                    ) }}
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -69,47 +65,37 @@
             <div class="card">
                 <div class="card-header">Actions</div>
                 <div class="card-body">
-                    {{
-                    macros.linkbutton(
+                    {{ macros.linkbutton(
                         path('guild_event_create', {guildId: guild.id}),
                         'Create Event',
                         'success btn-block',
                         'plus'
-                    )
-                    }}
-                    {{
-                    macros.linkbutton(
+                    ) }}
+                    {{ macros.linkbutton(
                         path('guild_members', {'guildId': guild.id}),
                         'Members list',
                         'info btn-block',
                         'users'
-                    )
-                    }}
-                    {{
-                    macros.linkbutton(
+                    ) }}
+                    {{ macros.linkbutton(
                         path('guild_reminder_list', {guildId: guild.id}),
                         'Reminder Messages',
                         'info btn-block',
                         'envelope'
-                    )
-                    }}
-                    {{
-                    macros.linkbutton(
+                    ) }}
+                    {{ macros.linkbutton(
                         path('home'),
                         'Recurring Events',
                         'info btn-block',
                         'calendar-week'
-                    )
-                    }}
+                    ) }}
                     {% if guild.owner.discordId == app.user.discordId %}
-                        {{
-                        macros.linkbutton(
+                        {{ macros.linkbutton(
                             path('guild_settings', {guildId: guild.id}),
                             'Guild Settings',
                             'info btn-block',
                             'cog'
-                        )
-                        }}
+                        ) }}
                     {% endif %}
                 </div>
             </div>
