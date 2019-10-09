@@ -87,4 +87,14 @@ class GuildLoggerService
 
         $this->sendMessage($message, $guild->getLogChannel());
     }
+
+    public function eventUnattending(DiscordGuild $guild, Event $event, EventAttendee $attendee): void
+    {
+        $message = new DiscordEmbedsMessage();
+        $message->setTitle('User is no longer attending event')
+            ->addField('Event', $event->getName(), true)
+            ->addField('User', $attendee->getUser()->getDiscordMention());
+
+        $this->sendMessage($message, $guild->getLogChannel());
+    }
 }

@@ -344,8 +344,11 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     public function eventUnattend(string $guildId, int $eventId, Request $request): Response
     {
         $attendee = $this->eventAttendeeRepository->findOneBy(['user' => $this->getUser()->getId(), 'event' => $eventId]);
+        $event = $this->eventRepository->find($eventId);
+        $guid = $this->discordGuildRepository->find($guildId);
 
         if (null !== $attendee) {
+            $this->guildLoggerService->eventUnattending($guid, $event, $attendee);
             $this->entityManager->remove($attendee);
             $this->entityManager->flush();
 
