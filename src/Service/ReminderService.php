@@ -42,7 +42,7 @@ class ReminderService
     {
         $embeds = new DiscordEmbedsMessage();
         $embeds->setTitle('Reminder for '.$this->event->getName());
-        $embeds->setUrl($this->appUrl.'/guild/'.$this->event->getGuild()->getId().'/event/'.$this->event->getId());
+        $embeds->setUrl($this->appUrl.'/guild/'.$this->event->getGuild()->getId().'/event/'.$this->event->getId().'/view');
         $embeds->setDescription($this->processText($notification->getText()));
         $embeds->setColor(9660137);
         $embeds->setAuthorName($this->event->getGuild()->getName());
