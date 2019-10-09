@@ -62,9 +62,16 @@ class Reminder
      */
     private $detailedInfo;
 
+    /**
+     * @ORM\Column(type="boolean")
+     * @var bool
+     */
+    private $pingAttendees;
+
     public function __construct()
     {
         $this->detailedInfo = false;
+        $this->pingAttendees = false;
     }
 
     /**
@@ -196,6 +203,25 @@ class Reminder
     public function setDetailedInfo(bool $detailedInfo): Reminder
     {
         $this->detailedInfo = $detailedInfo;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPingAttendees(): bool
+    {
+        return $this->pingAttendees;
+    }
+
+    /**
+     * @param bool $pingAttendees
+     * @return Reminder
+     */
+    public function setPingAttendees(bool $pingAttendees): Reminder
+    {
+        $this->pingAttendees = $pingAttendees;
 
         return $this;
     }

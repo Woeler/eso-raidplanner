@@ -50,6 +50,13 @@ class ReminderService
         $embeds->setAuthorUrl($this->appUrl.'/guild/'.$this->event->getGuild()->getId());
         $embeds->setFooterIcon('https://esoraidplanner.com/favicon/appicon.jpg');
         $embeds->setFooterText('ESO Raidplanner by Woeler');
+        if ($notification->isPingAttendees()) {
+            $mentions = [];
+            foreach ($this->event->getAttendees() as $attendee) {
+                $mentions[] = $attendee->getUser()->getDiscordMention();
+            }
+            $embeds->setContent(implode(',', $mentions));
+        }
         if ($notification->isDetailedInfo()) {
             foreach (EsoRoleUtility::toArray() as $roleId => $roleName) {
                 $attendees = $this->event->getAttendeesByRole($roleId);

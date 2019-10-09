@@ -209,7 +209,7 @@ class Event
     }
 
     /**
-     * @return mixed
+     * @return EventAttendee[]
      */
     public function getAttendees()
     {

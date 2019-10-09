@@ -52,6 +52,15 @@ class ReminderType extends AbstractType
                     'label' => 'Include attendee list in message',
                 ]
             )
+            ->add(
+                'pingAttendees',
+                ChoiceType::class,
+                [
+                    'required' => true,
+                    'choices' => ['No' => 0, 'Yes' => 1],
+                    'label' => 'Ping (mention) all attendees',
+                ]
+            )
             ->add('submit', SubmitType::class, [
                 'label' => 'Save',
                 'attr' => ['class' => 'btn btn-primary pull-right'],
