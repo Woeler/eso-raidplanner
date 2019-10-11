@@ -13,13 +13,17 @@ module.exports = (client, message) => {
     // Ignore messages not starting with the prefix (in config.json)
     if (message.content.indexOf(client.config.prefix) !== 0) return;
 
+    const args = message.content.slice(client.config.prefix.length).trim().split(/ +/g);
+    let command = args.shift().toLowerCase();
+
     const https = require('https');
 
     const data = {
         userId: message.author.id,
         channelId: message.channel.id,
         guildId: message.guild.id,
-        text: message.content
+        query: args.join(' '),
+        command: '!'+command
     };
 
     const options = {
