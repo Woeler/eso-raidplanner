@@ -47,7 +47,7 @@ module.exports = (client, message) => {
             serverResponse += chunk;
         });
         res.on('end', () => {
-            callback(serverResponse);
+            //callback(serverResponse);
         });
     });
 
