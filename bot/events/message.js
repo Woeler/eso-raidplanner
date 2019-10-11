@@ -16,6 +16,9 @@ module.exports = (client, message) => {
     const args = message.content.slice(client.config.prefix.length).trim().split(/ +/g);
     let command = args.shift().toLowerCase();
 
+    if (command === 'signup') command = 'attend';
+    if (command === 'signoff') command = 'unattend';
+
     const https = require('https');
 
     const data = {
@@ -28,7 +31,7 @@ module.exports = (client, message) => {
 
     const options = {
         host: client.config.host,
-        path: client.config.host+'/api/discord/bot',
+        path: "https://"+client.config.host+'/api/discord/bot',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
