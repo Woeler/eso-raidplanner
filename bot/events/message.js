@@ -31,4 +31,18 @@ module.exports = (client, message) => {
             Authorization: 'Basic '+ new Buffer(client.config.authToken).toString('base64'),
         },
     };
+
+    const requestData = JSON.stringify(data);
+
+    let serverResponse = '';
+    const request = https.request(options, res => {
+        res.on('data', chunk => {
+            serverResponse += chunk;
+        });
+        res.on('end', () => {
+            callback(serverResponse);
+        });
+    });
+
+    request.write(requestData);
 };
