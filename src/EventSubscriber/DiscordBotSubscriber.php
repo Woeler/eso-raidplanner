@@ -17,6 +17,7 @@ use App\Service\DiscordBotService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Woeler\DiscordPhp\Message\DiscordTextMessage;
 
@@ -37,14 +38,21 @@ class DiscordBotSubscriber implements EventSubscriberInterface
      */
     private $userRepository;
 
+    /**
+     * @var string
+     */
+    private $token;
+
     public function __construct(
         DiscordBotService $discordBotService,
         DiscordGuildRepository $guildRepository,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        string $token
     ) {
         $this->discordBotService = $discordBotService;
         $this->guildRepository = $guildRepository;
         $this->userRepository = $userRepository;
+        $this->token = $token;
     }
 
     public function onTalksWithDiscordController(ControllerEvent $event): void
@@ -61,6 +69,10 @@ class DiscordBotSubscriber implements EventSubscriberInterface
         }
 
         if ($controller[0] instanceof TalksWithDiscordBotController) {
+            $token = str_replace('Basic ', '', $event->getRequest()->headers->get('Authorization') ?? '');
+            if ($this->token !== base64_decode($token)) {
+                throw new UnauthorizedHttpException('Invalid token');
+            }
             $guildId = $event->getRequest()->get('guildId');
             $userId = $event->getRequest()->get('userId');
             $channelId = $event->getRequest()->get('channelId');

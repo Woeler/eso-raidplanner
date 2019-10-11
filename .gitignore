@@ -39,3 +39,5 @@ yarn-error.log
 /bin/simple-phpunit
 /bin/var-dump-server
 /.env
+/bot/node_modules/
+/bot/config.json

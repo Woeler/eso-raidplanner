@@ -44,6 +44,12 @@ services:
       arguments:
         $botToken: '%env(DISCORD_BOT_TOKEN)%'
 
+    App\EventSubscriber\DiscordBotSubscriber:
+      class: App\EventSubscriber\DiscordBotSubscriber
+      public: true
+      arguments:
+        $token: '%env(BOT_AUTH_TOKEN)%'
+
     App\Service\DiscordOauthService:
       class: App\Service\DiscordOauthService
       public: true
