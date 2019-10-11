@@ -26,6 +26,10 @@ class HomeController extends AbstractController
             return $this->render('home.html.twig');
         }
 
+        if ($this->getUser()->getTimezone() === 'UTC') {
+            $this->addFlash('warning', 'Your current timezone is set to UTC, please configure your home timezone in <a href="/user/update">your user settings</a>.');
+        }
+
         return $this->render(
             'home_logged_in.html.twig',
             [
