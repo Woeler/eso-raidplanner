@@ -73,9 +73,9 @@ class DiscordBotSubscriber implements EventSubscriberInterface
             if ($this->token !== base64_decode($token)) {
                 throw new UnauthorizedHttpException('Invalid token');
             }
-            $guildId = $event->getRequest()->get('guildId');
-            $userId = $event->getRequest()->get('userId');
-            $channelId = $event->getRequest()->get('channelId');
+            $guildId = $event->getRequest()->request->get('guildId');
+            $userId = $event->getRequest()->request->get('userId');
+            $channelId = $event->getRequest()->request->get('channelId');
             $guild = $this->guildRepository->find($guildId);
             $user = $this->userRepository->findOneBy(['discordId' => $userId]);
 

@@ -95,7 +95,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      */
     public function entryPoint(Request $request): Response
     {
-        $command = $request->get('command');
+        $command = $request->request->get('command');
 
         try {
             switch ($command) {
@@ -112,8 +112,8 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
                     $this->unattend($request);
                     break;
                 default:
-                    if (!empty($request->get('channelId'))) {
-                        $this->replyWithText('Oops, something went wrong.', $request->get('channelId'));
+                    if (!empty($request->request->get('channelId'))) {
+                        $this->replyWithText('Oops, something went wrong.', $request->request->get('channelId'));
                     }
 
                     return Response::create('', Response::HTTP_BAD_REQUEST);
@@ -132,9 +132,9 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      */
     protected function events(Request $request): void
     {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->get('guildId')]);
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->request->get('guildId')]);
         $events = $this->eventRepository->findFutureEventsForGuild($guild);
-        $user = $this->userRepository->findOneBy(['discordId' => $request->get('userId')]);
+        $user = $this->userRepository->findOneBy(['discordId' => $request->request->get('userId')]);
         $desc = '';
         foreach ($events as $event) {
             $desc .= $event->getId().': **'.$event->getName().'**'.PHP_EOL.$user->toUserTimeString($event->getStart()).PHP_EOL.PHP_EOL;
@@ -148,7 +148,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
             ->setDescription($desc);
         $message->setContent($user->getDiscordMention());
 
-        $this->replyWith($message, $request->get('channelId'));
+        $this->replyWith($message, $request->request->get('channelId'));
     }
 
     /**
@@ -157,11 +157,11 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      */
     public function event(Request $request): void
     {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->get('guildId')]);
-        $event = $this->eventRepository->find(trim($request->get('query')));
-        $user = $this->userRepository->findOneBy(['discordId' => $request->get('userId')]);
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->request->get('guildId')]);
+        $event = $this->eventRepository->find(trim($request->request->get('query')));
+        $user = $this->userRepository->findOneBy(['discordId' => $request->request->get('userId')]);
         if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
-            $this->replyWithText('I don\'t know that event.', $request->get('channelId'));
+            $this->replyWithText('I don\'t know that event.', $request->request->get('channelId'));
 
             return;
         }
@@ -182,7 +182,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
             }
         }
 
-        $this->replyWith($message, $request->get('channelId'));
+        $this->replyWith($message, $request->request->get('channelId'));
     }
 
     /**
@@ -191,30 +191,30 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      */
     public function attend(Request $request): void
     {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->get('guildId')]);
-        $data = explode(' ', trim($request->get('query')));
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->request->get('guildId')]);
+        $data = explode(' ', trim($request->request->get('query')));
         $event = $this->eventRepository->find($data[0]);
         $class = EsoClassUtility::getClassIdByAlias($data[1] ?? '');
         $role = EsoRoleUtility::getRoleIdByAlias($data[2] ?? '');
-        $user = $this->userRepository->findOneBy(['discordId' => $request->get('userId')]);
+        $user = $this->userRepository->findOneBy(['discordId' => $request->request->get('userId')]);
         if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
             $this->replyWithText(
                 $user->getDiscordMention().' I don\'t know that event.',
-                $request->get('channelId')
+                $request->request->get('channelId')
             );
 
             return;
         } elseif (null === $class) {
             $this->replyWithText(
                 $user->getDiscordMention().' I don\'t know that class.',
-                $request->get('channelId')
+                $request->request->get('channelId')
             );
 
             return;
         } elseif (null === $role) {
             $this->replyWithText(
                 $user->getDiscordMention().' I don\'t know that role.',
-                $request->get('channelId')
+                $request->request->get('channelId')
             );
 
             return;
@@ -235,7 +235,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
 
         $this->replyWithText(
             $user->getDiscordMention().' you are now attending '.$event->getName().' as a '.EsoClassUtility::getClassName($class).' '.EsoRoleUtility::getRoleName($role),
-            $request->get('channelId')
+            $request->request->get('channelId')
         );
         $this->guildLoggerService->eventAttending($guild, $event, $attendee);
     }
@@ -246,11 +246,11 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      */
     public function unattend(Request $request): void
     {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->get('guildId')]);
-        $event = $this->eventRepository->find(trim($request->get('query')));
-        $user = $this->userRepository->findOneBy(['discordId' => $request->get('userId')]);
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->request->get('guildId')]);
+        $event = $this->eventRepository->find(trim($request->request->get('query')));
+        $user = $this->userRepository->findOneBy(['discordId' => $request->request->get('userId')]);
         if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
-            $this->replyWithText('I don\'t know that event.', $request->get('channelId'));
+            $this->replyWithText('I don\'t know that event.', $request->request->get('channelId'));
 
             return;
         }
@@ -264,7 +264,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
 
         $this->replyWithText(
             $user->getDiscordMention().' you are no longer attending '.$event->getName(),
-            $request->get('channelId')
+            $request->request->get('channelId')
         );
     }
 

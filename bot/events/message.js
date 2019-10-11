@@ -28,6 +28,7 @@ module.exports = (client, message) => {
         query: args.join(' '),
         command: '!'+command
     };
+    const requestData = JSON.stringify(data);
 
     const options = {
         host: client.config.host,
@@ -35,21 +36,26 @@ module.exports = (client, message) => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Content-Length': requestData.length,
             Authorization: 'Basic '+ new Buffer(client.config.authToken).toString('base64'),
         },
     };
 
-    const requestData = JSON.stringify(data);
+    console.log(message.content);
 
-    let serverResponse = '';
-    const request = https.request(options, res => {
-        res.on('data', chunk => {
-            serverResponse += chunk;
-        });
-        res.on('end', () => {
-            //callback(serverResponse);
+    var req = https.request(options, (res) => {
+        console.log('statusCode:', res.statusCode);
+        console.log('headers:', res.headers);
+
+        res.on('data', (d) => {
+            process.stdout.write(d);
         });
     });
 
-    request.write(requestData);
+    req.on('error', (e) => {
+        console.error(e);
+    });
+
+    req.write(requestData);
+    req.end();
 };
