@@ -13,6 +13,7 @@ use App\Entity\DiscordChannel;
 use App\Entity\DiscordGuild;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
+use App\Exception\UnexpectedDiscordApiResponseException;
 use Woeler\DiscordPhp\Message\AbstractDiscordMessage;
 use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 
@@ -48,7 +49,12 @@ class GuildLoggerService
             $message->setFooterIcon('https://esoraidplanner.com/favicon/appicon.jpg');
             $message->setFooterText('ESO Raidplanner by Woeler');
         }
-        $this->discordBotService->sendMessage($channel->getId(), $message);
+
+        try {
+            $this->discordBotService->sendMessage($channel->getId(), $message);
+        } catch (UnexpectedDiscordApiResponseException $e) {
+            // Something needs to be done here, not sure what at the moment
+        }
     }
 
     public function eventCreated(DiscordGuild $guild, Event $event): void
