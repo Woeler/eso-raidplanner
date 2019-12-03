@@ -88,32 +88,32 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
     }
 
     /**
-     * @Route("/bot", name="bot_entry_point")
+     * @Route("/bot", name="bot_entry_point", methods={"POST"})
      *
      * @param Request $request
      * @return Response
      */
     public function entryPoint(Request $request): Response
     {
-        $command = $request->request->get('command');
+        $json = json_decode($request->getContent(), true);
 
         try {
-            switch ($command) {
+            switch ($json['command'] ?? null) {
                 case '!events':
-                    $this->events($request);
+                    $this->events($json);
                     break;
                 case '!event':
-                    $this->event($request);
+                    $this->event($json);
                     break;
                 case '!attend':
-                    $this->attend($request);
+                    $this->attend($json);
                     break;
                 case '!unattend':
-                    $this->unattend($request);
+                    $this->unattend($json);
                     break;
                 default:
                     if (!empty($request->request->get('channelId'))) {
-                        $this->replyWithText('Oops, something went wrong.', $request->request->get('channelId'));
+                        $this->replyWithText('Oops, something went wrong.', $json['channelId']);
                     }
 
                     return Response::create('', Response::HTTP_BAD_REQUEST);
@@ -127,14 +127,14 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
     }
 
     /**
-     * @param Request $request
+     * @param array $data
      * @throws UnexpectedDiscordApiResponseException
      */
-    protected function events(Request $request): void
+    protected function events(array $data): void
     {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->request->get('guildId')]);
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $data['guildId']]);
         $events = $this->eventRepository->findFutureEventsForGuild($guild);
-        $user = $this->userRepository->findOneBy(['discordId' => $request->request->get('userId')]);
+        $user = $this->userRepository->findOneBy(['discordId' => $data['userId']]);
         $desc = '';
         foreach ($events as $event) {
             $desc .= $event->getId().': **'.$event->getName().'**'.PHP_EOL.$user->toUserTimeString($event->getStart()).PHP_EOL.PHP_EOL;
@@ -148,20 +148,20 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
             ->setDescription($desc);
         $message->setContent($user->getDiscordMention());
 
-        $this->replyWith($message, $request->request->get('channelId'));
+        $this->replyWith($message, $data['channelId']);
     }
 
     /**
-     * @param Request $request
+     * @param array $data
      * @throws UnexpectedDiscordApiResponseException
      */
-    public function event(Request $request): void
+    public function event(array $data): void
     {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->request->get('guildId')]);
-        $event = $this->eventRepository->find(trim($request->request->get('query')));
-        $user = $this->userRepository->findOneBy(['discordId' => $request->request->get('userId')]);
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $data['guildId']]);
+        $event = $this->eventRepository->find(trim($data['query']));
+        $user = $this->userRepository->findOneBy(['discordId' => $data['userId']]);
         if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
-            $this->replyWithText('I don\'t know that event.', $request->request->get('channelId'));
+            $this->replyWithText('I don\'t know that event.', $data['channelId']);
 
             return;
         }
@@ -182,39 +182,39 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
             }
         }
 
-        $this->replyWith($message, $request->request->get('channelId'));
+        $this->replyWith($message, $data['channelId']);
     }
 
     /**
-     * @param Request $request
+     * @param array $data
      * @throws UnexpectedDiscordApiResponseException
      */
-    public function attend(Request $request): void
+    public function attend(array $data): void
     {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->request->get('guildId')]);
-        $data = explode(' ', trim($request->request->get('query')));
-        $event = $this->eventRepository->find($data[0]);
-        $class = EsoClassUtility::getClassIdByAlias($data[1] ?? '');
-        $role = EsoRoleUtility::getRoleIdByAlias($data[2] ?? '');
-        $user = $this->userRepository->findOneBy(['discordId' => $request->request->get('userId')]);
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $data['guildId']]);
+        $exploded = explode(' ', trim($data['query']));
+        $event = $this->eventRepository->find($exploded[0]);
+        $class = EsoClassUtility::getClassIdByAlias($exploded[1] ?? '');
+        $role = EsoRoleUtility::getRoleIdByAlias($exploded[2] ?? '');
+        $user = $this->userRepository->findOneBy(['discordId' => $data['userId']]);
         if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
             $this->replyWithText(
                 $user->getDiscordMention().' I don\'t know that event.',
-                $request->request->get('channelId')
+                $data['channelId']
             );
 
             return;
         } elseif (null === $class) {
             $this->replyWithText(
                 $user->getDiscordMention().' I don\'t know that class.',
-                $request->request->get('channelId')
+                $data['channelId']
             );
 
             return;
         } elseif (null === $role) {
             $this->replyWithText(
                 $user->getDiscordMention().' I don\'t know that role.',
-                $request->request->get('channelId')
+                $data['chanelId']
             );
 
             return;
@@ -235,22 +235,22 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
 
         $this->replyWithText(
             $user->getDiscordMention().' you are now attending '.$event->getName().' as a '.EsoClassUtility::getClassName($class).' '.EsoRoleUtility::getRoleName($role),
-            $request->request->get('channelId')
+            $data['channelId']
         );
         $this->guildLoggerService->eventAttending($guild, $event, $attendee);
     }
 
     /**
-     * @param Request $request
+     * @param array $data
      * @throws UnexpectedDiscordApiResponseException
      */
-    public function unattend(Request $request): void
+    public function unattend(array $data): void
     {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $request->request->get('guildId')]);
-        $event = $this->eventRepository->find(trim($request->request->get('query')));
-        $user = $this->userRepository->findOneBy(['discordId' => $request->request->get('userId')]);
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $data['guildId']]);
+        $event = $this->eventRepository->find(trim($data['query']));
+        $user = $this->userRepository->findOneBy(['discordId' => $data['userId']]);
         if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
-            $this->replyWithText('I don\'t know that event.', $request->request->get('channelId'));
+            $this->replyWithText('I don\'t know that event.', $data['channelId']);
 
             return;
         }
@@ -264,7 +264,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
 
         $this->replyWithText(
             $user->getDiscordMention().' you are no longer attending '.$event->getName(),
-            $request->request->get('channelId')
+            $data['channelId']
         );
     }
 

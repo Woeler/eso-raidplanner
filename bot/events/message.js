@@ -29,7 +29,6 @@ module.exports = (client, message) => {
         command: '!'+command
     };
     const requestData = JSON.stringify(data);
-    console.log(requestData);
 
     const options = {
         host: client.config.host,
