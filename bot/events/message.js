@@ -29,6 +29,7 @@ module.exports = (client, message) => {
         command: '!'+command
     };
     const requestData = JSON.stringify(data);
+    console.log(requestData);
 
     const options = {
         host: client.config.host,
@@ -44,11 +45,11 @@ module.exports = (client, message) => {
     console.log(message.content);
 
     var req = https.request(options, (res) => {
-        console.log('statusCode:', res.statusCode);
-        console.log('headers:', res.headers);
+        //console.log('statusCode:', res.statusCode);
+        //console.log('headers:', res.headers);
 
         res.on('data', (d) => {
-            process.stdout.write(d);
+            //process.stdout.write(d);
         });
     });
 
