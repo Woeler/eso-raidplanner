@@ -478,6 +478,7 @@ class GuildController extends AbstractController
     public function reminders(string $guildId): Response
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::CREATE_REMINDER, $guild);
 
         return $this->render(
             'reminder/list.html.twig',
