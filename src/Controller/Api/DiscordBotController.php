@@ -112,7 +112,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
                     $this->unattend($json);
                     break;
                 default:
-                    if (!empty($request->request->get('channelId'))) {
+                    if (!empty($json['channelId'])) {
                         $this->replyWithText('Oops, something went wrong.', $json['channelId']);
                     }
 
