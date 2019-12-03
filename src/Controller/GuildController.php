@@ -9,7 +9,6 @@
 
 namespace App\Controller;
 
-use App\Controller\Checks\GuildMemberCheckController;
 use App\Entity\DiscordChannel;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
@@ -25,6 +24,9 @@ use App\Repository\EventRepository;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\ReminderRepository;
 use App\Repository\UserRepository;
+use App\Security\Voter\EventVoter;
+use App\Security\Voter\GuildVoter;
+use App\Security\Voter\ReminderVoter;
 use App\Service\DiscordBotService;
 use App\Service\GuildLoggerService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -37,7 +39,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/guild", name="guild_")
  */
-class GuildController extends AbstractController implements GuildMemberCheckController
+class GuildController extends AbstractController
 {
     /**
      * @var DiscordGuildRepository
@@ -87,6 +89,8 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     public function view(string $guildId): Response
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::VIEW, $guild);
+
         $upcomingEvents = $this->eventRepository->findFutureEventsForGuild($guild);
 
         return $this->render(
@@ -108,6 +112,8 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     public function settings(string $guildId, Request $request): Response
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::VIEW_SETTINGS, $guild);
+
         $form = $this->createForm(DiscordGuildType::class, $guild, ['guild' => $guild]);
         $form->handleRequest($request);
 
@@ -136,10 +142,13 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
      */
     public function members(string $guildId): Response
     {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::VIEW_MEMBERS, $guild);
+
         return $this->render(
             'guild/members.html.twig',
             [
-                'guild' => $this->discordGuildRepository->findOneBy(['id' => $guildId]),
+                'guild' => $guild,
             ]
         );
     }
@@ -158,6 +167,8 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
         DiscordChannelRepository $discordChannelRepository
     ): Response {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::SYNC_DISCORD_CHANNELS, $guild);
+
         try {
             $channels = $discordBotService->getChannels($guild->getId());
             $existingChannels = new ArrayCollection();
@@ -211,6 +222,8 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     public function viewEvent(string $guildId, int $eventId, Request $request): Response
     {
         $event = $this->eventRepository->find($eventId);
+        $this->denyAccessUnlessGranted(EventVoter::VIEW, $event);
+
         $attendee = $this->eventAttendeeRepository->findOneBy(['user' => $this->getUser()->getId(), 'event' => $eventId]);
         $attending = true;
         if (null === $attendee) {
@@ -221,6 +234,8 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $this->denyAccessUnlessGranted(EventVoter::ATTEND, $event);
+
             $attendee->setUser($this->getUser())
                 ->setEvent($event);
             $this->entityManager->persist($attendee);
@@ -255,6 +270,8 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     public function createEvent(string $guildId, Request $request): Response
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::CREATE_EVENT, $guild);
+
         $event = new Event();
         $event->setStart(new \DateTime('now'));
         $form = $this->createForm(\App\Form\Event::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'clock' => $this->getUser()->getClock()]);
@@ -291,6 +308,8 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
         $event = $this->eventRepository->find($eventId);
+        $this->denyAccessUnlessGranted(EventVoter::UPDATE, $event);
+
         $form = $this->createForm(\App\Form\Event::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'clock' => $this->getUser()->getClock()]);
         $form->handleRequest($request);
 
@@ -324,6 +343,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     public function deleteEvent(string $guildId, int $eventId, Request $request): Response
     {
         $event = $this->eventRepository->find($eventId);
+        $this->denyAccessUnlessGranted(EventVoter::DELETE, $event);
 
         $this->guildLoggerService->eventDeleted($event->getGuild(), $event);
         $this->entityManager->remove($event);
@@ -345,6 +365,8 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     {
         $attendee = $this->eventAttendeeRepository->findOneBy(['user' => $this->getUser()->getId(), 'event' => $eventId]);
         $event = $this->eventRepository->find($eventId);
+        $this->denyAccessUnlessGranted(EventVoter::UNATTEND, $event);
+
         $guid = $this->discordGuildRepository->find($guildId);
 
         if (null !== $attendee) {
@@ -368,6 +390,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     public function createReminder(int $guildId, Request $request): Response
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::CREATE_REMINDER, $guild);
         $reminder = new Reminder();
         $form = $this->createForm(ReminderType::class, $reminder, ['guild' => $guild]);
         $form->handleRequest($request);
@@ -403,6 +426,8 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
         $reminder = $reminderRepository->find($reminderId);
+        $this->denyAccessUnlessGranted(ReminderVoter::UPDATE, $reminder);
+
         $form = $this->createForm(ReminderType::class, $reminder, ['guild' => $guild]);
         $form->handleRequest($request);
 
@@ -435,6 +460,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     public function deleteReminder(string $guildId, int $reminderId, Request $request, ReminderRepository $reminderRepository): Response
     {
         $reminder = $reminderRepository->find($reminderId);
+        $this->denyAccessUnlessGranted(ReminderVoter::DELETE, $reminder);
 
         $this->entityManager->remove($reminder);
         $this->entityManager->flush();
@@ -473,6 +499,7 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     public function promoteToAdmin(string $guildId, string $userId, UserRepository $userRepository, GuildMembershipRepository $guildMembershipRepository): Response
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::PROMOTE, $guild);
         $user = $userRepository->findOneBy(['discordId' => $userId]);
 
         if (null === $user || $guild->isAdmin($user)) {
@@ -500,6 +527,8 @@ class GuildController extends AbstractController implements GuildMemberCheckCont
     public function demoteToMember(string $guildId, string $userId, UserRepository $userRepository, GuildMembershipRepository $guildMembershipRepository): Response
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::DEMOTE, $guild);
+
         $user = $userRepository->findOneBy(['discordId' => $userId]);
 
         if (null === $user || !$guild->isAdmin($user)) {
