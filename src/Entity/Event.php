@@ -69,6 +69,12 @@ class Event
      */
     private $attendees;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\RecurringEvent")
+     * @ORM\JoinColumn(onDelete="SET NULL")
+     */
+    private $recurringParent;
+
     public function __construct()
     {
         $this->locked = false;
@@ -114,7 +120,7 @@ class Event
     }
 
     /**
-     * @return mixed
+     * @return DateTime
      */
     public function getStart()
     {
@@ -234,6 +240,18 @@ class Event
     public function setAttendees($attendees)
     {
         $this->attendees = $attendees;
+
+        return $this;
+    }
+
+    public function getRecurringParent(): ?RecurringEvent
+    {
+        return $this->recurringParent;
+    }
+
+    public function setRecurringParent(?RecurringEvent $recurringParent): self
+    {
+        $this->recurringParent = $recurringParent;
 
         return $this;
     }

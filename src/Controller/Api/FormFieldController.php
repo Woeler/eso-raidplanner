@@ -10,6 +10,7 @@
 namespace App\Controller\Api;
 
 use App\Repository\ArmorSetRepository;
+use App\Utility\TimezoneUtility;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,6 +35,28 @@ class FormFieldController extends AbstractController
 
         foreach ($sets as $set) {
             $return[] = ['id' => $set->getId(), 'text' => $set->getName()];
+        }
+
+        return $this->json($return);
+    }
+
+    /**
+     * @Route("/timezones", name="timezones")
+     *
+     * @param Request $request
+     * @return Response
+     */
+    public function timeZones(Request $request): Response
+    {
+        $query = $request->get('q');
+        $zones = array_filter(TimezoneUtility::timeZones(), static function ($item) use ($query) {
+            return false !== stripos($item, $query);
+        });
+
+        $return = [];
+
+        foreach ($zones as $key => $value) {
+            $return[] = ['id' => $key, 'text' => $value];
         }
 
         return $this->json($return);

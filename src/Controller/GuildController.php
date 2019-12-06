@@ -13,15 +13,18 @@ use App\Entity\DiscordChannel;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
 use App\Entity\GuildMembership;
+use App\Entity\RecurringEvent;
 use App\Entity\Reminder;
 use App\Exception\UnexpectedDiscordApiResponseException;
 use App\Form\DiscordGuildType;
+use App\Form\RecurringEventType;
 use App\Form\ReminderType;
 use App\Repository\DiscordChannelRepository;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventAttendeeRepository;
 use App\Repository\EventRepository;
 use App\Repository\GuildMembershipRepository;
+use App\Repository\RecurringEventRepository;
 use App\Repository\ReminderRepository;
 use App\Repository\UserRepository;
 use App\Security\Voter\EventVoter;
@@ -543,5 +546,78 @@ class GuildController extends AbstractController
         $this->addFlash('success', $user->getUsername().' was demoted to member.');
 
         return $this->redirectToRoute('guild_members', ['guildId' => $guildId]);
+    }
+
+    /**
+     * @Route("/{guildId}/recurring", name="recurring_list")
+     *
+     * @param string $guildId
+     * @param RecurringEventRepository $recurringEventRepository
+     * @return Response
+     */
+    public function recurringEvents(string $guildId, RecurringEventRepository $recurringEventRepository): Response
+    {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::DEMOTE, $guild);
+        $events = $recurringEventRepository->findBy(['guild' => $guild]);
+
+        return $this->render(
+            'recurring_event/list.html.twig',
+            [
+                'events' => $events,
+                'guild' => $guild,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/{guildId}/recurring/create", name="recurring_create")
+     *
+     * @param Request $request
+     * @param string $guildId
+     * @return Response
+     * @throws \Exception
+     */
+    public function createRecurringEvent(Request $request, string $guildId): Response
+    {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::CREATE_REMINDER, $guild);
+        $recurringEvent = new RecurringEvent();
+        $form = $this->createForm(RecurringEventType::class, $recurringEvent);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $recurringEvent->setGuild($guild)
+                ->setLastEventStartDate($recurringEvent->getDate());
+            if (in_array(strtoupper(substr($recurringEvent->getDate()->format('D'), 0, 2)), $recurringEvent->getDays(), true)) {
+                $this->entityManager->persist($recurringEvent);
+                $this->entityManager->flush();
+
+                $eventDate = new \DateTime($recurringEvent->getDate()->format('Y-m-d H:i:s'), new \DateTimeZone($recurringEvent->getTimezone()));
+                $eventDate->setTimezone(new \DateTimeZone('UTC'));
+                $event = (new Event())
+                    ->setName($recurringEvent->getName())
+                    ->setDescription($recurringEvent->getDescription())
+                    ->setStart($eventDate)
+                    ->setGuild($guild)
+                    ->setRecurringParent($recurringEvent);
+                $this->entityManager->persist($event);
+                $this->entityManager->flush();
+
+                $this->addFlash('success', 'Reminder '.$recurringEvent->getName().' created.');
+
+                return $this->redirectToRoute('guild_recurring_list', ['guildId' => $guildId]);
+            } else {
+                $this->addFlash('danger', 'The start date you selected does not correspond with the weekdays you selected.');
+            }
+        }
+
+        return $this->render(
+            'recurring_event/form.html.twig',
+            [
+                'form' => $form->createView(),
+                'guild' => $guild,
+            ]
+        );
     }
 }

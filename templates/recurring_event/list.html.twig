@@ -1,0 +1,66 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/macros.html.twig' as macros %}
+{% block title %}{{ guild.name }}{% endblock %}
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="float-right">
+                    {{
+                    macros.linkbutton(
+                        path('guild_recurring_create', {guildId: guild.id}),
+                        'Create Recurring Event',
+                        'success',
+                        'plus'
+                    )
+                    }}
+                </div>
+                <img class="avatar rounded-circle" src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32" height="32"/>
+                <a href="{{ path('guild_view', {'guildId': guild.id}) }}">
+                    {{ guild.name }}
+                </a>
+                - Reminders
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Event name</th>
+                        <th>Interval</th>
+                        <th>Timezone</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for event in events %}
+                        <tr>
+                            <td style="vertical-align: middle">{{ event.name }}</td>
+                            <td style="vertical-align: middle">
+                                {{ event.days|join(', ') }} at {{ event.date|date('H:i') }}
+                                {% if event.weekInterval == 1 %}
+                                    every week
+                                {% else %}
+                                    every {{ event.weekInterval }} weeks
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ event.timezone }}
+                            </td>
+                            <td>
+                                {{
+                                macros.linkbutton(
+                                    path('home'),
+                                    '',
+                                    'danger',
+                                    'trash'
+                                )
+                                }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

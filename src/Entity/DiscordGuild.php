@@ -90,6 +90,11 @@ class DiscordGuild
      */
     private $logChannel;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\RecurringEvent", mappedBy="guild", orphanRemoval=true)
+     */
+    private $recurringEvents;
+
     public function __construct()
     {
         $this->active = false;
@@ -98,6 +103,7 @@ class DiscordGuild
         $this->discordChannels = new ArrayCollection();
         $this->reminders = new ArrayCollection();
         $this->events = new ArrayCollection();
+        $this->recurringEvents = new ArrayCollection();
     }
 
     /**
@@ -322,6 +328,37 @@ class DiscordGuild
     public function setLogChannel(?DiscordChannel $logChannel): DiscordGuild
     {
         $this->logChannel = $logChannel;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|RecurringEvent[]
+     */
+    public function getRecurringEvents(): Collection
+    {
+        return $this->recurringEvents;
+    }
+
+    public function addRecurringEvent(RecurringEvent $recurringEvent): self
+    {
+        if (!$this->recurringEvents->contains($recurringEvent)) {
+            $this->recurringEvents[] = $recurringEvent;
+            $recurringEvent->setGuild($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRecurringEvent(RecurringEvent $recurringEvent): self
+    {
+        if ($this->recurringEvents->contains($recurringEvent)) {
+            $this->recurringEvents->removeElement($recurringEvent);
+            // set the owning side to null (unless already changed)
+            if ($recurringEvent->getGuild() === $this) {
+                $recurringEvent->setGuild(null);
+            }
+        }
 
         return $this;
     }

@@ -11,6 +11,7 @@ namespace App\Repository;
 
 use App\Entity\DiscordGuild;
 use App\Entity\Event;
+use App\Entity\RecurringEvent;
 use App\Entity\User;
 use DateTime;
 use DateTimeZone;
@@ -43,6 +44,25 @@ class EventRepository extends ServiceEntityRepository
             ->orderBy('e.start', 'ASC')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @param RecurringEvent $recurringEvent
+     * @return Event[]
+     */
+    public function findFutureEventsByRecurring(RecurringEvent $recurringEvent)
+    {
+        $dt = new DateTime();
+
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.start > :now')
+            ->andWhere('e.recurringParent = :parent')
+            ->setParameter('now', $dt->format('Y-m-d H:i:s'))
+            ->setParameter('parent', $recurringEvent)
+            ->orderBy('e.start', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
     }
 
     /**
