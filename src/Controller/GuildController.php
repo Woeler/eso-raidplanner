@@ -10,28 +10,16 @@
 namespace App\Controller;
 
 use App\Entity\DiscordChannel;
-use App\Entity\Event;
-use App\Entity\EventAttendee;
 use App\Entity\GuildMembership;
-use App\Entity\RecurringEvent;
-use App\Entity\Reminder;
 use App\Exception\UnexpectedDiscordApiResponseException;
 use App\Form\DiscordGuildType;
-use App\Form\RecurringEventType;
-use App\Form\ReminderType;
 use App\Repository\DiscordChannelRepository;
 use App\Repository\DiscordGuildRepository;
-use App\Repository\EventAttendeeRepository;
 use App\Repository\EventRepository;
 use App\Repository\GuildMembershipRepository;
-use App\Repository\RecurringEventRepository;
-use App\Repository\ReminderRepository;
 use App\Repository\UserRepository;
-use App\Security\Voter\EventVoter;
 use App\Security\Voter\GuildVoter;
-use App\Security\Voter\ReminderVoter;
 use App\Service\DiscordBotService;
-use App\Service\GuildLoggerService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -59,28 +47,14 @@ class GuildController extends AbstractController
      */
     private $eventRepository;
 
-    /**
-     * @var EventAttendeeRepository
-     */
-    private $eventAttendeeRepository;
-
-    /**
-     * @var GuildLoggerService
-     */
-    private $guildLoggerService;
-
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,
         EntityManagerInterface $entityManager,
-        EventRepository $eventRepository,
-        EventAttendeeRepository $eventAttendeeRepository,
-        GuildLoggerService $guildLoggerService
+        EventRepository $eventRepository
     ) {
         $this->discordGuildRepository = $discordGuildRepository;
         $this->entityManager = $entityManager;
         $this->eventRepository = $eventRepository;
-        $this->eventAttendeeRepository = $eventAttendeeRepository;
-        $this->guildLoggerService = $guildLoggerService;
     }
 
     /**
@@ -215,283 +189,6 @@ class GuildController extends AbstractController
     }
 
     /**
-     * @Route("/{guildId}/event/{eventId}/view", name="event_view")
-     *
-     * @param string $guildId
-     * @param int $eventId
-     * @param Request $request
-     * @return Response
-     */
-    public function viewEvent(string $guildId, int $eventId, Request $request): Response
-    {
-        $event = $this->eventRepository->find($eventId);
-        $this->denyAccessUnlessGranted(EventVoter::VIEW, $event);
-
-        $attendee = $this->eventAttendeeRepository->findOneBy(['user' => $this->getUser()->getId(), 'event' => $eventId]);
-        $attending = true;
-        if (null === $attendee) {
-            $attendee = new EventAttendee();
-            $attending = false;
-        }
-        $form = $this->createForm(\App\Form\EventAttendee::class, $attendee);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->denyAccessUnlessGranted(EventVoter::ATTEND, $event);
-
-            $attendee->setUser($this->getUser())
-                ->setEvent($event);
-            $this->entityManager->persist($attendee);
-            $this->entityManager->flush();
-            if (!$attending) {
-                $this->guildLoggerService->eventAttending($event->getGuild(), $event, $attendee);
-            }
-            $this->addFlash('success', 'Event attendance updated.');
-
-            return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
-        }
-
-        return $this->render(
-            'event/view.html.twig',
-            [
-                'event' => $event,
-                'guild' => $this->discordGuildRepository->find($guildId),
-                'form' => $form->createView(),
-                'attending' => $attending,
-            ]
-        );
-    }
-
-    /**
-     * @Route("/{guildId}/event/create", name="event_create")
-     *
-     * @param string $guildId
-     * @param Request $request
-     * @return Response
-     * @throws \Exception
-     */
-    public function createEvent(string $guildId, Request $request): Response
-    {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
-        $this->denyAccessUnlessGranted(GuildVoter::CREATE_EVENT, $guild);
-
-        $event = new Event();
-        $event->setStart(new \DateTime('now'));
-        $form = $this->createForm(\App\Form\Event::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'clock' => $this->getUser()->getClock()]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $event->setGuild($guild);
-            $this->entityManager->persist($event);
-            $this->entityManager->flush();
-            $this->guildLoggerService->eventCreated($guild, $event);
-            $this->addFlash('success', 'Event '.$event->getName().' created.');
-
-            return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
-        }
-
-        return $this->render(
-            'event/form.html.twig',
-            [
-                'form' => $form->createView(),
-                'guild' => $guild,
-            ]
-        );
-    }
-
-    /**
-     * @Route("/{guildId}/event/{eventId}/update", name="event_update")
-     *
-     * @param string $guildId
-     * @param int $eventId
-     * @param Request $request
-     * @return Response
-     */
-    public function updateEvent(string $guildId, int $eventId, Request $request): Response
-    {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
-        $event = $this->eventRepository->find($eventId);
-        $this->denyAccessUnlessGranted(EventVoter::UPDATE, $event);
-
-        $form = $this->createForm(\App\Form\Event::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'clock' => $this->getUser()->getClock()]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->persist($event);
-            $this->entityManager->flush();
-            $this->guildLoggerService->eventCreated($guild, $event);
-            $this->addFlash('success', 'Event '.$event->getName().' updated.');
-
-            return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
-        }
-
-        return $this->render(
-            'event/form.html.twig',
-            [
-                'form' => $form->createView(),
-                'guild' => $guild,
-                'update' => true,
-            ]
-        );
-    }
-
-    /**
-     * @Route("/{guildId}/event/{eventId}/delete", name="event_delete")
-     *
-     * @param string $guildId
-     * @param int $eventId
-     * @param Request $request
-     * @return Response
-     */
-    public function deleteEvent(string $guildId, int $eventId, Request $request): Response
-    {
-        $event = $this->eventRepository->find($eventId);
-        $this->denyAccessUnlessGranted(EventVoter::DELETE, $event);
-
-        $this->guildLoggerService->eventDeleted($event->getGuild(), $event);
-        $this->entityManager->remove($event);
-        $this->entityManager->flush();
-        $this->addFlash('success', 'Event was deleted.');
-
-        return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
-    }
-
-    /**
-     * @Route("/{guildId}/event/{eventId}/unattend", name="event_unattend")
-     *
-     * @param string $guildId
-     * @param int $eventId
-     * @param Request $request
-     * @return Response
-     */
-    public function eventUnattend(string $guildId, int $eventId, Request $request): Response
-    {
-        $attendee = $this->eventAttendeeRepository->findOneBy(['user' => $this->getUser()->getId(), 'event' => $eventId]);
-        $event = $this->eventRepository->find($eventId);
-        $this->denyAccessUnlessGranted(EventVoter::UNATTEND, $event);
-
-        $guid = $this->discordGuildRepository->find($guildId);
-
-        if (null !== $attendee) {
-            $this->guildLoggerService->eventUnattending($guid, $event, $attendee);
-            $this->entityManager->remove($attendee);
-            $this->entityManager->flush();
-
-            $this->addFlash('success', 'You are no longer attending this event.');
-        }
-
-        return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
-    }
-
-    /**
-     * @Route("/{guildId}/reminder/create", name="reminder_create")
-     *
-     * @param int $guildId
-     * @param Request $request
-     * @return Response
-     */
-    public function createReminder(int $guildId, Request $request): Response
-    {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
-        $this->denyAccessUnlessGranted(GuildVoter::CREATE_REMINDER, $guild);
-        $reminder = new Reminder();
-        $form = $this->createForm(ReminderType::class, $reminder, ['guild' => $guild]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $reminder->setGuild($guild);
-            $this->entityManager->persist($reminder);
-            $this->entityManager->flush();
-            $this->addFlash('success', 'Reminder '.$reminder->getName().' created.');
-
-            return $this->redirectToRoute('guild_reminder_list', ['guildId' => $guildId]);
-        }
-
-        return $this->render(
-            'reminder/form.html.twig',
-            [
-                'form' => $form->createView(),
-                'guild' => $guild,
-            ]
-        );
-    }
-
-    /**
-     * @Route("/{guildId}/reminder/{reminderId}/update", name="reminder_update")
-     *
-     * @param int $guildId
-     * @param int $reminderId
-     * @param Request $request
-     * @param ReminderRepository $reminderRepository
-     * @return Response
-     */
-    public function updateReminder(int $guildId, int $reminderId, Request $request, ReminderRepository $reminderRepository): Response
-    {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
-        $reminder = $reminderRepository->find($reminderId);
-        $this->denyAccessUnlessGranted(ReminderVoter::UPDATE, $reminder);
-
-        $form = $this->createForm(ReminderType::class, $reminder, ['guild' => $guild]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->persist($reminder);
-            $this->entityManager->flush();
-            $this->addFlash('success', 'Reminder '.$reminder->getName().' updated.');
-
-            return $this->redirectToRoute('guild_reminder_list', ['guildId' => $guildId]);
-        }
-
-        return $this->render(
-            'reminder/form.html.twig',
-            [
-                'form' => $form->createView(),
-                'guild' => $guild,
-            ]
-        );
-    }
-
-    /**
-     * @Route("/{guildId}/reminder/{reminderId}/delete", name="reminder_delete")
-     *
-     * @param string $guildId
-     * @param int $reminderId
-     * @param Request $request
-     * @param ReminderRepository $reminderRepository
-     * @return Response
-     */
-    public function deleteReminder(string $guildId, int $reminderId, Request $request, ReminderRepository $reminderRepository): Response
-    {
-        $reminder = $reminderRepository->find($reminderId);
-        $this->denyAccessUnlessGranted(ReminderVoter::DELETE, $reminder);
-
-        $this->entityManager->remove($reminder);
-        $this->entityManager->flush();
-        $this->addFlash('success', 'Reminder was deleted.');
-
-        return $this->redirectToRoute('guild_reminder_list', ['guildId' => $guildId]);
-    }
-
-    /**
-     * @Route("/{guildId}/reminders", name="reminder_list")
-     *
-     * @param string $guildId
-     * @return Response
-     */
-    public function reminders(string $guildId): Response
-    {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
-        $this->denyAccessUnlessGranted(GuildVoter::CREATE_REMINDER, $guild);
-
-        return $this->render(
-            'reminder/list.html.twig',
-            [
-                'guild' => $guild,
-            ]
-        );
-    }
-
-    /**
      * @Route("/{guildId}/member/{userId}/promote", name="member_promote")
      *
      * @param string $guildId
@@ -546,78 +243,5 @@ class GuildController extends AbstractController
         $this->addFlash('success', $user->getUsername().' was demoted to member.');
 
         return $this->redirectToRoute('guild_members', ['guildId' => $guildId]);
-    }
-
-    /**
-     * @Route("/{guildId}/recurring", name="recurring_list")
-     *
-     * @param string $guildId
-     * @param RecurringEventRepository $recurringEventRepository
-     * @return Response
-     */
-    public function recurringEvents(string $guildId, RecurringEventRepository $recurringEventRepository): Response
-    {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
-        $this->denyAccessUnlessGranted(GuildVoter::DEMOTE, $guild);
-        $events = $recurringEventRepository->findBy(['guild' => $guild]);
-
-        return $this->render(
-            'recurring_event/list.html.twig',
-            [
-                'events' => $events,
-                'guild' => $guild,
-            ]
-        );
-    }
-
-    /**
-     * @Route("/{guildId}/recurring/create", name="recurring_create")
-     *
-     * @param Request $request
-     * @param string $guildId
-     * @return Response
-     * @throws \Exception
-     */
-    public function createRecurringEvent(Request $request, string $guildId): Response
-    {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
-        $this->denyAccessUnlessGranted(GuildVoter::CREATE_REMINDER, $guild);
-        $recurringEvent = new RecurringEvent();
-        $form = $this->createForm(RecurringEventType::class, $recurringEvent);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $recurringEvent->setGuild($guild)
-                ->setLastEventStartDate($recurringEvent->getDate());
-            if (in_array(strtoupper(substr($recurringEvent->getDate()->format('D'), 0, 2)), $recurringEvent->getDays(), true)) {
-                $this->entityManager->persist($recurringEvent);
-                $this->entityManager->flush();
-
-                $eventDate = new \DateTime($recurringEvent->getDate()->format('Y-m-d H:i:s'), new \DateTimeZone($recurringEvent->getTimezone()));
-                $eventDate->setTimezone(new \DateTimeZone('UTC'));
-                $event = (new Event())
-                    ->setName($recurringEvent->getName())
-                    ->setDescription($recurringEvent->getDescription())
-                    ->setStart($eventDate)
-                    ->setGuild($guild)
-                    ->setRecurringParent($recurringEvent);
-                $this->entityManager->persist($event);
-                $this->entityManager->flush();
-
-                $this->addFlash('success', 'Reminder '.$recurringEvent->getName().' created.');
-
-                return $this->redirectToRoute('guild_recurring_list', ['guildId' => $guildId]);
-            } else {
-                $this->addFlash('danger', 'The start date you selected does not correspond with the weekdays you selected.');
-            }
-        }
-
-        return $this->render(
-            'recurring_event/form.html.twig',
-            [
-                'form' => $form->createView(),
-                'guild' => $guild,
-            ]
-        );
     }
 }

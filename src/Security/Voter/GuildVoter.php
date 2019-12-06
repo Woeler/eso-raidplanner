@@ -27,6 +27,8 @@ class GuildVoter extends Voter
 
     public const CREATE_EVENT = 'create_event';
 
+    public const CREATE_RECURRING_EVENT = 'create_recurring_event';
+
     public const SYNC_DISCORD_CHANNELS = 'sync_discord_channels';
 
     public const PROMOTE = 'promote';
@@ -38,7 +40,7 @@ class GuildVoter extends Voter
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
         return in_array($attribute, [
-            self::VIEW_SETTINGS, self::VIEW, self::VIEW_MEMBERS, self::CREATE_EVENT, self::CREATE_REMINDER, self::SYNC_DISCORD_CHANNELS, self::PROMOTE, self::DEMOTE,
+            self::VIEW_SETTINGS, self::VIEW, self::VIEW_MEMBERS, self::CREATE_EVENT, self::CREATE_REMINDER, self::SYNC_DISCORD_CHANNELS, self::PROMOTE, self::DEMOTE, self::CREATE_RECURRING_EVENT,
             ], true)
             && $subject instanceof \App\Entity\DiscordGuild;
     }
@@ -63,6 +65,8 @@ class GuildVoter extends Voter
                 return $this->canCreateReminder($subject, $user);
             case self::CREATE_EVENT:
                 return $this->canCreateEvent($subject, $user);
+                case self::CREATE_RECURRING_EVENT:
+                return $this->canCreateRecurringEvent($subject, $user);
             case self::SYNC_DISCORD_CHANNELS:
                 return $this->canSyncDiscordChannels($subject, $user);
             case self::PROMOTE:
@@ -95,6 +99,11 @@ class GuildVoter extends Voter
     }
 
     private function canCreateReminder(DiscordGuild $guild, User $user): bool
+    {
+        return $guild->isAdmin($user);
+    }
+
+    public function canCreateRecurringEvent(DiscordGuild $guild, User $user): bool
     {
         return $guild->isAdmin($user);
     }

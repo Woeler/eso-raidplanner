@@ -49,7 +49,7 @@
                             <td>
                                 {{
                                 macros.linkbutton(
-                                    path('home'),
+                                    path('guild_recurring_delete', {'guildId': guild.id, 'recurringEventId': event.id}),
                                     '',
                                     'danger',
                                     'trash'
