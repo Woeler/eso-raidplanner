@@ -69,6 +69,7 @@
                 <table class="table">
                     <tbody>
                     {% for membership in app.user.guildMemberships %}
+                        {% if membership.guild.owner is null or membership.guild.owner.id != app.user.id %}
                         <tr>
                             <td>
                                 {% if membership.guild.icon is not null %}
@@ -88,6 +89,7 @@
                                 {% endif %}
                             </td>
                         </tr>
+                        {% endif %}
                     {% endfor %}
                     </tbody>
                 </table>
