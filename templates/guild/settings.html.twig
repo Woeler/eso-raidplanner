@@ -6,7 +6,11 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <img class="avatar rounded-circle" src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32" height="32"/>
+                    {% if guild.icon is not null %}
+                        <img class="avatar rounded-circle"
+                             src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32"
+                             height="32"/>
+                    {% endif %}
                     <a href="{{ path('guild_view', {'guildId': guild.id}) }}">
                         {{ guild.name }}
                     </a>
