@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         timeZone: 'local',
         eventRender: function(info) {
             var tooltip = new Tooltip(info.el, {
-                title: '<strong>Guild: </strong>'+info.event.extendedProps.guild+'<br>'+info.event.title,
+                title: '<strong>Guild: </strong>'+info.event.extendedProps.guild+'<br>'+info.event.title+'<br>'+info.event.extendedProps.attending+' people attending',
                 placement: 'top',
                 trigger: 'hover',
                 container: 'body',

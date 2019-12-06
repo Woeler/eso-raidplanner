@@ -152,6 +152,12 @@ class DiscordAuthenticator extends SocialAuthenticator
             ->findOneBy(['discordId' => $discordUser->getId()]);
         if ($user) {
             $user->setDiscordToken($credentials->getToken())
+                ->setDiscordTokenExpirationDate(
+                    new \DateTime(
+                        '@'.($credentials->getExpires() ?? 3600),
+                        new \DateTimeZone('UTC')
+                    )
+                )
                 ->setDiscordRefreshToken($credentials->getRefreshToken());
         } else {
 
@@ -166,6 +172,12 @@ class DiscordAuthenticator extends SocialAuthenticator
                 ->setAvatar($discordUser->getAvatarHash())
                 ->setDiscordDiscriminator($discordUser->getDiscriminator())
                 ->setUsername($discordUser->getUsername())
+                ->setDiscordTokenExpirationDate(
+                    new \DateTime(
+                        '@'.($credentials->getExpires() ?? 3600),
+                        new \DateTimeZone('UTC')
+                    )
+                )
                 ->setDiscordToken($credentials->getToken())
                 ->setDiscordRefreshToken($credentials->getRefreshToken());
         }

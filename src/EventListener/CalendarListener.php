@@ -74,6 +74,7 @@ class CalendarListener
                     ]
                 ));
                 $calendarEvent->addOption('guild', $event->getGuild()->getName());
+                $calendarEvent->addOption('attending', count($event->getAttendees()));
 
                 $calendar->addEvent($calendarEvent);
             }

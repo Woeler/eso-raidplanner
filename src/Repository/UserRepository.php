@@ -25,4 +25,16 @@ class UserRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, User::class);
     }
+
+    /**
+     * @return array|User[]
+     */
+    public function findWhereTokenAlmostExpires(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.discordTokenExpirationDate <  :date')
+            ->setParameter('date', new \DateTime('+8 day'))
+            ->getQuery()
+            ->getResult();
+    }
 }

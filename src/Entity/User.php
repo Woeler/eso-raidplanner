@@ -108,6 +108,11 @@ class User implements UserInterface
      */
     private $discordRefreshToken;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $discordTokenExpirationDate;
+
     public function __construct()
     {
         $this->clock = 24;
@@ -454,5 +459,17 @@ class User implements UserInterface
     public function getDiscordMention(): string
     {
         return '<@'.$this->getDiscordId().'>';
+    }
+
+    public function getDiscordTokenExpirationDate(): ?\DateTimeInterface
+    {
+        return $this->discordTokenExpirationDate;
+    }
+
+    public function setDiscordTokenExpirationDate(\DateTimeInterface $discordTokenExpirationDate): self
+    {
+        $this->discordTokenExpirationDate = $discordTokenExpirationDate;
+
+        return $this;
     }
 }

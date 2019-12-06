@@ -53,6 +53,9 @@ services:
     App\Service\DiscordOauthService:
       class: App\Service\DiscordOauthService
       public: true
+      arguments:
+        $clientId: '%env(OAUTH_DISCORD_CLIENT_ID)%'
+        $clientSecret: '%env(OAUTH_DISCORD_CLIENT_SECRET)%'
 
     App\Service\GuildLoggerService:
       class: App\Service\GuildLoggerService
