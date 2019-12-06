@@ -12,6 +12,7 @@ namespace App\Command;
 use App\Repository\UserRepository;
 use App\Service\DiscordOauthService;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -55,7 +56,11 @@ class RefreshDiscordTokensCommand extends Command
         $users = $this->userRepository->findWhereTokenAlmostExpires();
 
         foreach ($users as $user) {
-            $newTokens = $this->discordOauthService->refreshOauthToken($user->getDiscordRefreshToken());
+            try {
+                $newTokens = $this->discordOauthService->refreshOauthToken($user->getDiscordRefreshToken());
+            } catch (ClientException $e) {
+                continue;
+            }
             $user->setDiscordToken($newTokens['access_token'])
                 ->setDiscordRefreshToken($newTokens['refresh_token'])
                 ->setDiscordTokenExpirationDate(
