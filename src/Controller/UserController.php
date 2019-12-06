@@ -83,6 +83,13 @@ class UserController extends AbstractController
     {
         $guilds = $this->getUser()->getDiscordGuilds();
 
+        // Needed for deleted "ghost" servers
+        foreach ($guilds as $key => $guild) {
+            if (!$guild->isMember($this->getUser())) {
+                unset($guilds[$key]);
+            }
+        }
+
         return $this->render('user/discord_guilds/list.html.twig', ['guilds' => $guilds]);
     }
 
