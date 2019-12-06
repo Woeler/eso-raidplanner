@@ -2,6 +2,8 @@
 @import '~@fortawesome/fontawesome-free/css/all.css';
 @import '~select2/dist/css/select2.min.css';
 @import 'darkmode';
+@import '~@fullcalendar/core/main.min.css';
+@import '~@fullcalendar/bootstrap/main.min.css';
 
 .node-js {
   color: #215732;
@@ -94,4 +96,11 @@ footer {
 }
 .dropdown-menu{
   top: 30px; /*Adjust this to around 33px */
+}
+
+.fc-day-grid-event > .fc-content {
+  white-space: unset !important;
+}
+.fc-dayGrid-view .fc-body .fc-row {
+  min-height: 8em;
 }
