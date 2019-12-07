@@ -169,7 +169,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         $message = (new DiscordEmbedsMessage())
             ->setTitle($event->getName())
             ->setAuthorIcon('https://cdn.discordapp.com/icons/'.$guild->getId().'/'.$guild->getIcon().'.png')
-            ->setDescription($event->getDescription());
+            ->setDescription($event->getDescription() ?? '');
         $message->setContent($user->getDiscordMention());
         foreach (EsoRoleUtility::toArray() as $roleId => $roleName) {
             $attendees = $event->getAttendeesByRole($roleId);
