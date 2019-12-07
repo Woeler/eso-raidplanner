@@ -19,7 +19,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Tetranz\Select2EntityBundle\Form\Type\Select2EntityType;
 
-class EventAttendee extends AbstractType
+class EventAttendeeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {

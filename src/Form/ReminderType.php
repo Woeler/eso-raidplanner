@@ -29,13 +29,20 @@ class ReminderType extends AbstractType
         $builder
             ->add('name', TextType::class, ['required' => true])
             ->add('text', TextareaType::class, ['required' => true])
-            ->add('minutesToTrigger', IntegerType::class, ['required' => true])
+            ->add(
+                'minutesToTrigger',
+                IntegerType::class,
+                [
+                    'required' => true,
+                    'label' => 'How many minutes before the start of events should this reminder be sent?',
+                ]
+            )
             ->add(
                 'channel',
                 EntityType::class,
                 [
                         'class' => DiscordChannel::class,
-                        'query_builder' => function (EntityRepository $er) use ($options) {
+                        'query_builder' => static function (EntityRepository $er) use ($options) {
                             return $er->createQueryBuilder('u')
                                 ->where('u.guild = :guild')
                                 ->setParameter('guild', $options['guild']->getId())

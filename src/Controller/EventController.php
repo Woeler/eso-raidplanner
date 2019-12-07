@@ -86,7 +86,7 @@ class EventController extends AbstractController
             $attendee = new EventAttendee();
             $attending = false;
         }
-        $form = $this->createForm(\App\Form\EventAttendee::class, $attendee);
+        $form = $this->createForm(\App\Form\EventAttendeeType::class, $attendee);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -130,7 +130,7 @@ class EventController extends AbstractController
 
         $event = new Event();
         $event->setStart(new \DateTime('now'));
-        $form = $this->createForm(\App\Form\Event::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'clock' => $this->getUser()->getClock()]);
+        $form = $this->createForm(\App\Form\EventType::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'clock' => $this->getUser()->getClock()]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -166,7 +166,7 @@ class EventController extends AbstractController
         $event = $this->eventRepository->find($eventId);
         $this->denyAccessUnlessGranted(EventVoter::UPDATE, $event);
 
-        $form = $this->createForm(\App\Form\Event::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'clock' => $this->getUser()->getClock()]);
+        $form = $this->createForm(\App\Form\EventType::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'clock' => $this->getUser()->getClock()]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
