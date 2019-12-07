@@ -38,12 +38,21 @@ class DiscordBotService
      */
     public function sendMessage(string $channelId, AbstractDiscordMessage $content): void
     {
-        $message = $content->formatForDiscord();
-        if (isset($message['embeds'])) {
-            $message['embed'] = $message['embeds'][0];
-            unset($message['embeds']);
+        $this->sendMessageWithArray($channelId, $content->formatForDiscord());
+    }
+
+    /**
+     * @param string $channelId
+     * @param array $content
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function sendMessageWithArray(string $channelId, array $content): void
+    {
+        if (isset($content['embeds'])) {
+            $content['embed'] = $content['embeds'][0];
+            unset($content['embeds']);
         }
-        $this->request('https://discordapp.com/api/channels/' . $channelId . '/messages', 'POST', $message);
+        $this->request('https://discordapp.com/api/channels/' . $channelId . '/messages', 'POST', $content);
     }
 
     /**

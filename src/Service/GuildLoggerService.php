@@ -13,29 +13,30 @@ use App\Entity\DiscordChannel;
 use App\Entity\DiscordGuild;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
-use App\Exception\UnexpectedDiscordApiResponseException;
+use App\Entity\GuildLog;
+use Doctrine\ORM\EntityManagerInterface;
 use Woeler\DiscordPhp\Message\AbstractDiscordMessage;
 use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 
 class GuildLoggerService
 {
     /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
-
-    /**
      * @var string
      */
     private $appUrl;
 
-    public function __construct(string $appUrl, DiscordBotService $discordBotService)
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    public function __construct(string $appUrl, EntityManagerInterface $entityManager)
     {
-        $this->discordBotService = $discordBotService;
         $this->appUrl = $appUrl;
+        $this->entityManager = $entityManager;
     }
 
-    private function sendMessage(AbstractDiscordMessage $message, ?DiscordChannel $channel): void
+    private function persistLog(AbstractDiscordMessage $message, ?DiscordChannel $channel): void
     {
         if (null === $channel) {
             return;
@@ -50,11 +51,11 @@ class GuildLoggerService
             $message->setFooterText('ESO Raidplanner by Woeler');
         }
 
-        try {
-            $this->discordBotService->sendMessage($channel->getId(), $message);
-        } catch (UnexpectedDiscordApiResponseException $e) {
-            // Something needs to be done here, not sure what at the moment
-        }
+        $entity = (new GuildLog())
+            ->setChannel($channel->getId())
+            ->setData($message->formatForDiscord());
+        $this->entityManager->persist($entity);
+        $this->entityManager->flush();
     }
 
     public function eventCreated(DiscordGuild $guild, Event $event): void
@@ -63,7 +64,7 @@ class GuildLoggerService
         $message->setTitle('Event created')
             ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription());
 
-        $this->sendMessage($message, $guild->getLogChannel());
+        $this->persistLog($message, $guild->getLogChannel());
     }
 
     public function eventUpdated(DiscordGuild $guild, Event $event): void
@@ -72,7 +73,7 @@ class GuildLoggerService
         $message->setTitle('Event updated')
             ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription());
 
-        $this->sendMessage($message, $guild->getLogChannel());
+        $this->persistLog($message, $guild->getLogChannel());
     }
 
     public function eventDeleted(DiscordGuild $guild, Event $event): void
@@ -81,7 +82,7 @@ class GuildLoggerService
         $message->setTitle('Event deleted')
             ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription());
 
-        $this->sendMessage($message, $guild->getLogChannel());
+        $this->persistLog($message, $guild->getLogChannel());
     }
 
     public function eventAttending(DiscordGuild $guild, Event $event, EventAttendee $attendee): void
@@ -91,7 +92,7 @@ class GuildLoggerService
             ->addField('Event', $event->getName(), true)
             ->addField('User', $attendee->getUser()->getDiscordMention());
 
-        $this->sendMessage($message, $guild->getLogChannel());
+        $this->persistLog($message, $guild->getLogChannel());
     }
 
     public function eventUnattending(DiscordGuild $guild, Event $event, EventAttendee $attendee): void
@@ -101,6 +102,6 @@ class GuildLoggerService
             ->addField('Event', $event->getName(), true)
             ->addField('User', $attendee->getUser()->getDiscordMention());
 
-        $this->sendMessage($message, $guild->getLogChannel());
+        $this->persistLog($message, $guild->getLogChannel());
     }
 }
