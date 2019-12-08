@@ -21,6 +21,8 @@ security:
                 lifetime: 2629746 # 1 month in seconds
                 path:     /
                 always_remember_me: true
+                secure: true
+                token_provider: 'Symfony\Bridge\Doctrine\Security\RememberMe\DoctrineTokenProvider'
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
