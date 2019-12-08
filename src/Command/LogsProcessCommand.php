@@ -60,7 +60,7 @@ class LogsProcessCommand extends Command
     {
         $store = new SemaphoreStore();
         $factory = new LockFactory($store);
-        $lock = $factory->createLock('logs:process', 600);
+        $lock = $factory->createLock(self::$defaultName, 600);
 
         if ($lock->acquire()) {
             $logs = $this->guildLogRepository->findAll();

@@ -1,14 +1,39 @@
 {% extends 'base.html.twig' %}
 {% block title %}{{ user.username }}{% endblock %}
 {% block body %}
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">Your profile settings</div>
-                <div class="card-body">
-                    {{ form_start(form) }}
-                    {{ form_widget(form) }}
-                    {{ form_end(form) }}
-                </div>
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">Your profile settings</div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                {{ form_end(form) }}
             </div>
         </div>
+        <div class="mt-3"></div>
+        <div class="card">
+            <div class="card-header">Supporter Status</div>
+            <div class="card-body">
+                {% if user.patreonMembership == constant('App\\Entity\\User::PATREON_NONE') %}
+                <div class="alert alert-info">
+                    You are currently not supporting ESO Raidplanner via Patreon. Patreon supporters will be
+                    identifiable by icons next to their name, so they can show off their support. <br><br>To claim supporter
+                    status on ESO Raidplanner you must <a href="https://patreon.com/woeler" target="_blank">support
+                        us on Patreon</a>, link your Patreon account to your Discord account and be a member of <a href="https://discord.gg/woeler" target="_blank">our
+                        Discord server</a>.
+                    Everything else will go automatically.
+                </div>
+                {% else %}
+                    <div class="alert alert-success">
+                        You are currently supporting ESO Raidplanner with
+                        a {{ constant('App\\Entity\\User::PATREON')[user.patreonMembership] }}
+                        <li class="fa fa-gem patreon-{{ user.patreonMembership }}"
+                            title="{{ constant('App\\Entity\\User::PATREON')[user.patreonMembership] }} Supporter"></li>
+                        membership via Patreon.
+                        Thank you!
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

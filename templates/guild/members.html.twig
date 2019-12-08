@@ -22,6 +22,9 @@
                         <tr>
                             <td style="vertical-align: middle">
                                 <strong>{{ member.user.username }}</strong><small>#{{ member.user.discordDiscriminator }}</small>
+                                {% if member.user.patreonMembership > constant('App\\Entity\\User::PATREON_NONE') %}
+                                    <li class="fa fa-gem patreon-{{ member.user.patreonMembership }}" title="{{ constant('App\\Entity\\User::PATREON')[member.user.patreonMembership] }} Supporter"></li>
+                                {% endif %}
                             </td>
                             <td style="vertical-align: middle">
                                 {% if guild.owner.id ==  member.user.id %}

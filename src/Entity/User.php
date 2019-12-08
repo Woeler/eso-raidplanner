@@ -22,6 +22,24 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class User implements UserInterface
 {
+    public const PATREON_NONE = 0;
+
+    public const PATREON_BRONZE = 1;
+
+    public const PATREON_SILVER = 2;
+
+    public const PATREON_GOLD = 3;
+
+    public const PATREON_RUBY = 4;
+
+    public const PATREON = [
+        self::PATREON_NONE => 'None',
+        self::PATREON_BRONZE => 'Bronze',
+        self::PATREON_SILVER => 'Silver',
+        self::PATREON_GOLD => 'Gold',
+        self::PATREON_RUBY => 'Ruby',
+    ];
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -113,6 +131,11 @@ class User implements UserInterface
      */
     private $discordTokenExpirationDate;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $patreonMembership;
+
     public function __construct()
     {
         $this->clock = 24;
@@ -121,6 +144,7 @@ class User implements UserInterface
         $this->guildMemberships = new ArrayCollection();
         $this->discordGuilds = new ArrayCollection();
         $this->darkmode = false;
+        $this->patreonMembership = 0;
     }
 
     /**
@@ -469,6 +493,18 @@ class User implements UserInterface
     public function setDiscordTokenExpirationDate(\DateTimeInterface $discordTokenExpirationDate): self
     {
         $this->discordTokenExpirationDate = $discordTokenExpirationDate;
+
+        return $this;
+    }
+
+    public function getPatreonMembership(): ?int
+    {
+        return $this->patreonMembership;
+    }
+
+    public function setPatreonMembership(int $patreonMembership): self
+    {
+        $this->patreonMembership = $patreonMembership;
 
         return $this;
     }

@@ -17,7 +17,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20191207152056 extends AbstractMigration
+final class Version20191208141844 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -38,7 +38,7 @@ final class Version20191207152056 extends AbstractMigration
         $this->addSql('CREATE TABLE event (id INT AUTO_INCREMENT NOT NULL, guild_id VARCHAR(255) DEFAULT NULL, recurring_parent_id INT DEFAULT NULL, name VARCHAR(255) NOT NULL, start DATETIME NOT NULL, description LONGTEXT DEFAULT NULL, locked TINYINT(1) NOT NULL, tags JSON NOT NULL COMMENT \'(DC2Type:json_array)\', INDEX IDX_3BAE0AA75F2131EF (guild_id), INDEX IDX_3BAE0AA7185E564F (recurring_parent_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE guild_membership (id INT AUTO_INCREMENT NOT NULL, user_id INT NOT NULL, guild_id VARCHAR(255) NOT NULL, role INT NOT NULL, INDEX IDX_E7D8D2AA76ED395 (user_id), INDEX IDX_E7D8D2A5F2131EF (guild_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE reminder (id INT AUTO_INCREMENT NOT NULL, discord_channel_id VARCHAR(255) DEFAULT NULL, guild_id VARCHAR(255) DEFAULT NULL, name VARCHAR(255) NOT NULL, text LONGTEXT NOT NULL, minutes_to_trigger INT NOT NULL, detailed_info TINYINT(1) NOT NULL, ping_attendees TINYINT(1) NOT NULL, INDEX IDX_40374F406D4A6EE0 (discord_channel_id), INDEX IDX_40374F405F2131EF (guild_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, username VARCHAR(255) NOT NULL, discord_discriminator VARCHAR(40) NOT NULL, email VARCHAR(255) NOT NULL, avatar VARCHAR(255) NOT NULL, discord_id VARCHAR(255) NOT NULL, clock INT NOT NULL, timezone VARCHAR(255) NOT NULL, darkmode TINYINT(1) NOT NULL, discord_token VARCHAR(255) NOT NULL, discord_refresh_token VARCHAR(255) NOT NULL, discord_token_expiration_date DATETIME NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, username VARCHAR(255) NOT NULL, discord_discriminator VARCHAR(40) NOT NULL, email VARCHAR(255) NOT NULL, avatar VARCHAR(255) NOT NULL, discord_id VARCHAR(255) NOT NULL, clock INT NOT NULL, timezone VARCHAR(255) NOT NULL, darkmode TINYINT(1) NOT NULL, discord_token VARCHAR(255) NOT NULL, discord_refresh_token VARCHAR(255) NOT NULL, discord_token_expiration_date DATETIME NOT NULL, patreon_membership INT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE guild_log (id INT AUTO_INCREMENT NOT NULL, channel VARCHAR(255) NOT NULL, data JSON NOT NULL, created_at DATETIME NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE recurring_event ADD CONSTRAINT FK_51B1C7F85F2131EF FOREIGN KEY (guild_id) REFERENCES discord_guild (id)');
         $this->addSql('ALTER TABLE discord_guild ADD CONSTRAINT FK_7539ABA87E3C61F9 FOREIGN KEY (owner_id) REFERENCES user (id)');

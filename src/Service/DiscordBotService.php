@@ -72,6 +72,7 @@ class DiscordBotService
     }
 
     /**
+     * @param string $serverId
      * @return array
      * @throws UnexpectedDiscordApiResponseException
      */
@@ -86,6 +87,36 @@ class DiscordBotService
         }
 
         return $channels;
+    }
+
+    /**
+     * @param string $serverId
+     * @param int $limitPerRequest
+     * @return array
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function getMembers(string $serverId, int $limitPerRequest = 1000): array
+    {
+        $members = [];
+        $lastId = null;
+
+        while (true) {
+            if (null === $lastId) {
+                $data = $this->request('https://discordapp.com/api/guilds/' . $serverId . '/members?limit='.$limitPerRequest);
+            } else {
+                $data = $this->request('https://discordapp.com/api/guilds/' . $serverId . '/members?limit='.$limitPerRequest.'&after='.$lastId);
+            }
+
+            if (empty($data)) {
+                break;
+            }
+
+            $lastId = $data[array_key_last($data)]['user']['id'];
+
+            $members = array_merge($members, $data);
+        }
+
+        return $members;
     }
 
     /**

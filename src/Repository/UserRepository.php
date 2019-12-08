@@ -11,6 +11,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
@@ -34,6 +35,21 @@ class UserRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('u')
             ->andWhere('u.discordTokenExpirationDate <  :date')
             ->setParameter('date', new \DateTime('+8 day'))
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param Collection $ids
+     * @return array|User[]
+     */
+    public function findWherePatronAndNotIn(array $ids): array
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.discordId NOT IN (:ids)')
+            ->andWhere('u.patreonMembership > :none')
+            ->setParameter('ids', $ids)
+            ->setParameter('none', 0)
             ->getQuery()
             ->getResult();
     }
