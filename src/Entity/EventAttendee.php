@@ -42,12 +42,14 @@ class EventAttendee
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="events")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      * @var User
      */
     private $user;
 
     /**
      * @ManyToOne(targetEntity="Event", inversedBy="attendees")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      * @var Event
      */
     private $event;

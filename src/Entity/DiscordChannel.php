@@ -37,7 +37,7 @@ class DiscordChannel
 
     /**
      * @ORM\ManyToOne(targetEntity="DiscordGuild", inversedBy="discordChannels")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @var DiscordGuild
      */
     private $guild;

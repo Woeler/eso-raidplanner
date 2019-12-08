@@ -38,14 +38,14 @@ class GuildMembership
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="guildMemberships", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @var User
      */
     private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="DiscordGuild", inversedBy="members", cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      * @var DiscordGuild
      */
     private $guild;

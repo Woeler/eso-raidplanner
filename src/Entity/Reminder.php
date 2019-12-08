@@ -40,6 +40,7 @@ class Reminder
 
     /**
      * @ManyToOne(targetEntity="DiscordGuild", inversedBy="reminders")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      * @var DiscordGuild
      */
     private $guild;

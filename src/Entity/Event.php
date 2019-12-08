@@ -47,6 +47,7 @@ class Event
 
     /**
      * @ManyToOne(targetEntity="DiscordGuild", inversedBy="events")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      * @var DiscordGuild
      */
     private $guild;
