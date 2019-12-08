@@ -50,6 +50,7 @@
                     {% for attendee in event.attendees %}
                         <tr>
                             <td style="vertical-align: middle">
+                                <img class="avatar rounded-circle" width="32px" alt="Avatar" src="https://cdn.discordapp.com/avatars/{{ attendee.user.discordId }}/{{ attendee.user.avatar }}.png" />
                                 <strong>{{ attendee.user.username }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small>
                                 {% if attendee.user.patreonMembership > constant('App\\Entity\\User::PATREON_NONE') %}
                                     <li class="fa fa-gem patreon-{{ attendee.user.patreonMembership }}" title="{{ constant('App\\Entity\\User::PATREON')[attendee.user.patreonMembership] }} Supporter"></li>
