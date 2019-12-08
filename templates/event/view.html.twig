@@ -10,10 +10,39 @@
                          src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32"
                          height="32"/>
                 {% endif %}
-                <a href="{{ path('guild_view', {'guildId': guild.id}) }}">
+                <strong><a href="{{ path('guild_view', {'guildId': guild.id}) }}">
                     {{ guild.name }}
                 </a>
-                - Event: {{ event.name }}
+                    - Event: {{ event.name }}</strong>
+            </div>
+            <div class="card-body">
+                {% if guild.isAdmin(app.user) %}
+                    <div class="float-right">
+                        {{ macros.linkbutton(
+                            path('guild_event_update', {guildId: guild.id, eventId: event.id}),
+                            'Edit Event',
+                            'info',
+                            'edit'
+                        ) }}
+                        {{ macros.linkbutton(
+                            path('guild_event_delete', {guildId: guild.id, eventId: event.id}),
+                            'Delete Event',
+                            'danger',
+                            'trash'
+                        ) }}
+                    </div>
+                {% endif %}
+                <strong>Starts at:</strong> {{ app.user.toUserTimeString(event.start) }}<br>
+                {% if event.description is not null %}
+                    <strong>Description:</strong> {{ event.description }}<br>
+                {% endif %}
+                <strong>Total Attendees:</strong> {{ event.attendees|length }}
+            </div>
+        </div>
+        <div class="mt-3"></div>
+        <div class="card">
+            <div class="card-header">
+                <strong>Event Attendance</strong>
             </div>
             <div class="card-body">
                 <table class="table">
@@ -38,7 +67,7 @@
     </div>
     <div class="col-md-4">
         <div class="card">
-            <div class="card-header">My attendance</div>
+            <div class="card-header"><strong>My attendance</strong></div>
             <div class="card-body">
                 {% if attending %}
                     <div class="alert alert-success">You are attending this event.</div>
@@ -51,21 +80,10 @@
                     macros.linkbutton(
                         path('guild_event_unattend', {guildId: guild.id, eventId: event.id}),
                         'I\'m no longer attending',
-                        'danger',
+                        'danger btn-block',
                         'times'
                     )
                     }}
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="mt-3"></div>
-
-        <div class="card">
-            <div class="card-header">Details</div>
-            <div class="card-body">
-                {% if event.description is not null %}
-                    <strong>Description:</strong> {{ event.description }}
                 {% endif %}
             </div>
         </div>

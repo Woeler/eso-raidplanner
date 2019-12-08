@@ -17,5 +17,4 @@ require('./libs/navbar.js');
 require('select2');
 
 $(document).ready(function () {
-
 });

@@ -44,8 +44,16 @@
                             <td>
                                 {{
                                 macros.linkbutton(
+                                    path('guild_reminder_test', {guildId: guild.id, reminderId: reminder.id}),
+                                    'Test',
+                                    'primary',
+                                    'envelope'
+                                )
+                                }}
+                                {{
+                                macros.linkbutton(
                                     path('guild_reminder_update', {guildId: guild.id, reminderId: reminder.id}),
-                                    '',
+                                    'Edit',
                                     'info',
                                     'edit'
                                 )
@@ -53,7 +61,7 @@
                                 {{
                                 macros.linkbutton(
                                     path('guild_reminder_delete', {guildId: guild.id, reminderId: reminder.id}),
-                                    '',
+                                    'Delete',
                                     'danger',
                                     'trash'
                                 )

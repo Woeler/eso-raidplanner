@@ -56,6 +56,8 @@ class EventType extends AbstractType
                     'year' => 'Year', 'month' => 'Month', 'day' => 'Day',
                     'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second',
                 ],
+                'date_widget' => 'single_text',
+                'time_widget' => 'single_text',
                 'view_timezone' => $options['timezone'],
             ])
             ->add('submit', SubmitType::class, [

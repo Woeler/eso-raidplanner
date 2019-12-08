@@ -10,16 +10,20 @@
 namespace App\Controller;
 
 use App\Entity\Reminder;
+use App\Exception\UnexpectedDiscordApiResponseException;
 use App\Form\ReminderType;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\ReminderRepository;
 use App\Security\Voter\GuildVoter;
 use App\Security\Voter\ReminderVoter;
+use App\Service\DiscordBotService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 
 /**
  * @Route("/guild", name="guild_")
@@ -155,5 +159,46 @@ class ReminderController extends AbstractController
                 'guild' => $guild,
             ]
         );
+    }
+
+    /**
+     * @Route("/{guildId}/reminder/{reminderId}/test", name="reminder_test")
+     *
+     * @param string $guildId
+     * @param int $reminderId
+     * @param DiscordBotService $discordBotService
+     * @param UrlGeneratorInterface $router
+     * @return Response
+     */
+    public function testReminder(
+        string $guildId,
+        int $reminderId,
+        DiscordBotService $discordBotService,
+        UrlGeneratorInterface $router
+    ): Response {
+        $reminder = $this->reminderRepository->find($reminderId);
+        $this->denyAccessUnlessGranted(ReminderVoter::UPDATE, $reminder);
+        $message = (new DiscordEmbedsMessage())
+            ->setColor(9660137)
+            ->setTitle('This is a test message')
+            ->addField('Triggered by', $this->getUser()->getDiscordMention())
+            ->setAuthorName($reminder->getGuild()->getName())
+            ->setAuthorIcon('https://cdn.discordapp.com/icons/' . $reminder->getGuild()->getId() . '/' . $reminder->getGuild()->getIcon() . '.png')
+            ->setAuthorUrl($router->generate(
+                'guild_view',
+                ['guildId' => $reminder->getGuild()->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ))
+            ->setFooterIcon('https://esoraidplanner.com/favicon/appicon.jpg')
+            ->setFooterText('ESO Raidplanner by Woeler');
+
+        try {
+            $discordBotService->sendMessage($reminder->getChannel()->getId(), $message);
+            $this->addFlash('success', 'Test message sent.');
+        } catch (UnexpectedDiscordApiResponseException $e) {
+            $this->addFlash('danger', 'Message could not be sent. Please check if the bot has the correct rights.');
+        }
+
+        return $this->redirectToRoute('guild_reminder_list', ['guildId' => $reminder->getGuild()->getId()]);
     }
 }

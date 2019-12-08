@@ -61,7 +61,7 @@ class EventAttendeeType extends AbstractType
             )
             ->add('submit', SubmitType::class, [
                 'label' => 'Save',
-                'attr' => ['class' => 'btn btn-primary pull-right'],
+                'attr' => ['class' => 'btn btn-primary btn-block'],
             ]);
     }
 

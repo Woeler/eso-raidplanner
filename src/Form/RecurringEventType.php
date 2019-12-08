@@ -56,6 +56,8 @@ class RecurringEventType extends AbstractType
                 DateTimeType::class,
                 [
                     'required' => true,
+                    'date_widget' => 'single_text',
+                    'time_widget' => 'single_text',
                     'label' => 'Recurring event start date and time',
                 ]
             )

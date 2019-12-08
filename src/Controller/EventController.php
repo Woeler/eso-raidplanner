@@ -129,7 +129,6 @@ class EventController extends AbstractController
         $this->denyAccessUnlessGranted(GuildVoter::CREATE_EVENT, $guild);
 
         $event = new Event();
-        $event->setStart(new \DateTime('now'));
         $form = $this->createForm(\App\Form\EventType::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'clock' => $this->getUser()->getClock()]);
         $form->handleRequest($request);
 
