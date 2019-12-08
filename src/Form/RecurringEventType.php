@@ -67,6 +67,7 @@ class RecurringEventType extends AbstractType
                 [
                     'required' => true,
                     'multiple' => false,
+                    'data' => $options['timezone'],
                     'choices' => array_flip(TimezoneUtility::timeZones()),
                 ]
             )
@@ -113,6 +114,7 @@ class RecurringEventType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => RecurringEvent::class,
+            'timezone' => 'UTC'
         ]);
     }
 }

@@ -87,7 +87,7 @@ class RecurringEventController extends AbstractController
         $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
         $this->denyAccessUnlessGranted(GuildVoter::CREATE_RECURRING_EVENT, $guild);
         $recurringEvent = new RecurringEvent();
-        $form = $this->createForm(RecurringEventType::class, $recurringEvent);
+        $form = $this->createForm(RecurringEventType::class, $recurringEvent, ['timezone' => $this->getUser()->getTimezone()]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
