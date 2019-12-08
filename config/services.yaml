@@ -16,8 +16,8 @@ services:
           $patreonRoles:
             1: '653216508478095360'
             2: '653248813347242000'
-            3: ''
-            4: ''
+            3: '653281259694456882'
+            4: '653281350228639765'
 
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
