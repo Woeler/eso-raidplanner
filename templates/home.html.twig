@@ -8,7 +8,36 @@
                 Welcome to ESORaidplanner
             </div>
             <div class="card-body">
+                ESO Raidplanner is a organizational tool for guilds in The Elder Scrolls Online. It is meant for
+                planning guild events and integrates seamlessly with your guild's Discord server. You do not need any
+                additional accounts to use this service, a Discord account is enough.<br><br>
 
+                <div class="text-center">
+                {{ macros.linkbutton(
+                    path('auth_discord_login'),
+                    'Login with Discord',
+                    'primary discord-bg',
+                    'discord',
+                    true
+                ) }}
+                </div>
+
+                <br>
+
+                <h4>Information for Guild Masters</h4>
+                In order to use ESO Raidplanner the owner of your Discord server must <a
+                        href="{{ path('auth_discord_login') }}">log in</a> to this website once. Once
+                logged in they will be able to activate the raidplanner on the Discord server. This process will also
+                add the Raidplanner Bot to your server, so users can do all their event magic from within the Discord
+                server!<br><br>
+
+                <h4>Information for Guild Members</h4>
+                If your guild is already using ESO Raidplanner, simply <a href="{{ path('auth_discord_login') }}">log
+                    in</a> to our system once. We will automatically
+                detect which guilds you are a part of. Once done you can use all the features of the website and the bot
+                in the guilds you are a member of.<br><br>
+
+                If you have any further questions you can always join our <a href="https://discord.gg/woeler" target="_blank">Discord server</a>.
             </div>
         </div>
     </div>
