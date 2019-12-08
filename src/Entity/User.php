@@ -389,9 +389,15 @@ class User implements UserInterface
      */
     public function getActiveGuildMemberships(): Collection
     {
-        return $this->guildMemberships->filter(function (GuildMembership $guildMembership) {
+        $active = $this->guildMemberships->filter(static function (GuildMembership $guildMembership) {
             return $guildMembership->getGuild()->isActive();
         });
+        $iterator = $active->getIterator();
+        $iterator->uasort(static function ($a, $b) {
+            return strcmp($a->getGuild()->getName(), $b->getGuild()->getName()) ? 1 : -1;
+        });
+
+        return new ArrayCollection(iterator_to_array($iterator));
     }
 
     /**

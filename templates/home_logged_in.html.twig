@@ -5,47 +5,42 @@
     {{ encore_entry_script_tags('calendar') }}
 {% endblock %}
 {% block body %}
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">Upcoming events</div>
-                <div class="card-body">
-                    {% include '@Calendar/calendar.html' %}
-                </div>
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header">Upcoming events</div>
+            <div class="card-body">
+                {% include '@Calendar/calendar.html' %}
             </div>
         </div>
-{#        <div class="col-md-4">#}
-{#            <div class="card">#}
-{#                <div class="card-header">Your guilds</div>#}
-{#                <div class="card-body">#}
-{#                    {% if app.user.getActiveGuildMemberships()|length < 1 %}#}
-{#                        You seem to have no active guilds. Turn one of your Discord servers into an active guild? <a href="{{ path('user_guilds') }}">Click here</a>!#}
-{#                    {% else %}#}
-{#                        <table class="table">#}
-{#                            <tbody>#}
-{#                            {% for guild in app.user.getActiveGuildMemberships() %}#}
-{#                                <tr>#}
-{#                                    <td>#}
-{#                                        {% if guild.guild.icon is not null %}#}
-{#                                            <img class="avatar rounded-circle"#}
-{#                                                 src="https://cdn.discordapp.com/icons/{{ guild.guild.discordId }}/{{ guild.guild.icon }}.png"#}
-{#                                                 width="32" height="32"/>#}
-{#                                        {% endif %}#}
-{#                                    </td>#}
-{#                                    <td>{{ guild.guild.name }}</td>#}
-{#                                    <td>#}
-{#                                        {{ macros.linkbutton(#}
-{#                                            path('guild_view', {guildId: guild.guild.id}),#}
-{#                                            '',#}
-{#                                            'secondary',#}
-{#                                            'eye'#}
-{#                                        ) }}#}
-{#                                    </td>#}
-{#                                </tr>#}
-{#                            {% endfor %}#}
-{#                            </tbody>#}
-{#                        </table>#}
-{#                    {% endif %}#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header">Guilds</div>
+            <div class="card-body">
+                {% if app.user.getActiveGuildMemberships()|length < 1 %}
+                    You seem to have no active guilds. Turn one of your Discord servers into an active guild? <a
+                        href="{{ path('user_guilds') }}">Click here</a>!
+                {% else %}
+                    <table class="table">
+                        <tbody>
+                        {% for guild in app.user.getActiveGuildMemberships() %}
+                            <tr>
+                                <td style="vertical-align: middle">
+                                    {% if guild.guild.icon is not null %}
+                                        <img class="avatar rounded-circle"
+                                             src="https://cdn.discordapp.com/icons/{{ guild.guild.discordId }}/{{ guild.guild.icon }}.png"
+                                             width="32" height="32"/>
+                                    {% endif %}
+                                </td>
+                                <td style="vertical-align: middle">
+                                    <strong><a href="{{ path('guild_view', {guildId: guild.guild.id}) }}">{{ guild.guild.name }}</a></strong>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
