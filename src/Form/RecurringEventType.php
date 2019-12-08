@@ -114,7 +114,7 @@ class RecurringEventType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => RecurringEvent::class,
-            'timezone' => 'UTC',
+            'timezone' => 'UTC'
         ]);
     }
 }
