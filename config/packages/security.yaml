@@ -3,9 +3,7 @@ security:
     providers:
         oauth:
             #id: knpu.oauth2.user_provider
-            entity:
-                class: App\Entity\User
-                property: discordId
+            entity: { class: App\Entity\User }
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
