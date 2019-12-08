@@ -111,6 +111,9 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
                 case '!unattend':
                     $this->unattend($json);
                     break;
+                case '!help':
+                    $this->help($json);
+                    break;
                 default:
                     return Response::create('', Response::HTTP_NO_CONTENT);
             }
@@ -265,6 +268,25 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
             $user->getDiscordMention().' you are no longer attending '.$event->getName(),
             $data['channelId']
         );
+    }
+
+    /**
+     * @param array $data
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function help(array $data): void
+    {
+        $user = $this->userRepository->findOneBy(['discordId' => $data['userId']]);
+        $message = (new DiscordEmbedsMessage())
+            ->addField('List all events', '!events')
+            ->addField('Show specific event', '!event [eventID]'.PHP_EOL.'**Example**: `!event 1`')
+            ->addField('Attend event', '!attend [eventId] [class] [role]'.PHP_EOL.'**Example**: `!attend 1 dragonknight tank`')
+            ->addField('Leave event', '!unattend [eventId]'.PHP_EOL.'**Example**: `!unattend 1`')
+            ->addField('Usable classes', implode(', ', EsoClassUtility::toArray()))
+            ->addField('Usable roles', implode(', ', EsoRoleUtility::toArray()));
+        $message->setContent($user->getDiscordMention());
+
+        $this->replyWith($message, $data['channelId']);
     }
 
     /**
