@@ -41,8 +41,6 @@ module.exports = (client, message) => {
         },
     };
 
-    console.log(message.content);
-
     var req = https.request(options, (res) => {
         //console.log('statusCode:', res.statusCode);
         //console.log('headers:', res.headers);

@@ -112,15 +112,14 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
                     $this->unattend($json);
                     break;
                 default:
-                    if (!empty($json['channelId'])) {
-                        $this->replyWithText('Oops, something went wrong.', $json['channelId']);
-                    }
-
-                    return Response::create('', Response::HTTP_BAD_REQUEST);
+                    return Response::create('', Response::HTTP_NO_CONTENT);
             }
         } catch (UnexpectedDiscordApiResponseException $e) {
-            // Something went wrong
-            // ToDo
+            if (!empty($json['channelId'])) {
+                $this->replyWithText('Oops, something went wrong.', $json['channelId']);
+            }
+
+            return Response::create('', Response::HTTP_BAD_REQUEST);
         }
 
         return Response::create('ok', Response::HTTP_OK);
