@@ -233,6 +233,14 @@ class DiscordAuthenticator extends SocialAuthenticator
     }
 
     /**
+     * @return bool
+     */
+    public function supportsRememberMe(): bool
+    {
+        return true;
+    }
+
+    /**
      * @return DiscordClient
      */
     private function getDiscordClient()

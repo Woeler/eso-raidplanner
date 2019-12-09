@@ -10,10 +10,13 @@
 namespace App\EventSubscriber;
 
 use App\Controller\Checks\TalksWithDiscordBotController;
+use App\Entity\GuildMembership;
+use App\Entity\User;
 use App\Exception\UnexpectedDiscordApiResponseException;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\UserRepository;
 use App\Service\DiscordBotService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
@@ -43,16 +46,23 @@ class DiscordBotSubscriber implements EventSubscriberInterface
      */
     private $token;
 
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
     public function __construct(
         DiscordBotService $discordBotService,
         DiscordGuildRepository $guildRepository,
         UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
         string $token
     ) {
         $this->discordBotService = $discordBotService;
         $this->guildRepository = $guildRepository;
         $this->userRepository = $userRepository;
         $this->token = $token;
+        $this->entityManager = $entityManager;
     }
 
     public function onTalksWithDiscordController(ControllerEvent $event): void
@@ -80,13 +90,7 @@ class DiscordBotSubscriber implements EventSubscriberInterface
             $guild = $this->guildRepository->find($guildId);
             $user = $this->userRepository->findOneBy(['discordId' => $userId]);
 
-            if (null === $user) {
-                $this->replyWithText(
-                    '<@'.$userId.'> I do not know you. You must at least log in once to ESO Raidplanner.',
-                    $channelId
-                );
-                throw new PreconditionFailedHttpException('User unknown');
-            } elseif (null === $guild) {
+            if (null === $guild) {
                 $this->replyWithText(
                     $user->getDiscordMention().' I do not know this guild.',
                     $channelId
@@ -98,6 +102,26 @@ class DiscordBotSubscriber implements EventSubscriberInterface
                     $channelId
                 );
                 throw new PreconditionFailedHttpException('Guild inactive');
+            } elseif (null === $user) {
+                $userInfo = $this->discordBotService->getUser($userId);
+                $user = (new User())
+                    ->setDiscordId($userId)
+                    ->setUsername($userInfo['username'])
+                    ->setDiscordDiscriminator($userInfo['discriminator'])
+                    ->setAvatar($userInfo['avatar']);
+                $this->entityManager->persist($user);
+                $this->entityManager->flush();
+
+                $membership = (new GuildMembership())
+                    ->setGuild($guild)
+                    ->setUser($user)
+                    ->setRole(GuildMembership::ROLE_MEMBER);
+                $this->entityManager->persist($membership);
+                $this->entityManager->flush();
+                $this->replyWithText(
+                    $user->getDiscordMention().' Welcome to ESO Raidplanner. This is your first time interacting with the system, so we have configured some basic things for you. You should be all set to use ESO Raidplanner in this guild now.',
+                    $channelId
+                );
             }
         }
     }

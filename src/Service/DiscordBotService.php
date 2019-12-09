@@ -120,6 +120,16 @@ class DiscordBotService
     }
 
     /**
+     * @param string $userId
+     * @return array
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function getUser(string $userId): array
+    {
+        return $this->request('https://discordapp.com/api/users/'.$userId);
+    }
+
+    /**
      * @param string $url
      * @param string $method
      * @param array $payload

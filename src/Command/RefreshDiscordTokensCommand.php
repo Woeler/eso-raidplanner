@@ -56,6 +56,9 @@ class RefreshDiscordTokensCommand extends Command
         $users = $this->userRepository->findWhereTokenAlmostExpires();
 
         foreach ($users as $user) {
+            if (null === $user->getDiscordRefreshToken()) {
+                continue;
+            }
             try {
                 $newTokens = $this->discordOauthService->refreshOauthToken($user->getDiscordRefreshToken());
             } catch (ClientException $e) {

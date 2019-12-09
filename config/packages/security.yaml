@@ -3,7 +3,9 @@ security:
     providers:
         oauth:
             #id: knpu.oauth2.user_provider
-            entity: { class: App\Entity\User }
+            entity:
+                class: App\Entity\User
+                property: discordId
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -17,9 +19,9 @@ security:
                 authenticators:
                     - App\Security\DiscordAuthenticator
             remember_me:
-                secret:   '%kernel.secret%'
+                secret: '%kernel.secret%'
                 lifetime: 2629746 # 1 month in seconds
-                path:     /
+                path: /
                 always_remember_me: true
 
             # activate different ways to authenticate
