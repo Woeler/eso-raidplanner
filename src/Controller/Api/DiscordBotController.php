@@ -20,6 +20,7 @@ use App\Service\DiscordBotService;
 use App\Service\GuildLoggerService;
 use App\Utility\EsoClassUtility;
 use App\Utility\EsoRoleUtility;
+use App\Utility\TimezoneUtility;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -113,6 +114,9 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
                     break;
                 case '!help':
                     $this->help($json);
+                    break;
+                case '!timezone':
+                    $this->timeZone($json);
                     break;
                 default:
                     return Response::create('', Response::HTTP_NO_CONTENT);
@@ -287,6 +291,28 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         $message->setContent($user->getDiscordMention());
 
         $this->replyWith($message, $data['channelId']);
+    }
+
+    /**
+     * @param array $data
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function timeZone(array $data): void
+    {
+        $timezone = trim($data['query']);
+        $user = $this->userRepository->findOneBy(['discordId' => $data['userId']]);
+
+        if (array_key_exists($timezone, TimezoneUtility::timeZones())) {
+            $user->setTimezone($timezone);
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+            $this->replyWithText($user->getDiscordMention().' Your timezone has been set to '.$timezone.'.', $data['channelId']);
+
+            return;
+        }
+        $this->replyWithText($user->getDiscordMention().' I do now know the timezone '.$timezone.'. 
+        Please make sure to check out this official timezone list. Also be aware that the timezone you give me is case sensitive. 
+        https://www.php.net/manual/en/timezones.php'.PHP_EOL.'Here is an example `!timezone Europe/Berlin`', $data['channelId']);
     }
 
     /**
