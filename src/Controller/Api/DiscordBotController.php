@@ -310,9 +310,19 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
 
             return;
         }
-        $this->replyWithText($user->getDiscordMention().' I do now know the timezone '.$timezone.'. 
-        Please make sure to check out this official timezone list. Also be aware that the timezone you give me is case sensitive. 
-        https://www.php.net/manual/en/timezones.php'.PHP_EOL.'Here is an example `!timezone Europe/Berlin`', $data['channelId']);
+        if (empty($timezone)) {
+            $this->replyWithText(
+                $user->getDiscordMention().' Please specify a timezone in your command. Here is an example `!timezone Europe/Berlin`, and here is a list of supported timezones https://www.php.net/manual/en/timezones.php',
+                $data['channelId']
+            );
+
+            return;
+        }
+        $this->replyWithText(
+            $user->getDiscordMention().' I do now know the timezone '.$timezone.'. Please make sure to check out this official timezone list. Also be aware that the timezone you give me is case sensitive. https://www.php.net/manual/en/timezones.php'
+            .PHP_EOL.'Here is an example `!timezone Europe/Berlin`',
+            $data['channelId']
+        );
     }
 
     /**

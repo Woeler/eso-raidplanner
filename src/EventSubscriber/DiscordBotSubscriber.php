@@ -119,7 +119,7 @@ class DiscordBotSubscriber implements EventSubscriberInterface
                 $this->entityManager->persist($membership);
                 $this->entityManager->flush();
                 $this->replyWithText(
-                    $user->getDiscordMention().' Welcome to ESO Raidplanner. This is your first time interacting with the system, so we have configured some basic things for you. You should be all set to use ESO Raidplanner in this guild now.',
+                    $user->getDiscordMention().' Welcome to ESO Raidplanner. This is your first time interacting with the system, so we have configured some basic things for you. You should be all set to use ESO Raidplanner in this guild now. Your timezone has been set to UTC by default. You may change this by using the `!timezone` command.',
                     $channelId
                 );
             }
