@@ -129,6 +129,48 @@ class MenuBuilder
         }
 
         $menu->addChild(
+            'faq',
+            [
+                'route' => 'faq',
+                'label' => 'FAQ & Help',
+                'extras' => [
+                    'icon' => 'info-circle',
+                ],
+            ]
+        );
+        $menu['faq']->addChild(
+            'help_getting_started',
+            [
+                'route' => 'help_getting_started',
+                'label' => 'Getting Started',
+                'extras' => [
+                    'icon' => 'arrow-circle-right',
+                ],
+            ]
+        );
+        $menu['faq']->addChild(
+            'help_discord_bot',
+            [
+                'route' => 'help_discord_bot',
+                'label' => 'Discord Bot',
+                'extras' => [
+                    'icon' => 'discord',
+                    'fab' => true,
+                ],
+            ]
+        );
+        $menu['faq']->addChild(
+            'help_recurring_events',
+            [
+                'route' => 'help_recurring_events',
+                'label' => 'Recurring Events',
+                'extras' => [
+                    'icon' => 'calendar',
+                ],
+            ]
+        );
+
+        $menu->addChild(
             'support',
             [
                 'uri' => 'https://woeler.tech',

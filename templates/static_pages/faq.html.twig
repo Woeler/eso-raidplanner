@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/macros.html.twig' as macros %}
+{% block title %}FAQ{% endblock %}
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">Frequently Asked Questions</div>
+            <div class="card-body">
+                <ul>
+                    <li><a href="#general">General</a></li>
+                    <li><a href="#setup">Setup</a></li>
+                    <li><a href="#discord-bot">Discord Bot</a></li>
+                    <li><a href="#patreon">Patreon</a></li>
+                    <li><a href="#other">Other</a></li>
+                </ul>
+
+                <h4 id="general">General</h4>
+                <hr>
+                <h5>Is ESO Raidplanner free to use?</h5>
+                Yes, ESO Raidplanner is 100% free. It is a hobby project of mine. All features are available to anyone,
+                without restrictions. Of course, if you would like a fancy badge next to your name, you can consider
+                supporting this project on <a href="https://patreon.com/woeler" target="_blank">Patreon</a>.<br><br>
+
+                <h5>Does my guild need to use Discord in order to use ESO Raidplanner?</h5>
+                Yes. ESO Raidplanner is entirely designed around the systems of Discord.<br><br>
+
+                <h5>Do my guild members have to log into this site in order to use it?</h5>
+                Your guild members do <strong>not</strong> need to use the website at all. Once you have configured your
+                Discord server to work with ESO Raidplanner all your members will be able to interact with it through
+                the bot. Of course, users can always go to the website if they wish, but it is never required.<br><br>
+
+                <h4 id="setup">Setup</h4>
+                <hr>
+                <h5>I want to set up my server, but it is not in the list!</h5>
+                In order to configure a Discord server with ESO Raidplanner you <strong>must</strong> be the
+                owner of the server. Admin rights are not enough, you must be the actual owner. If you cannot reach the
+                owner of your server, please see the point at the very bottom with our Discord server info. You can come
+                there and ask, we will work something out. You can also check out <a
+                        href="https://support.discordapp.com/hc/en-us/articles/216273938-How-do-I-transfer-server-ownership-"
+                        target="_blank">this article</a> about server ownership in Discord.
+                <br><br>
+
+                <h5>How long does it take before recurring events appear after setting them up?</h5>
+                Roughly 10 minutes depending on the server load.<br><br>
+
+                <h4 id="discord-bot">Discord Bot</h4>
+                <hr>
+                <h5>Does ESO Raidplanner have a bot?</h5>
+                Yes, ESO Raidplanner does have a bot. You will be guided through adding it to your server when you go
+                through the setup process after you have logged in.<br><br>
+
+                <h5>What permissions does the Discord bot need?</h5>
+                The Discord bot needs at least the following permissions in the channels it is active in: Read Messages,
+                Send Messages and Embed Links.<br><br>
+
+                <h4 id="patreon">Patreon</h4>
+                <hr>
+                <h5>How long does it take for my supporter role to show up after I pledge on Patreon?</h5>
+                Supporter roles are updated every 6 hours.<br><br>
+
+                <h4 id="other">Other</h4>
+                <hr>
+                <h5>Where can I go if I have more questions?</h5>
+                You can come to our <a href="https://discord.gg/woeler" target="_blank">Discord server</a>.
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -72,4 +72,36 @@ class HomeController extends AbstractController
     {
         return $this->render('static_pages/terms_of_use.html.twig');
     }
+
+    /**
+     * @Route("/faq", name="faq")
+     */
+    public function faq()
+    {
+        return $this->render('static_pages/faq.html.twig');
+    }
+
+    /**
+     * @Route("/help/discord-bot", name="help_discord_bot")
+     */
+    public function helpDiscordBot()
+    {
+        return $this->render('static_pages/help/discord_bot.html.twig');
+    }
+
+    /**
+     * @Route("/help/recurring-events", name="help_recurring_events")
+     */
+    public function helpRecurringEvents()
+    {
+        return $this->render('static_pages/help/recurring_events.html.twig');
+    }
+
+    /**
+     * @Route("/help/getting-started", name="help_getting_started")
+     */
+    public function helpGettingStarted()
+    {
+        return $this->render('static_pages/help/getting_started.html.twig');
+    }
 }
