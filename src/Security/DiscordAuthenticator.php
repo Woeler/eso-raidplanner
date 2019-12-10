@@ -135,9 +135,9 @@ class DiscordAuthenticator extends SocialAuthenticator
      *
      * @param mixed $credentials
      *
+     * @param UserProviderInterface $userProvider
      * @return UserInterface|null
-     * @throws AuthenticationException
-     *
+     * @throws \Exception
      */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
@@ -145,9 +145,6 @@ class DiscordAuthenticator extends SocialAuthenticator
         $discordUser = $this->getDiscordClient()
             ->fetchUserFromToken($credentials);
 
-        $email = $discordUser->getEmail();
-
-        // 1) have they logged in with Facebook before? Easy!
         $user = $this->em->getRepository(User::class)
             ->findOneBy(['discordId' => $discordUser->getId()]);
         if ($user) {
@@ -160,15 +157,7 @@ class DiscordAuthenticator extends SocialAuthenticator
                 )
                 ->setDiscordRefreshToken($credentials->getRefreshToken());
         } else {
-
-            // 2) do we have a matching user by email?
-            $user = $this->em->getRepository(User::class)
-                    ->findOneBy(['email' => $email]) ?? new User();
-
-            // 3) Maybe you just want to "register" them by creating
-            // a User object
             $user->setDiscordId($discordUser->getId())
-                ->setEmail($discordUser->getEmail())
                 ->setAvatar($discordUser->getAvatarHash())
                 ->setDiscordDiscriminator($discordUser->getDiscriminator())
                 ->setUsername($discordUser->getUsername())

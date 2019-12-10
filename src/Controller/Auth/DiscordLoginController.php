@@ -42,7 +42,7 @@ class DiscordLoginController extends AbstractController
     {
         return $clientRegistry
             ->getClient('discord')
-            ->redirect(['identify', 'email', 'guilds'])
+            ->redirect(['identify', 'guilds'])
             ;
     }
 }

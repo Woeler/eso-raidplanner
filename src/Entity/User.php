@@ -61,12 +61,6 @@ class User implements UserInterface
     private $discordDiscriminator;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string
-     */
-    private $email;
-
-    /**
      * @ORM\Column(type="string", length=255)
      * @var string
      */
@@ -218,25 +212,6 @@ class User implements UserInterface
     public function setDiscordDiscriminator(string $discordDiscriminator): self
     {
         $this->discordDiscriminator = $discordDiscriminator;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail(): string
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param string $email
-     * @return User
-     */
-    public function setEmail(string $email): self
-    {
-        $this->email = $email;
 
         return $this;
     }
