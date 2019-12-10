@@ -51,18 +51,25 @@ class DiscordBotSubscriber implements EventSubscriberInterface
      */
     private $entityManager;
 
+    /**
+     * @var array
+     */
+    private $discordBotCommands;
+
     public function __construct(
         DiscordBotService $discordBotService,
         DiscordGuildRepository $guildRepository,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
-        string $token
+        string $token,
+        array $discordBotCommands
     ) {
         $this->discordBotService = $discordBotService;
         $this->guildRepository = $guildRepository;
         $this->userRepository = $userRepository;
         $this->token = $token;
         $this->entityManager = $entityManager;
+        $this->discordBotCommands = $discordBotCommands;
     }
 
     public function onTalksWithDiscordController(ControllerEvent $event): void
@@ -84,6 +91,9 @@ class DiscordBotSubscriber implements EventSubscriberInterface
                 throw new UnauthorizedHttpException('Invalid token');
             }
             $json = json_decode($event->getRequest()->getContent(), true);
+            if (!in_array($json['command'], $this->discordBotCommands, true)) {
+                throw new PreconditionFailedHttpException('Unknown command');
+            }
             $guildId = $json['guildId'];
             $userId = $json['userId'];
             $channelId = $json['channelId'];
