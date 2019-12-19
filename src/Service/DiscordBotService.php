@@ -130,6 +130,15 @@ class DiscordBotService
     }
 
     /**
+     * @param string $serverId
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function leaveServer(string $serverId): void
+    {
+        $this->request('https://discordapp.com/api/users/@me/guilds/'.$serverId, 'DELETE');
+    }
+
+    /**
      * @param string $url
      * @param string $method
      * @param array $payload

@@ -35,12 +35,14 @@ class GuildVoter extends Voter
 
     public const DEMOTE = 'demote';
 
+    public const DEACTIVATE = 'deactivate';
+
     protected function supports($attribute, $subject)
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
         return in_array($attribute, [
-            self::VIEW_SETTINGS, self::VIEW, self::VIEW_MEMBERS, self::CREATE_EVENT, self::CREATE_REMINDER, self::SYNC_DISCORD_CHANNELS, self::PROMOTE, self::DEMOTE, self::CREATE_RECURRING_EVENT,
+            self::VIEW_SETTINGS, self::VIEW, self::VIEW_MEMBERS, self::CREATE_EVENT, self::CREATE_REMINDER, self::SYNC_DISCORD_CHANNELS, self::PROMOTE, self::DEMOTE, self::CREATE_RECURRING_EVENT, self::DEACTIVATE,
             ], true)
             && $subject instanceof \App\Entity\DiscordGuild;
     }
@@ -73,6 +75,8 @@ class GuildVoter extends Voter
                 return $this->canPromote($subject, $user);
             case self::DEMOTE:
                 return $this->canDemote($subject, $user);
+            case self::DEACTIVATE:
+                return $this->canDeactivate($subject, $user);
         }
 
         return false;
@@ -119,6 +123,11 @@ class GuildVoter extends Voter
     }
 
     public function canDemote(DiscordGuild $guild, User $user): bool
+    {
+        return $guild->getOwner()->getId() === $user->getId();
+    }
+
+    public function canDeactivate(DiscordGuild $guild, User $user): bool
     {
         return $guild->getOwner()->getId() === $user->getId();
     }

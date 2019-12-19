@@ -244,4 +244,31 @@ class GuildController extends AbstractController
 
         return $this->redirectToRoute('guild_members', ['guildId' => $guildId]);
     }
+
+    /**
+     * @Route("/{guildId}/deactivate", name="deactivate")
+     *
+     * @param string $guildId
+     * @param DiscordBotService $discordBotService
+     * @return Response
+     */
+    public function deactivate(string $guildId, DiscordBotService $discordBotService): Response
+    {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::DEACTIVATE, $guild);
+
+        try {
+            $discordBotService->leaveServer($guild->getDiscordId());
+            $guild->setActive(false);
+            $this->entityManager->persist($guild);
+            $this->entityManager->flush();
+            $this->addFlash('danger', 'Guild '.$guild->getName().' was deactivated.');
+        } catch (UnexpectedDiscordApiResponseException $e) {
+            $this->addFlash('danger', 'An error occurred. Please try again later.');
+
+            return $this->redirectToRoute('guild_settings');
+        }
+
+        return $this->redirectToRoute('home');
+    }
 }
