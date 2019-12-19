@@ -76,8 +76,9 @@ class CreateRecurringEventsCommand extends Command
 
             $startDate = new \DateTime(
                 $recurringEvent->getLastEventStartDate()->format('Y-m-d H:i:s'),
-                new \DateTimeZone($recurringEvent->getTimezone())
+                new \DateTimeZone('UTC')
             );
+            $startDate->setTimezone(new \DateTimeZone($recurringEvent->getTimezone()));
             $rule = new Rule(
                 'FREQ=WEEKLY;COUNT='.$createInAdvance.
                 ';INTERVAL='.$recurringEvent->getWeekInterval().
@@ -125,6 +126,7 @@ class CreateRecurringEventsCommand extends Command
             }
 
             if (null !== $lastDate) {
+                $lastDate->setTimezone(new \DateTimeZone('UTC'));
                 $recurringEvent->setLastEventStartDate($lastDate);
                 $this->entityManager->persist($recurringEvent);
                 $this->entityManager->flush();

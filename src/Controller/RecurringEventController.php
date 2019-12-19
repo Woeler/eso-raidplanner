@@ -91,14 +91,14 @@ class RecurringEventController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $eventDate = new \DateTime($recurringEvent->getDate()->format('Y-m-d H:i:s'), new \DateTimeZone($recurringEvent->getTimezone()));
+            $eventDate->setTimezone(new \DateTimeZone('UTC'));
             $recurringEvent->setGuild($guild)
-                ->setLastEventStartDate($recurringEvent->getDate());
+                ->setLastEventStartDate($eventDate);
             if (in_array(strtoupper(substr($recurringEvent->getDate()->format('D'), 0, 2)), $recurringEvent->getDays(), true)) {
                 $this->entityManager->persist($recurringEvent);
                 $this->entityManager->flush();
 
-                $eventDate = new \DateTime($recurringEvent->getDate()->format('Y-m-d H:i:s'), new \DateTimeZone($recurringEvent->getTimezone()));
-                $eventDate->setTimezone(new \DateTimeZone('UTC'));
                 $event = (new Event())
                     ->setName($recurringEvent->getName())
                     ->setDescription($recurringEvent->getDescription())

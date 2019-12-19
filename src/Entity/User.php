@@ -337,7 +337,7 @@ class User implements UserInterface
      */
     public function getActiveDiscordGuilds(): Collection
     {
-        return $this->discordGuilds->filter(function (DiscordGuild $discordGuild) {
+        return $this->discordGuilds->filter(static function (DiscordGuild $discordGuild) {
             return $discordGuild->isActive();
         });
     }
