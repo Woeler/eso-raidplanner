@@ -266,7 +266,7 @@ class GuildController extends AbstractController
         } catch (UnexpectedDiscordApiResponseException $e) {
             $this->addFlash('danger', 'An error occurred. Please try again later.');
 
-            return $this->redirectToRoute('guild_settings');
+            return $this->redirectToRoute('guild_settings', ['guildId' => $guild->getId()]);
         }
 
         return $this->redirectToRoute('home');
