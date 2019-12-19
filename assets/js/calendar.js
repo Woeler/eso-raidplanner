@@ -5,11 +5,12 @@ import bootstrapPlugin from '@fullcalendar/bootstrap';
 
 document.addEventListener('DOMContentLoaded', () => {
     let calendarEl = document.getElementById('calendar-holder');
+    let calendarPropsEl = document.getElementById('calendar-props');
 
     let calendar = new Calendar(calendarEl, {
         defaultView: 'dayGridMonth',
         themeSystem: 'bootstrap',
-        firstDay: 1,
+        firstDay: parseInt(calendarPropsEl.getAttribute('data-first-day-of-week')),
         contentHeight: 'auto',
         eventSources: [
             {

@@ -94,19 +94,19 @@ class User implements UserInterface
      * @ORM\Column(type="integer")
      * @var int
      */
-    private $clock;
+    private $clock = 24;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @var string
      */
-    private $timezone;
+    private $timezone = 'UTC';
 
     /**
      * @ORM\Column(type="boolean")
      * @var bool
      */
-    private $darkmode;
+    private $darkmode = false;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -128,17 +128,19 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="integer")
      */
-    private $patreonMembership;
+    private $patreonMembership = 0;
+
+    /**
+     * @ORM\Column(type="integer")
+     * 1 defaults to Monday, 0 is Sunday
+     */
+    private $firstDayOfWeek = 1;
 
     public function __construct()
     {
-        $this->clock = 24;
-        $this->timezone = 'UTC';
         $this->events = new ArrayCollection();
         $this->guildMemberships = new ArrayCollection();
         $this->discordGuilds = new ArrayCollection();
-        $this->darkmode = false;
-        $this->patreonMembership = 0;
     }
 
     /**
@@ -486,6 +488,18 @@ class User implements UserInterface
     public function setPatreonMembership(int $patreonMembership): self
     {
         $this->patreonMembership = $patreonMembership;
+
+        return $this;
+    }
+
+    public function getFirstDayOfWeek(): ?int
+    {
+        return $this->firstDayOfWeek;
+    }
+
+    public function setFirstDayOfWeek(int $firstDayOfWeek): self
+    {
+        $this->firstDayOfWeek = $firstDayOfWeek;
 
         return $this;
     }

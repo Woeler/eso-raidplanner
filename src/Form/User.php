@@ -41,6 +41,17 @@ class User extends AbstractType
                 ]
             )
             ->add(
+                'firstDayOfWeek',
+                ChoiceType::class,
+                [
+                    'choices' => array_flip([
+                        0 => 'Sunday',
+                        1 => 'Monday',
+                    ]),
+                    'required' => true,
+                ]
+            )
+            ->add(
                 'darkmode',
                 ChoiceType::class,
                 [
