@@ -261,6 +261,9 @@ class GuildController extends AbstractController
             $discordBotService->leaveServer($guild->getDiscordId());
             $guild->setActive(false);
             $this->entityManager->persist($guild);
+            foreach ($guild->getRecurringEvents() as $recurringEvent) {
+                $this->entityManager->remove($recurringEvent);
+            }
             $this->entityManager->flush();
             $this->addFlash('danger', 'Guild '.$guild->getName().' was deactivated.');
         } catch (UnexpectedDiscordApiResponseException $e) {
