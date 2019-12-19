@@ -18,11 +18,11 @@ security:
             guard:
                 authenticators:
                     - App\Security\DiscordAuthenticator
-            remember_me:
-                secret: '%kernel.secret%'
-                lifetime: 2629746 # 1 month in seconds
-                path: /
-                always_remember_me: true
+#            remember_me:
+#                secret: '%kernel.secret%'
+#                lifetime: 2629746 # 1 month in seconds
+#                path: /
+#                always_remember_me: true
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
