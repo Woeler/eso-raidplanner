@@ -74,8 +74,10 @@ class CreateRecurringEventsCommand extends Command
                 continue;
             }
 
-            $startDate = $recurringEvent->getLastEventStartDate();
-            $startDate->setTimezone(new \DateTimeZone($recurringEvent->getTimezone()));
+            $startDate = new \DateTime(
+                $recurringEvent->getLastEventStartDate()->format('Y-m-d H:i:s'),
+                new \DateTimeZone($recurringEvent->getTimezone())
+            );
             $rule = new Rule(
                 'FREQ=WEEKLY;COUNT='.$createInAdvance.
                 ';INTERVAL='.$recurringEvent->getWeekInterval().
