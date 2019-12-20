@@ -1,4 +1,4 @@
-# ESO Raidplanner
+# ESO Raidplanner [![Build Status](https://travis-ci.com/Woeler/eso-raidplanner.svg?branch=master)](https://travis-ci.com/Woeler/eso-raidplanner)
 
 ESO Raidplanner uses [DDEV](https://github.com/drud/ddev) as a development environment. You can get it running with a vanilla LAMP stack, but we strongly recommend you use [DDEV](https://github.com/drud/ddev).
 
