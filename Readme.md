@@ -1,6 +1,8 @@
 # ESO Raidplanner
 
-ESO Raidplanner uses DDEV as a development environment. You can get it running with a vanilla LAMP stack, but we strongly recommend you use DDEV.
+ESO Raidplanner uses [DDEV](https://github.com/drud/ddev) as a development environment. You can get it running with a vanilla LAMP stack, but we strongly recommend you use [DDEV](https://github.com/drud/ddev).
+
+ESO Raidplanner is based on [Symfony 4.4](https://symfony.com/releases/4.4).
 
 ## Development setup
 
