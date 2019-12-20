@@ -11,6 +11,8 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\EventRepository;
+use App\Utility\EsoClassUtility;
+use App\Utility\EsoRoleUtility;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -86,7 +88,16 @@ class HomeController extends AbstractController
      */
     public function helpDiscordBot()
     {
-        return $this->render('static_pages/help/discord_bot.html.twig');
+        $classes = EsoClassUtility::toArray();
+        $roles = EsoRoleUtility::toArray();
+
+        return $this->render(
+            'static_pages/help/discord_bot.html.twig',
+            [
+                'classes' => $classes,
+                'roles' => $roles,
+            ]
+        );
     }
 
     /**

@@ -6,7 +6,33 @@
         <div class="card">
             <div class="card-header">Help: Discord Bot</div>
             <div class="card-body">
+                <h4>Required bot permissions</h4><hr>
+                The bot must have certain permissions to function in Discord. Please make sure the bot has the following permissions in the channel(s) you want it to be active in:
+                <ul>
+                    <li>Read Messages</li>
+                    <li>Write Messages</li>
+                    <li>Embed Links</li>
+                </ul>
 
+                <br><h4>Using bot commands</h4><hr>
+                <strong>!help</strong> will return a message describing how to use all commands.<br><br>
+
+                <strong>!events</strong> will return a list of all upcoming events.<br><br>
+
+                <strong>!event [eventId]</strong> will return information on a specific event.<br>
+                Example: <i>!event 123</i><br><br>
+
+                <strong>!attend [eventId] [class] [role]</strong> will set the user to attend a certain event.<br>
+                The following options are possible as classes: <i>{{ classes|join(', ') }}</i><br>
+                The following options are possible as roles: <i>{{ roles|join(', ') }}</i><br>
+                Example: <i>!attend 123 dragonknight tank</i><br><br>
+
+                <strong>!unattend [eventId]</strong> will set the user to not attend a certain event.<br>
+                Example: <i>!unattend 123</i><br><br>
+
+                <strong>!timezone [timezone]</strong> will set the user's timezone to the specified value.<br>
+                Example: <i>!timezone Europe/Berlin</i><br>
+                NOTE: Timezones are <u>case sensitive</u>.<br>
             </div>
         </div>
     </div>
