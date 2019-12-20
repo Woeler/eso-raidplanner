@@ -15,3 +15,12 @@ ESO Raidplanner is based on [Symfony 4.4](https://symfony.com/releases/4.4).
 * Run `ddev exec yarn install`.
 * Run `ddev exec yarn encore dev`.
 * Your application development environment is now set up.
+
+### Development setup Discord bot
+
+* Move into the `bot/` folder.
+* Copy `config.example.json` to `config.json`.
+* Set your Discord bot token in `config.json` in the field `botToken`.
+* Set your auth token in `config.json` in the field `authToken`. Make sure that the `authToken` is the same as your `BOT_AUTH_TOKEN` .env variable.
+* Run `npm install`.
+* Start the both with `node bot.js`.

@@ -1,0 +1,6 @@
+{
+  "botToken": "DemoToken",
+  "authToken": "DemoToken",
+  "host": "raidplanner.ddev.site",
+  "prefix": "!"
+}
