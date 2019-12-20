@@ -159,7 +159,7 @@ class DiscordAuthenticator extends SocialAuthenticator
         } else {
             $user = new User();
             $user->setDiscordId($discordUser->getId())
-                ->setAvatar($discordUser->getAvatarHash())
+                ->setAvatar($discordUser->getAvatarHash() ?? 'unknown')
                 ->setDiscordDiscriminator($discordUser->getDiscriminator())
                 ->setUsername($discordUser->getUsername())
                 ->setDiscordTokenExpirationDate(
