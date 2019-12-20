@@ -12,6 +12,7 @@ namespace App\Service;
 use App\Entity\Event;
 use App\Entity\Reminder;
 use App\Utility\EsoRoleUtility;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 
 class ReminderService
@@ -26,9 +27,15 @@ class ReminderService
      */
     private $appUrl;
 
-    public function __construct(string $appUrl)
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $router;
+
+    public function __construct(string $appUrl, UrlGeneratorInterface $router)
     {
         $this->appUrl = $appUrl;
+        $this->router = $router;
     }
 
     public function setEvent(Event $event): self
@@ -47,8 +54,8 @@ class ReminderService
         $embeds->setColor(9660137);
         $embeds->setAuthorName($this->event->getGuild()->getName());
         $embeds->setAuthorIcon('https://cdn.discordapp.com/icons/'.$this->event->getGuild()->getId().'/'.$this->event->getGuild()->getIcon().'.png');
-        $embeds->setAuthorUrl($this->appUrl.'/guild/'.$this->event->getGuild()->getId());
-        $embeds->setFooterIcon('https://esoraidplanner.com/favicon/appicon.jpg');
+        $embeds->setAuthorUrl($this->router->generate('guild_view', ['guildId' => $this->event->getGuild()->getId()], UrlGeneratorInterface::ABSOLUTE_URL));
+        $embeds->setFooterIcon($this->appUrl.'/build/images/favicon/appicon.jpg');
         $embeds->setFooterText('ESO Raidplanner by Woeler');
         if ($notification->isPingAttendees()) {
             $mentions = [];

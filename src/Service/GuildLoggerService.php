@@ -15,6 +15,7 @@ use App\Entity\Event;
 use App\Entity\EventAttendee;
 use App\Entity\GuildLog;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Woeler\DiscordPhp\Message\AbstractDiscordMessage;
 use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 
@@ -30,10 +31,16 @@ class GuildLoggerService
      */
     private $entityManager;
 
-    public function __construct(string $appUrl, EntityManagerInterface $entityManager)
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $router;
+
+    public function __construct(string $appUrl, EntityManagerInterface $entityManager, UrlGeneratorInterface $router)
     {
         $this->appUrl = $appUrl;
         $this->entityManager = $entityManager;
+        $this->router = $router;
     }
 
     private function persistLog(AbstractDiscordMessage $message, ?DiscordChannel $channel): void
@@ -46,8 +53,8 @@ class GuildLoggerService
             $message->setColor(9660137);
             $message->setAuthorName($channel->getGuild()->getName());
             $message->setAuthorIcon('https://cdn.discordapp.com/icons/' . $channel->getGuild()->getId() . '/' . $channel->getGuild()->getIcon() . '.png');
-            $message->setAuthorUrl($this->appUrl . '/guild/' . $channel->getGuild()->getId());
-            $message->setFooterIcon('https://esoraidplanner.com/favicon/appicon.jpg');
+            $message->setAuthorUrl($this->router->generate('guild_view', ['guildId' => $channel->getGuild()->getId()], UrlGeneratorInterface::ABSOLUTE_URL));
+            $message->setFooterIcon($this->appUrl.'/build/images/favicon/appicon.jpg');
             $message->setFooterText('ESO Raidplanner by Woeler');
         }
 
