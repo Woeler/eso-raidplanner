@@ -15,6 +15,7 @@ before_install:
   - travis_retry composer global require hirak/prestissimo
 
 install:
+  - composer make:env
   - composer install
 
 script:
