@@ -85,6 +85,9 @@
         ],
         "cgl": [
             "mkdir -p var/php-cs-fixer/; php-cs-fixer fix --config build/.php_cs --format=junit > var/php-cs-fixer/php-cs-fixer.xml"
+        ],
+        "make:env": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ]
     },
     "conflict": {

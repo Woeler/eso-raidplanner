@@ -7,6 +7,7 @@ ESO Raidplanner uses DDEV as a development environment. You can get it running w
 * Clone this repository, or your fork..
 * Run `ddev start`.
 * Run `ddev composer install`.
+* Run `ddev composer make:env`.
 * Set the following variables in your `.env.local` file: `OAUTH_DISCORD_CLIENT_ID`, `OAUTH_DISCORD_CLIENT_SECRET`, `DISCORD_BOT_TOKEN`, `DISCORD_BOT_CLIENT_ID` and `BOT_AUTH_TOKEN`.
 * Run `ddev exec bin/consone doctrine:migrations:migrate`.
 * Run `ddev exec yarn install`.
