@@ -11,8 +11,8 @@
                          height="32"/>
                 {% endif %}
                 <strong><a href="{{ path('guild_view', {'guildId': guild.id}) }}">
-                    {{ guild.name }}
-                </a>
+                        {{ guild.name }}
+                    </a>
                     - Event: {{ event.name }}</strong>
             </div>
             <div class="card-body">
@@ -40,41 +40,52 @@
             </div>
         </div>
         <div class="mt-3"></div>
-        <div class="card">
-            <div class="card-header">
-                <strong>Event Attendance</strong>
-            </div>
-            <div class="card-body">
-                {% for key,value in roles %}
-                    {% if event.attendeesByRole(key)|length > 0 %}
-                        <h4>{{ value }}</h4><hr>
-                        <table class="table">
-                            <tbody>
-                            {% for attendee in event.attendeesByRole(key) %}
-                                <tr>
-                                    <td style="vertical-align: middle">
-                                        <img class="avatar rounded-circle" width="32px" alt="Avatar" src="https://cdn.discordapp.com/avatars/{{ attendee.user.discordId }}/{{ attendee.user.avatar }}.png" />
-                                        <strong>{{ attendee.user.username }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small>
-                                        {% if attendee.user.patreonMembership > constant('App\\Entity\\User::PATREON_NONE') %}
-                                            <li class="fa fa-gem patreon-{{ attendee.user.patreonMembership }}" title="{{ constant('App\\Entity\\User::PATREON')[attendee.user.patreonMembership] }} Supporter"></li>
-                                        {% endif %}
-                                    </td>
-                                    <td style="vertical-align: middle"><img src="{{ asset(attendee.getClassIcon()) }}" alt="{{ attendee.getClassName() }}" title="{{ attendee.getClassName() }}" width="30px"/></td>
-                                    <td style="vertical-align: middle"><img src="{{ asset(attendee.getRoleIcon()) }}" alt="{{ attendee.getRoleName() }}" title="{{ attendee.getRoleName() }}" width="30px"/></td>
-                                    <td style="vertical-align: middle">
-                                        {% for set in attendee.sets %}
-                                            <a href="https://eso-sets.com/set/{{ set.slug }}" target="_blank">{{ set.name }}</a><br>
-                                        {% endfor %}
-                                    </td>
-                                    <td style="vertical-align: middle"><i class="fa fa-clock" title="{{ app.user.toUserTimeString(attendee.createdAt) }}"></i></td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
+        {% for key,value in roles %}
+            {% if event.attendeesByRole(key)|length > 0 %}
+                <div class="card">
+                <div class="card-header">
+                    <strong>{{ value }}</strong>
+                </div>
+                <div class="card-body">
+                <table class="table">
+                    <tbody>
+                    {% for attendee in event.attendeesByRole(key) %}
+                        <tr>
+                            <td style="vertical-align: middle">
+                                <img class="avatar rounded-circle" width="32px" alt="Avatar"
+                                     src="https://cdn.discordapp.com/avatars/{{ attendee.user.discordId }}/{{ attendee.user.avatar }}.png"/>
+                                <strong>{{ attendee.user.username }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small>
+                                {% if attendee.user.patreonMembership > constant('App\\Entity\\User::PATREON_NONE') %}
+                                    <li class="fa fa-gem patreon-{{ attendee.user.patreonMembership }}"
+                                        title="{{ constant('App\\Entity\\User::PATREON')[attendee.user.patreonMembership] }} Supporter"></li>
+                                {% endif %}
+                            </td>
+                            <td style="vertical-align: middle"><img src="{{ asset(attendee.getClassIcon()) }}"
+                                                                    alt="{{ attendee.getClassName() }}"
+                                                                    title="{{ attendee.getClassName() }}" width="30px"/>
+                            </td>
+                            <td style="vertical-align: middle"><img src="{{ asset(attendee.getRoleIcon()) }}"
+                                                                    alt="{{ attendee.getRoleName() }}"
+                                                                    title="{{ attendee.getRoleName() }}" width="30px"/>
+                            </td>
+                            <td style="vertical-align: middle">
+                                {% for set in attendee.sets %}
+                                    <a href="https://eso-sets.com/set/{{ set.slug }}" target="_blank">{{ set.name }}</a>
+                                    <br>
+                                {% endfor %}
+                            </td>
+                            <td style="vertical-align: middle"><i class="fa fa-clock"
+                                                                  title="{{ app.user.toUserTimeString(attendee.createdAt) }}"></i>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+                </div>
+                <div class="mt-3"></div>
+            {% endif %}
+        {% endfor %}
     </div>
     <div class="col-md-4">
         <div class="card">
@@ -87,14 +98,12 @@
                 {{ form_widget(form) }}
                 {{ form_end(form) }}
                 {% if attending %}
-                    {{
-                    macros.linkbutton(
+                    {{ macros.linkbutton(
                         path('guild_event_unattend', {guildId: guild.id, eventId: event.id}),
                         'I\'m no longer attending',
                         'danger btn-block',
                         'times'
-                    )
-                    }}
+                    ) }}
                 {% endif %}
             </div>
         </div>
