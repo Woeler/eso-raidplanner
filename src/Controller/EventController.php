@@ -17,6 +17,7 @@ use App\Repository\EventRepository;
 use App\Security\Voter\EventVoter;
 use App\Security\Voter\GuildVoter;
 use App\Service\GuildLoggerService;
+use App\Utility\EsoRoleUtility;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -111,6 +112,7 @@ class EventController extends AbstractController
                 'guild' => $this->discordGuildRepository->find($guildId),
                 'form' => $form->createView(),
                 'attending' => $attending,
+                'roles' => EsoRoleUtility::toArray(),
             ]
         );
     }
