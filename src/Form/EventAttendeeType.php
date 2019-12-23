@@ -10,8 +10,11 @@
 namespace App\Form;
 
 use App\Entity\ArmorSet;
+use App\Entity\CharacterPreset;
 use App\Utility\EsoClassUtility;
 use App\Utility\EsoRoleUtility;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -23,6 +26,23 @@ class EventAttendeeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        if (0 < $options['user']->getCharacterPresets()->count()) {
+            $builder->add(
+                'preset',
+                EntityType::class,
+                [
+                    'mapped' => false,
+                    'required' => false,
+                    'class' => CharacterPreset::class,
+                    'query_builder' => static function (EntityRepository $er) use ($options) {
+                        return $er->createQueryBuilder('p')
+                            ->where('p.user = :user')
+                            ->setParameter('user', $options['user']->getId())
+                            ->orderBy('p.name', 'ASC');
+                    },
+                ]
+            );
+        }
         $builder
             ->add(
                 'class',
@@ -70,6 +90,7 @@ class EventAttendeeType extends AbstractType
         $resolver->setDefaults([
             'data_class' => \App\Entity\EventAttendee::class,
             'csrf_protection' => 'test' !== getenv('APP_ENV'),
+            'user' => null,
         ]);
     }
 }

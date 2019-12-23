@@ -9,6 +9,7 @@
 
 namespace App\Controller;
 
+use App\Entity\CharacterPreset;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
 use App\Repository\DiscordGuildRepository;
@@ -89,11 +90,18 @@ class EventController extends AbstractController
             $attendee = new EventAttendee();
             $attending = false;
         }
-        $form = $this->createForm(\App\Form\EventAttendeeType::class, $attendee);
+        $form = $this->createForm(\App\Form\EventAttendeeType::class, $attendee, ['user' => $this->getUser()]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->denyAccessUnlessGranted(EventVoter::ATTEND, $event);
+            if (!empty($form['preset']->getData())) {
+                /** @var CharacterPreset $preset */
+                $preset = $form['preset']->getData();
+                $attendee->setRole($preset->getRole())
+                    ->setClass($preset->getClass())
+                    ->setSets($preset->getSets()->toArray());
+            }
 
             $attendee->setUser($this->getUser())
                 ->setEvent($event);
