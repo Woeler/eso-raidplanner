@@ -242,4 +242,32 @@ class EventController extends AbstractController
 
         return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
     }
+
+    /**
+     * @Route("/{guildId}/event/{eventId}/attendee/{attendeeId}/remove", name="event_remove_attendee")
+     * @IsGranted("ROLE_USER")
+     *
+     * @param string $guildId
+     * @param int $eventId
+     * @param int $attendeeId
+     * @return Response
+     */
+    public function removeAttendee(string $guildId, int $eventId, int $attendeeId): Response
+    {
+        $attendee = $this->eventAttendeeRepository->find($attendeeId);
+        $event = $this->eventRepository->find($eventId);
+        $this->denyAccessUnlessGranted(EventVoter::REMOVE_ATTENDEE, $event);
+
+        $guid = $this->discordGuildRepository->find($guildId);
+
+        if (null !== $attendee && $attendee->getEvent()->getId() === $event->getId()) {
+            $this->guildLoggerService->eventUnattending($guid, $event, $attendee);
+            $this->entityManager->remove($attendee);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'User is no longet attending this event.');
+        }
+
+        return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
+    }
 }

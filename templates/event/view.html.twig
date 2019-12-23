@@ -51,7 +51,7 @@
                     <tbody>
                     {% for attendee in event.attendeesByRole(key) %}
                         <tr>
-                            <td style="vertical-align: middle">
+                            <td style="vertical-align: middle" width="30%">
                                 <img class="avatar rounded-circle" width="32px" alt="Avatar"
                                      src="https://cdn.discordapp.com/avatars/{{ attendee.user.discordId }}/{{ attendee.user.avatar }}.png"/>
                                 <strong>{{ attendee.user.username }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small>
@@ -60,11 +60,11 @@
                                         title="{{ constant('App\\Entity\\User::PATREON')[attendee.user.patreonMembership] }} Supporter"></li>
                                 {% endif %}
                             </td>
-                            <td style="vertical-align: middle"><img src="{{ asset(attendee.getClassIcon()) }}"
+                            <td style="vertical-align: middle"  width="10%"><img src="{{ asset(attendee.getClassIcon()) }}"
                                                                     alt="{{ attendee.getClassName() }}"
                                                                     title="{{ attendee.getClassName() }}" width="30px"/>
                             </td>
-                            <td style="vertical-align: middle"><img src="{{ asset(attendee.getRoleIcon()) }}"
+                            <td style="vertical-align: middle"  width="10%"><img src="{{ asset(attendee.getRoleIcon()) }}"
                                                                     alt="{{ attendee.getRoleName() }}"
                                                                     title="{{ attendee.getRoleName() }}" width="30px"/>
                             </td>
@@ -77,6 +77,16 @@
                             <td style="vertical-align: middle"><i class="fa fa-clock"
                                                                   title="{{ app.user.toUserTimeString(attendee.createdAt) }}"></i>
                             </td>
+                            {% if guild.isAdmin(app.user) %}
+                            <td style="vertical-align: middle" align="right"  width="10%">
+                                {{ macros.linkbutton(
+                                    path('guild_event_remove_attendee', {guildId: guild.id, eventId: event.id, attendeeId: attendee.id}),
+                                    '',
+                                    'danger',
+                                    'trash'
+                                ) }}
+                            </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>

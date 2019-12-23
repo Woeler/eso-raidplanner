@@ -27,11 +27,13 @@ class EventVoter extends Voter
 
     public const UNATTEND = 'unattend';
 
+    public const REMOVE_ATTENDEE = 'remove_attendee';
+
     protected function supports($attribute, $subject)
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::VIEW, self::UNATTEND, self::UPDATE, self::DELETE, self::ATTEND], true)
+        return in_array($attribute, [self::VIEW, self::UNATTEND, self::UPDATE, self::DELETE, self::ATTEND, self::REMOVE_ATTENDEE], true)
             && $subject instanceof \App\Entity\Event;
     }
 
@@ -55,6 +57,8 @@ class EventVoter extends Voter
                 return $this->canAttend($subject, $user);
             case self::UNATTEND:
                 return $this->canUnattend($subject, $user);
+            case self::REMOVE_ATTENDEE:
+                return $this->canRemoveAttendee($subject, $user);
         }
 
         return false;
@@ -83,5 +87,10 @@ class EventVoter extends Voter
     private function canUnattend(Event $event, User $user): bool
     {
         return $event->getGuild()->isMember($user) && !$event->getLocked();
+    }
+
+    private function canRemoveAttendee(Event $event, User $user): bool
+    {
+        return $event->getGuild()->isAdmin($user);
     }
 }
