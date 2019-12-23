@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block title %}Character Preset{% endblock %}
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                {{ app.user.username }} - Character Preset
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

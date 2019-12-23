@@ -215,6 +215,16 @@ class MenuBuilder
                 ]
             );
             $menu['username']->addChild(
+                'character_presets',
+                [
+                    'route' => 'user_preset_list',
+                    'label' => 'Your Characters',
+                    'extras' => [
+                        'icon' => 'chess',
+                    ],
+                ]
+            );
+            $menu['username']->addChild(
                 'discord_guilds',
                 [
                     'route' => 'user_guilds',
