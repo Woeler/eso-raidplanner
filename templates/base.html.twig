@@ -46,6 +46,9 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600">
     {{ encore_entry_link_tags('app') }}
+    {% if app.user is not null and app.user.darkmode %}
+        {{ encore_entry_link_tags('darkmode') }}
+    {%  endif %}
 </head>
 <body>
 <div id="app">
