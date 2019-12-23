@@ -19,6 +19,7 @@ use App\Security\Voter\GuildVoter;
 use App\Service\GuildLoggerService;
 use App\Utility\EsoRoleUtility;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -70,6 +71,7 @@ class EventController extends AbstractController
 
     /**
      * @Route("/{guildId}/event/{eventId}/view", name="event_view")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param int $eventId
@@ -119,6 +121,7 @@ class EventController extends AbstractController
 
     /**
      * @Route("/{guildId}/event/create", name="event_create")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param Request $request
@@ -155,6 +158,7 @@ class EventController extends AbstractController
 
     /**
      * @Route("/{guildId}/event/{eventId}/update", name="event_update")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param int $eventId
@@ -191,6 +195,7 @@ class EventController extends AbstractController
 
     /**
      * @Route("/{guildId}/event/{eventId}/delete", name="event_delete")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param int $eventId
@@ -212,6 +217,7 @@ class EventController extends AbstractController
 
     /**
      * @Route("/{guildId}/event/{eventId}/unattend", name="event_unattend")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param int $eventId

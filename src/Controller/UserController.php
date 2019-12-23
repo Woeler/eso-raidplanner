@@ -20,6 +20,7 @@ use App\Service\DiscordBotService;
 use App\Service\DiscordOauthService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,6 +49,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/update", name="update")
+     * @IsGranted("ROLE_USER")
      *
      * @param Request $request
      * @return Response
@@ -75,6 +77,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/guilds", name="guilds")
+     * @IsGranted("ROLE_USER")
      *
      * @param Request $request
      * @return Response
@@ -95,6 +98,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/guilds/refresh", name="guilds_refresh")
+     * @IsGranted("ROLE_USER")
      *
      * @param Request $request
      * @param DiscordOauthService $discordOauthService

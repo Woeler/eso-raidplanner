@@ -22,6 +22,7 @@ use App\Security\Voter\GuildVoter;
 use App\Service\DiscordBotService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -59,6 +60,7 @@ class GuildController extends AbstractController
 
     /**
      * @Route("/{guildId}", name="view")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @return Response
@@ -81,6 +83,7 @@ class GuildController extends AbstractController
 
     /**
      * @Route("/{guildId}/settings", name="settings")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param Request $request
@@ -113,6 +116,7 @@ class GuildController extends AbstractController
 
     /**
      * @Route("/{guildId}/members", name="members")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @return Response
@@ -132,6 +136,7 @@ class GuildController extends AbstractController
 
     /**
      * @Route("/{guildId}/settings/discord/sync", name="settings_discord_sync")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param DiscordBotService $discordBotService
@@ -190,6 +195,7 @@ class GuildController extends AbstractController
 
     /**
      * @Route("/{guildId}/member/{userId}/promote", name="member_promote")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param string $userId
@@ -218,6 +224,7 @@ class GuildController extends AbstractController
 
     /**
      * @Route("/{guildId}/member/{userId}/demote", name="member_demote")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param string $userId
@@ -247,6 +254,7 @@ class GuildController extends AbstractController
 
     /**
      * @Route("/{guildId}/deactivate", name="deactivate")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param DiscordBotService $discordBotService

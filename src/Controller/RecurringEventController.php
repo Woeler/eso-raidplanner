@@ -17,6 +17,7 @@ use App\Repository\RecurringEventRepository;
 use App\Security\Voter\GuildVoter;
 use App\Security\Voter\RecurringEventVoter;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,9 +55,9 @@ class RecurringEventController extends AbstractController
 
     /**
      * @Route("/{guildId}/recurring", name="recurring_list")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
-     * @param RecurringEventRepository $recurringEventRepository
      * @return Response
      */
     public function recurringEvents(string $guildId): Response
@@ -76,6 +77,7 @@ class RecurringEventController extends AbstractController
 
     /**
      * @Route("/{guildId}/recurring/create", name="recurring_create")
+     * @IsGranted("ROLE_USER")
      *
      * @param Request $request
      * @param string $guildId
@@ -127,6 +129,7 @@ class RecurringEventController extends AbstractController
 
     /**
      * @Route("/{guildId}/recurring/{recurringEventId}/delete", name="recurring_delete")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param int $recurringEventId

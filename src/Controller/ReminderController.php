@@ -18,6 +18,7 @@ use App\Security\Voter\GuildVoter;
 use App\Security\Voter\ReminderVoter;
 use App\Service\DiscordBotService;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,6 +58,7 @@ class ReminderController extends AbstractController
 
     /**
      * @Route("/{guildId}/reminder/create", name="reminder_create")
+     * @IsGranted("ROLE_USER")
      *
      * @param int $guildId
      * @param Request $request
@@ -90,6 +92,7 @@ class ReminderController extends AbstractController
 
     /**
      * @Route("/{guildId}/reminder/{reminderId}/update", name="reminder_update")
+     * @IsGranted("ROLE_USER")
      *
      * @param int $guildId
      * @param int $reminderId
@@ -124,6 +127,7 @@ class ReminderController extends AbstractController
 
     /**
      * @Route("/{guildId}/reminder/{reminderId}/delete", name="reminder_delete")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param int $reminderId
@@ -144,6 +148,7 @@ class ReminderController extends AbstractController
 
     /**
      * @Route("/{guildId}/reminders", name="reminder_list")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @return Response
@@ -163,6 +168,7 @@ class ReminderController extends AbstractController
 
     /**
      * @Route("/{guildId}/reminder/{reminderId}/test", name="reminder_test")
+     * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
      * @param int $reminderId
