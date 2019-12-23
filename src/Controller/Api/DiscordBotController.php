@@ -227,7 +227,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         } else {
             $role = $preset->getRole();
             $class = $preset->getClass();
-            $sets = $preset->getSets();
+            $sets = $preset->getSets()->toArray();
         }
 
         if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
