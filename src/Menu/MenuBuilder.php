@@ -105,7 +105,7 @@ class MenuBuilder
                 $menu->addChild(
                     'guilds',
                     [
-                        'route' => 'home',
+                        'uri' => '#',
                         'label' => 'Guilds',
                         'extras' => [
                             'icon' => 'users',
