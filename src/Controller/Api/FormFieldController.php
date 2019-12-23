@@ -11,6 +11,7 @@ namespace App\Controller\Api;
 
 use App\Repository\ArmorSetRepository;
 use App\Utility\TimezoneUtility;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,6 +24,7 @@ class FormFieldController extends AbstractController
 {
     /**
      * @Route("/sets", name="armor_sets")
+     * @IsGranted("ROLE_USER")
      *
      * @param Request $request
      * @param ArmorSetRepository $armorSetRepository
@@ -42,6 +44,7 @@ class FormFieldController extends AbstractController
 
     /**
      * @Route("/timezones", name="timezones")
+     * @IsGranted("ROLE_USER")
      *
      * @param Request $request
      * @return Response
