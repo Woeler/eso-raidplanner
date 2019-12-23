@@ -34,6 +34,7 @@ class EventAttendeeType extends AbstractType
                     'mapped' => false,
                     'required' => false,
                     'class' => CharacterPreset::class,
+                    'label' => 'Character preset',
                     'query_builder' => static function (EntityRepository $er) use ($options) {
                         return $er->createQueryBuilder('p')
                             ->where('p.user = :user')
