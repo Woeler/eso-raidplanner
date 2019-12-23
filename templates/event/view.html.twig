@@ -51,7 +51,7 @@
                     <tbody>
                     {% for attendee in event.attendeesByRole(key) %}
                         <tr>
-                            <td style="vertical-align: middle" width="30%">
+                            <td style="vertical-align: middle;word-break: break-all;" width="30%">
                                 <img class="avatar rounded-circle" width="32px" alt="Avatar"
                                      src="https://cdn.discordapp.com/avatars/{{ attendee.user.discordId }}/{{ attendee.user.avatar }}.png"/>
                                 <strong>{{ attendee.user.username }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small>
