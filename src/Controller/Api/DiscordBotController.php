@@ -12,6 +12,7 @@ namespace App\Controller\Api;
 use App\Controller\Checks\TalksWithDiscordBotController;
 use App\Entity\EventAttendee;
 use App\Exception\UnexpectedDiscordApiResponseException;
+use App\Repository\CharacterPresetRepository;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventAttendeeRepository;
 use App\Repository\EventRepository;
@@ -70,6 +71,11 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      */
     private $guildLoggerService;
 
+    /**
+     * @var CharacterPresetRepository
+     */
+    private $characterPresetRepository;
+
     public function __construct(
         DiscordBotService $discordBotService,
         DiscordGuildRepository $discordGuildRepository,
@@ -77,7 +83,8 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         EventAttendeeRepository $eventAttendeeRepository,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
-        GuildLoggerService $guildLoggerService
+        GuildLoggerService $guildLoggerService,
+        CharacterPresetRepository $characterPresetRepository
     ) {
         $this->discordBotService = $discordBotService;
         $this->discordGuildRepository = $discordGuildRepository;
@@ -86,6 +93,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
         $this->guildLoggerService = $guildLoggerService;
+        $this->characterPresetRepository = $characterPresetRepository;
     }
 
     /**
@@ -200,9 +208,25 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         $guild = $this->discordGuildRepository->findOneBy(['id' => $data['guildId']]);
         $exploded = explode(' ', trim($data['query']));
         $event = $this->eventRepository->find($exploded[0]);
-        $class = EsoClassUtility::getClassIdByAlias($exploded[1] ?? '');
-        $role = EsoRoleUtility::getRoleIdByAlias($exploded[2] ?? '');
+        unset($exploded[0]);
         $user = $this->userRepository->findOneBy(['discordId' => $data['userId']]);
+
+        $preset = $this->characterPresetRepository->findOneBy(
+            [
+                'name' => implode(' ', $exploded),
+                'user' => $user,
+            ]
+        );
+        if (null === $preset) {
+            $class = EsoClassUtility::getClassIdByAlias($exploded[1] ?? '');
+            $role = EsoRoleUtility::getRoleIdByAlias($exploded[2] ?? '');
+            $sets = [];
+        } else {
+            $role = $preset->getRole();
+            $class = $preset->getClass();
+            $sets = $preset->getSets();
+        }
+
         if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
             $this->replyWithText(
                 $user->getDiscordMention().' I don\'t know that event.',
@@ -234,7 +258,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         }
         $attendee->setClass($class)
             ->setRole($role)
-            ->setSets([]);
+            ->setSets($sets);
 
         $this->entityManager->persist($attendee);
         $this->entityManager->flush();
