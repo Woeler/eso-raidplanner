@@ -371,7 +371,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         foreach ($presets as $preset) {
             $message->addField(
                 $preset->getName(),
-                $preset->getClassName().' '.$preset->getRoleName().' '.(0 < $preset->getSets()->count() ? 'with sets '.implode(', ', $preset->getSets()) : ''),
+                $preset->getClassName().' '.$preset->getRoleName().' '.(0 < $preset->getSets()->count() ? 'with sets '.implode(', ', $preset->getSets()->toArray()) : ''),
                 false
             );
         }
