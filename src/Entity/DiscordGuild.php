@@ -238,7 +238,12 @@ class DiscordGuild
 
     public function getMembers(): Collection
     {
-        return $this->members;
+        $iterator = $this->members->getIterator();
+        $iterator->uasort(static function ($a, $b) {
+            return strcmp(strtolower($a->getUser()->getUsername()), strtolower($b->getUser()->getUsername()));
+        });
+
+        return new ArrayCollection(iterator_to_array($iterator));
     }
 
     public function isMember(User $user): bool
