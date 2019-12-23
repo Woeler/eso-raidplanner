@@ -126,6 +126,9 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
                 case '!timezone':
                     $this->timeZone($json);
                     break;
+                case '!characters':
+                    $this->characters($json);
+                    break;
                 default:
                     return Response::create('', Response::HTTP_NO_CONTENT);
             }
@@ -347,6 +350,33 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
             .PHP_EOL.'Here is an example `!timezone Europe/Berlin`',
             $data['channelId']
         );
+    }
+
+    /**
+     * @param array $data
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function characters(array $data): void
+    {
+        $user = $this->userRepository->findOneBy(['discordId' => $data['userId']]);
+        $presets = $user->getCharacterPresets();
+
+        if (0 === count($presets)) {
+            $this->replyWithText($user->getDiscordMention().' You currently have no character presets.', $data['channelId']);
+
+            return;
+        }
+
+        $message = new DiscordEmbedsMessage();
+        foreach ($presets as $preset) {
+            $message->addField(
+                $preset->getName(),
+                $preset->getClassName().' '.$preset->getRoleName().' '.(0 < $preset->getSets()->count() ? 'with sets '.implode(', ', $preset->getSets()) : ''),
+                false
+            );
+        }
+
+        $this->replyWith($message, $data['channelId']);
     }
 
     /**

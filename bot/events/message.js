@@ -18,6 +18,7 @@ module.exports = (client, message) => {
 
     if (command === 'signup') command = 'attend';
     if (command === 'signoff') command = 'unattend';
+    if (command === 'presets') command = 'characters';
 
     const https = require('https');
 
