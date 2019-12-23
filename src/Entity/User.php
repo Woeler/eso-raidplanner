@@ -371,7 +371,7 @@ class User implements UserInterface
         });
         $iterator = $active->getIterator();
         $iterator->uasort(static function ($a, $b) {
-            return strcmp($a->getGuild()->getName(), $b->getGuild()->getName()) ? 1 : -1;
+            return strcmp(strtolower($a->getGuild()->getName()), strtolower($b->getGuild()->getName()));
         });
 
         return new ArrayCollection(iterator_to_array($iterator));
