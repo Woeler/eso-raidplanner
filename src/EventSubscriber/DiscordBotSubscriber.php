@@ -118,7 +118,7 @@ class DiscordBotSubscriber implements EventSubscriberInterface
                     ->setDiscordId($userId)
                     ->setUsername($userInfo['username'])
                     ->setDiscordDiscriminator($userInfo['discriminator'])
-                    ->setAvatar($userInfo['avatar']);
+                    ->setAvatar($userInfo['avatar'] ?? 'unknown');
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
 
