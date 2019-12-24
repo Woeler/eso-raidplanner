@@ -95,7 +95,7 @@ class EventController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->denyAccessUnlessGranted(EventVoter::ATTEND, $event);
-            if (!empty($form['preset']->getData())) {
+            if (!empty($form['preset']) && !empty($form['preset']->getData())) {
                 /** @var CharacterPreset $preset */
                 $preset = $form['preset']->getData();
                 $attendee->setRole($preset->getRole())
