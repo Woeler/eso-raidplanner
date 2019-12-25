@@ -86,12 +86,6 @@ services:
     GuzzleHttp\Client:
       class: GuzzleHttp\Client
 
-    App\Client\DiscordClient:
-      class: App\Client\DiscordClient
-      arguments:
-        $config:
-          base_uri: 'https://discordapp.com/api'
-
     App\EventListener\CalendarListener:
       tags:
         - { name: 'kernel.event_listener', event: 'calendar.set_data', method: load }

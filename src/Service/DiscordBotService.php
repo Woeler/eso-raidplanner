@@ -9,9 +9,9 @@
 
 namespace App\Service;
 
-use App\Client\DiscordClient;
 use App\Entity\DiscordChannel;
 use App\Exception\UnexpectedDiscordApiResponseException;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use Symfony\Component\HttpFoundation\Response;
 use Woeler\DiscordPhp\Message\AbstractDiscordMessage;
@@ -24,18 +24,11 @@ class DiscordBotService
     private $botToken;
 
     /**
-     * @var DiscordClient
-     */
-    private $client;
-
-    /**
      * @param string $botToken
-     * @param DiscordClient $client
      */
-    public function __construct(string $botToken, DiscordClient $client)
+    public function __construct(string $botToken)
     {
         $this->botToken = $botToken;
-        $this->client = $client;
     }
 
     /**
@@ -59,7 +52,7 @@ class DiscordBotService
             $content['embed'] = $content['embeds'][0];
             unset($content['embeds']);
         }
-        $this->request('/channels/' . $channelId . '/messages', 'POST', $content);
+        $this->request('https://discordapp.com/api/channels/' . $channelId . '/messages', 'POST', $content);
     }
 
     /**
@@ -69,7 +62,7 @@ class DiscordBotService
      */
     public function getChannels(string $serverId): array
     {
-        $channels = $this->request('/guilds/' . $serverId . '/channels');
+        $channels = $this->request('https://discordapp.com/api/guilds/' . $serverId . '/channels');
         $return = [];
         foreach ($channels as $channel) {
             $return[$channel['id']] = $channel;
@@ -109,9 +102,9 @@ class DiscordBotService
 
         while (true) {
             if (null === $lastId) {
-                $data = $this->request('/guilds/' . $serverId . '/members?limit='.$limitPerRequest);
+                $data = $this->request('https://discordapp.com/api/guilds/' . $serverId . '/members?limit='.$limitPerRequest);
             } else {
-                $data = $this->request('/guilds/' . $serverId . '/members?limit='.$limitPerRequest.'&after='.$lastId);
+                $data = $this->request('https://discordapp.com/api/guilds/' . $serverId . '/members?limit='.$limitPerRequest.'&after='.$lastId);
             }
 
             if (empty($data)) {
@@ -133,7 +126,7 @@ class DiscordBotService
      */
     public function getUser(string $userId): array
     {
-        return $this->request('/users/'.$userId);
+        return $this->request('https://discordapp.com/api/users/'.$userId);
     }
 
     /**
@@ -142,7 +135,7 @@ class DiscordBotService
      */
     public function leaveServer(string $serverId): void
     {
-        $this->request('/users/@me/guilds/'.$serverId, 'DELETE');
+        $this->request('https://discordapp.com/api/users/@me/guilds/'.$serverId, 'DELETE');
     }
 
     /**
@@ -154,6 +147,7 @@ class DiscordBotService
      */
     private function request(string $url, string $method = 'GET', array $payload = []): array
     {
+        $client = new Client();
         $sleep = 0;
 
         while (null !== $sleep) {
@@ -162,7 +156,7 @@ class DiscordBotService
             }
             try {
                 if ('POST' === $method) {
-                    $response = $this->client->request(
+                    $response = $client->request(
                         $method,
                         $url,
                         [
@@ -174,7 +168,7 @@ class DiscordBotService
                         ]
                     );
                 } else {
-                    $response = $this->client->request(
+                    $response = $client->request(
                         $method,
                         $url,
                         [
