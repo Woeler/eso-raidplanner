@@ -9,13 +9,13 @@
 
 namespace App\Service;
 
-use GuzzleHttp\Client;
+use App\Client\DiscordClient;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class DiscordOauthService
 {
     /**
-     * @var Client
+     * @var DiscordClient
      */
     private $client;
 
@@ -35,7 +35,7 @@ class DiscordOauthService
     private $clientSecret;
 
     public function __construct(
-        Client $client,
+        DiscordClient $client,
         TokenStorageInterface $tokenStorage,
         string $clientId,
         string $clientSecret
@@ -82,7 +82,7 @@ class DiscordOauthService
     private function getRequest(string $endpoint): array
     {
         $response = $this->client->get(
-            'https://discordapp.com/api'.$endpoint,
+            $endpoint,
             [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->tokenStorage->getToken()->getUser()->getDiscordToken(),
@@ -102,7 +102,7 @@ class DiscordOauthService
     private function postRequest(string $endpoint, array $data = []): array
     {
         $response = $this->client->post(
-            'https://discordapp.com/api'.$endpoint,
+            $endpoint,
             [
                 'headers' => [
                     'Content-Type' => 'application/x-www-form-urlencoded',
