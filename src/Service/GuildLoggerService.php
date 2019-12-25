@@ -72,6 +72,7 @@ class GuildLoggerService
             ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription());
 
         $this->persistLog($message, $guild->getLogChannel());
+        $this->persistLog($message, $guild->getEventCreateChannel());
     }
 
     public function eventUpdated(DiscordGuild $guild, Event $event): void

@@ -85,7 +85,7 @@ class DiscordGuild
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\DiscordChannel")
-     * @ORM\JoinColumn(name="log_channel", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="log_channel", referencedColumnName="id", nullable=true, onDelete="SET NULL")
      * @var DiscordChannel
      */
     private $logChannel;
@@ -94,6 +94,12 @@ class DiscordGuild
      * @ORM\OneToMany(targetEntity="App\Entity\RecurringEvent", mappedBy="guild", orphanRemoval=true)
      */
     private $recurringEvents;
+
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\DiscordChannel")
+     * @ORM\JoinColumn(name="event_create_channel", referencedColumnName="id", nullable=true, onDelete="SET NULL")
+     */
+    private $eventCreateChannel;
 
     public function __construct()
     {
@@ -364,6 +370,18 @@ class DiscordGuild
                 $recurringEvent->setGuild(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getEventCreateChannel(): ?DiscordChannel
+    {
+        return $this->eventCreateChannel;
+    }
+
+    public function setEventCreateChannel(?DiscordChannel $eventCreateChannel): self
+    {
+        $this->eventCreateChannel = $eventCreateChannel;
 
         return $this;
     }

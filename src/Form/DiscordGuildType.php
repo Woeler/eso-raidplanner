@@ -39,6 +39,22 @@ class DiscordGuildType extends AbstractType
                     },
                 ]
             )
+            ->add(
+                'eventCreateChannel',
+                EntityType::class,
+                [
+                    'class' => DiscordChannel::class,
+                    'empty_data' => '',
+                    'placeholder' => 'Discord channel for notifications when an event has been created',
+                    'required' => false,
+                    'query_builder' => static function (EntityRepository $er) use ($options) {
+                        return $er->createQueryBuilder('u')
+                            ->where('u.guild = :guild')
+                            ->setParameter('guild', $options['guild']->getId())
+                            ->orderBy('u.name', 'ASC');
+                    },
+                ]
+            )
             ->add('submit', SubmitType::class, [
                 'label' => 'Save',
                 'attr' => ['class' => 'btn btn-primary pull-right'],
