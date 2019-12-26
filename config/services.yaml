@@ -90,7 +90,7 @@ services:
       class: App\Client\DiscordClient
       arguments:
         $config:
-          base_uri: 'https://discordapp.com/api'
+          base_uri: 'https://discordapp.com/api/'
 
     App\EventListener\CalendarListener:
       tags:

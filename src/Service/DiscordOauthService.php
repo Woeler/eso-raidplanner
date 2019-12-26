@@ -51,7 +51,7 @@ class DiscordOauthService
      */
     public function getMe(): array
     {
-        return $this->getRequest('/users/@me');
+        return $this->getRequest('users/@me');
     }
 
     /**
@@ -59,13 +59,13 @@ class DiscordOauthService
      */
     public function getGuilds(): array
     {
-        return $this->getRequest('/users/@me/guilds');
+        return $this->getRequest('users/@me/guilds');
     }
 
     public function refreshOauthToken(string $refreshToken): array
     {
         return $this->postRequest(
-            '/oauth2/token',
+            'oauth2/token',
             [
                 'client_id' => $this->clientId,
                 'client_secret' => $this->clientSecret,

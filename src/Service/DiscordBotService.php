@@ -59,7 +59,7 @@ class DiscordBotService
             $content['embed'] = $content['embeds'][0];
             unset($content['embeds']);
         }
-        $this->request('/channels/' . $channelId . '/messages', 'POST', $content);
+        $this->request('channels/' . $channelId . '/messages', 'POST', $content);
     }
 
     /**
@@ -69,7 +69,7 @@ class DiscordBotService
      */
     public function getChannels(string $serverId): array
     {
-        $channels = $this->request('/guilds/' . $serverId . '/channels');
+        $channels = $this->request('guilds/' . $serverId . '/channels');
         $return = [];
         foreach ($channels as $channel) {
             $return[$channel['id']] = $channel;
@@ -109,9 +109,9 @@ class DiscordBotService
 
         while (true) {
             if (null === $lastId) {
-                $data = $this->request('/guilds/' . $serverId . '/members?limit='.$limitPerRequest);
+                $data = $this->request('guilds/' . $serverId . '/members?limit='.$limitPerRequest);
             } else {
-                $data = $this->request('/guilds/' . $serverId . '/members?limit='.$limitPerRequest.'&after='.$lastId);
+                $data = $this->request('guilds/' . $serverId . '/members?limit='.$limitPerRequest.'&after='.$lastId);
             }
 
             if (empty($data)) {
@@ -133,7 +133,7 @@ class DiscordBotService
      */
     public function getUser(string $userId): array
     {
-        return $this->request('/users/'.$userId);
+        return $this->request('users/'.$userId);
     }
 
     /**
@@ -142,7 +142,7 @@ class DiscordBotService
      */
     public function leaveServer(string $serverId): void
     {
-        $this->request('/users/@me/guilds/'.$serverId, 'DELETE');
+        $this->request('users/@me/guilds/'.$serverId, 'DELETE');
     }
 
     /**
@@ -197,10 +197,6 @@ class DiscordBotService
             } else {
                 $sleep = null;
             }
-        }
-
-        if (200 > $response->getStatusCode() || 400 <= $response->getStatusCode()) {
-            throw new UnexpectedDiscordApiResponseException('Discord API responded with code ' . $response->getStatusCode(), 1561556559);
         }
 
         return $result ?? [];
