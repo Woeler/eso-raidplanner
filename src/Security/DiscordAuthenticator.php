@@ -256,7 +256,7 @@ class DiscordAuthenticator extends SocialAuthenticator
                 ],
             ]
         );
-        $guilds = json_decode((string)$guilds->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        $guilds = json_decode((string)$guilds->getBody(), false, 512, JSON_THROW_ON_ERROR);
         $existingGuilds = new ArrayCollection();
 
         foreach ($guilds as $guild) {
