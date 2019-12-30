@@ -153,30 +153,21 @@ class DiscordAuthenticator extends SocialAuthenticator
 
         $user = $this->em->getRepository(User::class)
             ->findOneBy(['discordId' => $discordUser->getId()]);
-        if ($user) {
-            $user->setDiscordToken($credentials->getToken())
-                ->setDiscordTokenExpirationDate(
-                    new \DateTime(
-                        '@'.($credentials->getExpires() ?? 3600),
-                        new \DateTimeZone('UTC')
-                    )
-                )
-                ->setDiscordRefreshToken($credentials->getRefreshToken());
-        } else {
-            $user = new User();
-            $user->setDiscordId($discordUser->getId())
-                ->setDiscordTokenExpirationDate(
-                    new \DateTime(
-                        '@'.($credentials->getExpires() ?? 3600),
-                        new \DateTimeZone('UTC')
-                    )
-                )
-                ->setDiscordToken($credentials->getToken())
-                ->setDiscordRefreshToken($credentials->getRefreshToken());
+        if (null === $user) {
+            $user = (new User())
+                ->setDiscordId($discordUser->getId());
         }
         $user->setAvatar($discordUser->getAvatarHash() ?? 'unknown')
-                ->setDiscordDiscriminator($discordUser->getDiscriminator())
-                ->setUsername($discordUser->getUsername());
+            ->setDiscordDiscriminator($discordUser->getDiscriminator())
+            ->setUsername($discordUser->getUsername())
+            ->setDiscordTokenExpirationDate(
+                new \DateTime(
+                    '@'.($credentials->getExpires() ?? 3600),
+                    new \DateTimeZone('UTC')
+                )
+            )
+            ->setDiscordToken($credentials->getToken())
+            ->setDiscordRefreshToken($credentials->getRefreshToken());
         $this->em->persist($user);
         $this->em->flush();
 
@@ -245,7 +236,11 @@ class DiscordAuthenticator extends SocialAuthenticator
             ->getClient('discord');
     }
 
-    private function updateGuilds(User $user, AccessToken $token)
+    /**
+     * @param User $user
+     * @param AccessToken $token
+     */
+    private function updateGuilds(User $user, AccessToken $token): void
     {
         $guilds = $this->discordClient->get(
             'users/@me/guilds',
