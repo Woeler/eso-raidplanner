@@ -9,13 +9,13 @@
 
 namespace App\Security;
 
+use App\Client\DiscordClient;
 use App\Entity\DiscordGuild;
 use App\Entity\User;
 use App\Repository\GuildMembershipRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
-use KnpU\OAuth2ClientBundle\Client\Provider\DiscordClient;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\SocialAuthenticator;
 use League\OAuth2\Client\Token\AccessToken;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -49,12 +49,18 @@ class DiscordAuthenticator extends SocialAuthenticator
      */
     private $guildMembershipRepository;
 
-    public function __construct(ClientRegistry $clientRegistry, EntityManagerInterface $em, RouterInterface $router, GuildMembershipRepository $guildMembershipRepository)
+    /**
+     * @var DiscordClient
+     */
+    private $discordClient;
+
+    public function __construct(ClientRegistry $clientRegistry, EntityManagerInterface $em, RouterInterface $router, GuildMembershipRepository $guildMembershipRepository, DiscordClient $discordClient)
     {
         $this->clientRegistry = $clientRegistry;
         $this->em = $em;
         $this->router = $router;
         $this->guildMembershipRepository = $guildMembershipRepository;
+        $this->discordClient = $discordClient;
     }
 
     /**
@@ -230,7 +236,7 @@ class DiscordAuthenticator extends SocialAuthenticator
     }
 
     /**
-     * @return DiscordClient
+     * @return \KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface
      */
     private function getDiscordClient()
     {
@@ -241,7 +247,16 @@ class DiscordAuthenticator extends SocialAuthenticator
 
     private function updateGuilds(User $user, AccessToken $token)
     {
-        $guilds = $this->apiRequest('https://discordapp.com/api/users/@me/guilds', $token->getToken());
+        $guilds = $this->discordClient->get(
+            'users/@me/guilds',
+            [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $token->getToken(),
+                    'Accept' => 'application/json',
+                ],
+            ]
+        );
+        $guilds = json_decode((string)$guilds->getBody(), true, 512, JSON_THROW_ON_ERROR);
         $existingGuilds = new ArrayCollection();
 
         foreach ($guilds as $guild) {
@@ -271,23 +286,5 @@ class DiscordAuthenticator extends SocialAuthenticator
         }
 
         $this->em->flush();
-    }
-
-    /**
-     * @param string $url
-     * @param string $token
-     * @return \stdClass
-     */
-    private function apiRequest(string $url, string $token)
-    {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $headers[] = 'Accept: application/json';
-        $headers[] = 'Authorization: Bearer ' . $token;
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $response = curl_exec($ch);
-
-        return json_decode($response, false);
     }
 }
