@@ -69,7 +69,8 @@ class GuildLoggerService
     {
         $message = new DiscordEmbedsMessage();
         $message->setTitle('Event created')
-            ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription());
+            ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription())
+            ->addField('Event ID', $event->getId());
 
         $this->persistLog($message, $guild->getLogChannel());
         $this->persistLog($message, $guild->getEventCreateChannel());
