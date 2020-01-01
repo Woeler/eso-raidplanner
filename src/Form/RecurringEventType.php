@@ -82,7 +82,7 @@ class RecurringEventType extends AbstractType
                         'Monday' => 'MO',
                         'Tuesday' => 'TU',
                         'Wednesday' => 'WE',
-                        'Thursday' => 'TU',
+                        'Thursday' => 'TH',
                         'Friday' => 'FR',
                         'Saturday' => 'SA',
                         'Sunday' => 'SU',
