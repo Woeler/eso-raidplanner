@@ -43,40 +43,42 @@ class EventAttendeesStatusType extends AbstractType
                 ]
             );
         }
-        $builder->add(
-            'confirm',
-            SubmitType::class,
-            [
-                'label' => 'Confirm',
-                'attr' => ['class' => 'btn btn-success'],
-            ]
-        )->add(
-            'reserve',
-            SubmitType::class,
-            [
-                'label' => 'Reserve',
-                'attr' => ['class' => 'btn btn-warning'],
-            ]
-        )->add(
-            'reset',
-            SubmitType::class,
-            [
-                'label' => 'Reset',
-                'attr' => ['class' => 'btn btn-info'],
-            ]
-        )->add(
-            'delete',
-            SubmitType::class,
-            [
-                'label' => 'Delete',
-                'attr' => ['class' => 'btn btn-danger'],
-            ]
-        )->setAction(
-            $this->router->generate(
-                'guild_event_attendee_status_change',
-                ['guildId' => $options['event']->getGuild()->getId(), 'eventId' => $options['event']->getId()]
-            )
-        );
+        if (count($options['attendees']) > 0) {
+            $builder->add(
+                'confirm',
+                SubmitType::class,
+                [
+                    'label' => 'Confirm',
+                    'attr' => ['class' => 'btn btn-success'],
+                ]
+            )->add(
+                'reserve',
+                SubmitType::class,
+                [
+                    'label' => 'Reserve',
+                    'attr' => ['class' => 'btn btn-warning'],
+                ]
+            )->add(
+                'reset',
+                SubmitType::class,
+                [
+                    'label' => 'Reset',
+                    'attr' => ['class' => 'btn btn-info'],
+                ]
+            )->add(
+                'delete',
+                SubmitType::class,
+                [
+                    'label' => 'Delete',
+                    'attr' => ['class' => 'btn btn-danger'],
+                ]
+            )->setAction(
+                $this->router->generate(
+                    'guild_event_attendee_status_change',
+                    ['guildId' => $options['event']->getGuild()->getId(), 'eventId' => $options['event']->getId()]
+                )
+            );
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver)
