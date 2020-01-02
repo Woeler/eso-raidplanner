@@ -43,7 +43,7 @@ class EventAttendeesStatusType extends AbstractType
                 ]
             );
         }
-        if (count($options['attendees']) > 0) {
+        if (0 < count($options['attendees'])) {
             $builder->add(
                 'confirm',
                 SubmitType::class,
