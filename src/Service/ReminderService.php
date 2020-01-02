@@ -60,7 +60,7 @@ class ReminderService
         if ($notification->isPingAttendees()) {
             $mentions = [];
             foreach ($this->event->getAttendees() as $attendee) {
-                $mentions[] = $attendee->getUser()->getDiscordMention();
+                $mentions[] = $attendee->getStatusEmoji().' '.$attendee->getUser()->getDiscordMention();
             }
             $embeds->setContent(implode(',', $mentions));
         }

@@ -12,6 +12,7 @@ namespace App\Controller;
 use App\Entity\CharacterPreset;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
+use App\Form\EventAttendeesStatusType;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventAttendeeRepository;
 use App\Repository\EventRepository;
@@ -115,6 +116,12 @@ class EventController extends AbstractController
             return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
         }
 
+        $attendeeForm = $this->createForm(
+            EventAttendeesStatusType::class,
+            null,
+            ['attendees' => $event->getAttendees(), 'event' => $event]
+        );
+
         return $this->render(
             'event/view.html.twig',
             [
@@ -123,6 +130,7 @@ class EventController extends AbstractController
                 'form' => $form->createView(),
                 'attending' => $attending,
                 'roles' => EsoRoleUtility::toArray(),
+                'attendeeForm' => $attendeeForm->createView(),
             ]
         );
     }
@@ -252,28 +260,55 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/{guildId}/event/{eventId}/attendee/{attendeeId}/remove", name="event_remove_attendee")
+     * @Route("/{guildId}/event/{eventId}/attendeestatuschange", name="event_attendee_status_change")
      * @IsGranted("ROLE_USER")
      *
+     * @param Request $request
      * @param string $guildId
      * @param int $eventId
-     * @param int $attendeeId
      * @return Response
      */
-    public function removeAttendee(string $guildId, int $eventId, int $attendeeId): Response
+    public function changeAttendeeStatus(Request $request, string $guildId, int $eventId): Response
     {
-        $attendee = $this->eventAttendeeRepository->find($attendeeId);
         $event = $this->eventRepository->find($eventId);
-        $this->denyAccessUnlessGranted(EventVoter::REMOVE_ATTENDEE, $event);
+        $this->denyAccessUnlessGranted(EventVoter::CHANGE_ATTENDEE_STATUS, $event);
 
-        $guid = $this->discordGuildRepository->find($guildId);
+        $form = $this->createForm(
+            EventAttendeesStatusType::class,
+            null,
+            ['attendees' => $event->getAttendees(), 'event' => $event]
+        );
+        $form->handleRequest($request);
 
-        if (null !== $attendee && $attendee->getEvent()->getId() === $event->getId()) {
-            $this->guildLoggerService->eventUnattending($guid, $event, $attendee);
-            $this->entityManager->remove($attendee);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $status = EventAttendee::STATUS_ATTENDING;
+            $delete = false;
+            if ($form->get('confirm')->isClicked()) {
+                $status = EventAttendee::STATUS_CONFIRMED;
+            }
+            if ($form->get('reserve')->isClicked()) {
+                $status = EventAttendee::STATUS_RESERVE;
+            }
+            if ($form->get('delete')->isClicked()) {
+                $delete = true;
+            }
+            foreach ($form->getData() as $key => $value) {
+                if (true !== $value) {
+                    continue;
+                }
+                $attendee = $this->eventAttendeeRepository->findOneBy(['id' => str_replace('attendee_', '', $key), 'event' => $event]);
+                if (null === $attendee) {
+                    continue;
+                }
+                if ($delete) {
+                    $this->guildLoggerService->eventUnattending($event->getGuild(), $event, $attendee);
+                    $this->entityManager->remove($attendee);
+                } else {
+                    $attendee->setStatus($status);
+                    $this->entityManager->persist($attendee);
+                }
+            }
             $this->entityManager->flush();
-
-            $this->addFlash('success', 'User is no longet attending this event.');
         }
 
         return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);

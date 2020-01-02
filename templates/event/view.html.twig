@@ -40,6 +40,24 @@
             </div>
         </div>
         <div class="mt-3"></div>
+        {% if guild.isAdmin(app.user) %}
+            {{ form_start(attendeeForm) }}
+            <div class="card">
+                <div class="card-header">
+                    Admin actions
+                </div>
+                <div class="card-body">
+                    You may check the checkboxes of event attendees and then click one of these buttons to apply actions to them.
+                    <div class="text-center">
+                        {{ form_widget(attendeeForm.confirm) }}
+                        {{ form_widget(attendeeForm.reserve) }}
+                        {{ form_widget(attendeeForm.reset) }}
+                        {{ form_widget(attendeeForm.delete) }}
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3"></div>
+        {% endif %}
         {% for key,value in roles %}
             {% if event.attendeesByRole(key)|length > 0 %}
                 <div class="card">
@@ -50,7 +68,7 @@
                 <table class="table">
                     <tbody>
                     {% for attendee in event.attendeesByRole(key) %}
-                        <tr>
+                        <tr class="attendee-status-{{ attendee.status }}">
                             <td style="vertical-align: middle;word-break: break-all;" width="30%">
                                 <img class="avatar rounded-circle" width="32px" alt="Avatar"
                                      src="https://cdn.discordapp.com/avatars/{{ attendee.user.discordId }}/{{ attendee.user.avatar }}.png"/>
@@ -79,12 +97,7 @@
                             </td>
                             {% if guild.isAdmin(app.user) %}
                             <td style="vertical-align: middle" align="right"  width="10%">
-                                {{ macros.linkbutton(
-                                    path('guild_event_remove_attendee', {guildId: guild.id, eventId: event.id, attendeeId: attendee.id}),
-                                    '',
-                                    'danger',
-                                    'trash'
-                                ) }}
+                                {{ form_widget(attribute(attendeeForm, 'attendee_'~attendee.id)) }}
                             </td>
                             {% endif %}
                         </tr>
@@ -96,6 +109,9 @@
                 <div class="mt-3"></div>
             {% endif %}
         {% endfor %}
+        {% if guild.isAdmin(app.user) %}
+            {{ form_end(attendeeForm) }}
+        {% endif %}
     </div>
     <div class="col-md-4">
         <div class="card">

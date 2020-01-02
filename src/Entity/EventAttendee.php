@@ -270,6 +270,21 @@ class EventAttendee
     }
 
     /**
+     * @return string
+     */
+    public function getStatusEmoji(): string
+    {
+        if (self::STATUS_RESERVE === $this->status) {
+            return '✅';
+        }
+        if (self::STATUS_CONFIRMED === $this->status) {
+            return '🟡';
+        }
+
+        return '';
+    }
+
+    /**
      * @ORM\PrePersist
      * @ORM\PreUpdate
      */
