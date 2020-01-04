@@ -11,6 +11,7 @@ namespace App\Form;
 
 use App\Entity\ArmorSet;
 use App\Entity\CharacterPreset;
+use App\Entity\GuildMembership;
 use App\Utility\EsoClassUtility;
 use App\Utility\EsoRoleUtility;
 use Doctrine\ORM\EntityRepository;
@@ -26,7 +27,7 @@ class EventAttendeeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        if (0 < $options['user']->getCharacterPresets()->count()) {
+        if (!$options['addOther'] && 0 < $options['user']->getCharacterPresets()->count()) {
             $builder->add(
                 'preset',
                 EntityType::class,
@@ -40,6 +41,25 @@ class EventAttendeeType extends AbstractType
                             ->where('p.user = :user')
                             ->setParameter('user', $options['user']->getId())
                             ->orderBy('p.name', 'ASC');
+                    },
+                ]
+            );
+        }
+        if ($options['addOther']) {
+            $builder->add(
+                'user',
+                EntityType::class,
+                [
+                    'required' => true,
+                    'class' => \App\Entity\User::class,
+                    'label' => 'User',
+                    'query_builder' => static function (EntityRepository $er) use ($options) {
+                        return $er->createQueryBuilder('u')
+                            ->innerJoin(GuildMembership::class, 'g')
+                            ->where('g.guild = :guild')
+                            ->setParameter('guild', $options['event']->getGuild()->getId())
+                            ->orderBy('u.name', 'ASC')
+                            ->orderBy('u.discordDiscriminator', 'ASC');
                     },
                 ]
             );
@@ -92,6 +112,8 @@ class EventAttendeeType extends AbstractType
             'data_class' => \App\Entity\EventAttendee::class,
             'csrf_protection' => 'test' !== getenv('APP_ENV'),
             'user' => null,
+            'event' => null,
+            'addOther' => false,
         ]);
     }
 }

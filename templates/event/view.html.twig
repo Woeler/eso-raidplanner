@@ -17,7 +17,7 @@
             </div>
             <div class="card-body">
                 {% if guild.isAdmin(app.user) %}
-                    <div class="float-right">
+                    <div class="float-right text-right">
                         {{ macros.linkbutton(
                             path('guild_event_update', {guildId: guild.id, eventId: event.id}),
                             'Edit Event',
@@ -44,10 +44,20 @@
             {{ form_start(attendeeForm) }}
             <div class="card">
                 <div class="card-header">
+                    <div class="float-right">
+                        {{ macros.linkbutton(
+                            path('guild_event_attend', {guildId: guild.id, eventId: event.id}),
+                            'Add/Edit Attendee',
+                            'success',
+                            'plus'
+                        ) }}
+                    </div>
                     Admin actions
                 </div>
                 <div class="card-body">
-                    You may check the checkboxes of event attendees and then click one of these buttons to apply actions to them.
+                    You may check the checkboxes of event attendees and then click one of these buttons to apply actions
+                    to them. This feature is entirely optional, but may come in handy for guilds that have too many
+                    attendees.
                     <div class="text-center">
                         {{ form_widget(attendeeForm.confirm) }}
                         {{ form_widget(attendeeForm.reserve) }}
@@ -61,50 +71,53 @@
         {% for key,value in roles %}
             {% if event.attendeesByRole(key)|length > 0 %}
                 <div class="card">
-                <div class="card-header">
-                    <strong>{{ value }}</strong>
-                </div>
-                <div class="card-body">
-                <table class="table">
-                    <tbody>
-                    {% for attendee in event.attendeesByRole(key) %}
-                        <tr class="attendee-status-{{ attendee.status }}">
-                            <td style="vertical-align: middle;word-break: break-all;" width="30%">
-                                <img class="avatar rounded-circle" width="32px" alt="Avatar"
-                                     src="https://cdn.discordapp.com/avatars/{{ attendee.user.discordId }}/{{ attendee.user.avatar }}.png"/>
-                                <strong>{{ attendee.user.username }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small>
-                                {% if attendee.user.patreonMembership > constant('App\\Entity\\User::PATREON_NONE') %}
-                                    <li class="fa fa-gem patreon-{{ attendee.user.patreonMembership }}"
-                                        title="{{ constant('App\\Entity\\User::PATREON')[attendee.user.patreonMembership] }} Supporter"></li>
-                                {% endif %}
-                            </td>
-                            <td style="vertical-align: middle"  width="10%"><img src="{{ asset(attendee.getClassIcon()) }}"
-                                                                    alt="{{ attendee.getClassName() }}"
-                                                                    title="{{ attendee.getClassName() }}" width="30px"/>
-                            </td>
-                            <td style="vertical-align: middle"  width="10%"><img src="{{ asset(attendee.getRoleIcon()) }}"
-                                                                    alt="{{ attendee.getRoleName() }}"
-                                                                    title="{{ attendee.getRoleName() }}" width="30px"/>
-                            </td>
-                            <td style="vertical-align: middle">
-                                {% for set in attendee.sets %}
-                                    <a href="https://eso-sets.com/set/{{ set.slug }}" target="_blank">{{ set.name }}</a>
-                                    <br>
-                                {% endfor %}
-                            </td>
-                            <td style="vertical-align: middle"><i class="fa fa-clock"
-                                                                  title="{{ app.user.toUserTimeString(attendee.createdAt) }}"></i>
-                            </td>
-                            {% if guild.isAdmin(app.user) %}
-                            <td style="vertical-align: middle" align="right"  width="10%">
-                                {{ form_widget(attribute(attendeeForm, 'attendee_'~attendee.id)) }}
-                            </td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-                </div>
+                    <div class="card-header">
+                        <strong>{{ value }}</strong>
+                    </div>
+                    <div class="card-body">
+                        <table class="table">
+                            <tbody>
+                            {% for attendee in event.attendeesByRole(key) %}
+                                <tr class="attendee-status-{{ attendee.status }}">
+                                    <td style="vertical-align: middle;word-break: break-all;" width="30%">
+                                        <img class="avatar rounded-circle" width="32px" alt="Avatar"
+                                             src="https://cdn.discordapp.com/avatars/{{ attendee.user.discordId }}/{{ attendee.user.avatar }}.png"/>
+                                        <strong>{{ attendee.user.username }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small>
+                                        {% if attendee.user.patreonMembership > constant('App\\Entity\\User::PATREON_NONE') %}
+                                            <li class="fa fa-gem patreon-{{ attendee.user.patreonMembership }}"
+                                                title="{{ constant('App\\Entity\\User::PATREON')[attendee.user.patreonMembership] }} Supporter"></li>
+                                        {% endif %}
+                                    </td>
+                                    <td style="vertical-align: middle" width="10%"><img
+                                                src="{{ asset(attendee.getClassIcon()) }}"
+                                                alt="{{ attendee.getClassName() }}"
+                                                title="{{ attendee.getClassName() }}" width="30px"/>
+                                    </td>
+                                    <td style="vertical-align: middle" width="10%"><img
+                                                src="{{ asset(attendee.getRoleIcon()) }}"
+                                                alt="{{ attendee.getRoleName() }}"
+                                                title="{{ attendee.getRoleName() }}" width="30px"/>
+                                    </td>
+                                    <td style="vertical-align: middle">
+                                        {% for set in attendee.sets %}
+                                            <a href="https://eso-sets.com/set/{{ set.slug }}"
+                                               target="_blank">{{ set.name }}</a>
+                                            <br>
+                                        {% endfor %}
+                                    </td>
+                                    <td style="vertical-align: middle"><i class="fa fa-clock"
+                                                                          title="{{ app.user.toUserTimeString(attendee.createdAt) }}"></i>
+                                    </td>
+                                    {% if guild.isAdmin(app.user) %}
+                                        <td style="vertical-align: middle" align="right" width="10%">
+                                            {{ form_widget(attribute(attendeeForm, 'attendee_'~attendee.id)) }}
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="mt-3"></div>
             {% endif %}

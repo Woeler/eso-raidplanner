@@ -151,6 +151,11 @@ class User implements UserInterface
         $this->characterPresets = new ArrayCollection();
     }
 
+    public function __toString()
+    {
+        return $this->username.'#'.$this->discordDiscriminator;
+    }
+
     /**
      * @return array
      */

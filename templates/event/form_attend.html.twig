@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ guild.name }}{% endblock %}
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                {% if guild.icon is not null %}
+                    <img class="avatar rounded-circle"
+                         src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png" width="32"
+                         height="32"/>
+                {% endif %}
+                <a href="{{ path('guild_view', {'guildId': guild.id}) }}">
+                    {{ guild.name }}
+                </a>
+                - {{ event.name }} - Attendance
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    Selecting a user that is not attending at the moment will add them to the attendance list.<br>
+                    Selecting a user that is already attending the event will edit their attendance information.
+                </div>
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

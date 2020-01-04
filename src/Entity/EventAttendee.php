@@ -120,7 +120,7 @@ class EventAttendee
     /**
      * @return mixed
      */
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }

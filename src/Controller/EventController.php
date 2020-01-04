@@ -13,6 +13,7 @@ use App\Entity\CharacterPreset;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
 use App\Form\EventAttendeesStatusType;
+use App\Form\EventAttendeeType;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventAttendeeRepository;
 use App\Repository\EventRepository;
@@ -91,7 +92,7 @@ class EventController extends AbstractController
             $attendee = new EventAttendee();
             $attending = false;
         }
-        $form = $this->createForm(\App\Form\EventAttendeeType::class, $attendee, ['user' => $this->getUser()]);
+        $form = $this->createForm(EventAttendeeType::class, $attendee, ['user' => $this->getUser()]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -257,6 +258,51 @@ class EventController extends AbstractController
         }
 
         return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
+    }
+
+    /**
+     * @Route("/{guildId}/event/{eventId}/attend", name="event_attend")
+     * @IsGranted("ROLE_USER")
+     *
+     * @param string $guildId
+     * @param int $eventId
+     * @param Request $request
+     * @return Response
+     */
+    public function eventAttendOther(string $guildId, int $eventId, Request $request): Response
+    {
+        $event = $this->eventRepository->find($eventId);
+        $this->denyAccessUnlessGranted(EventVoter::ATTEND_OTHER, $event);
+        $attendee = new EventAttendee();
+        $form = $this->createForm(EventAttendeeType::class, $attendee, ['event' => $event, 'addOther' => true]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $exists = $this->eventAttendeeRepository->findOneBy(['event' => $event, 'user' => $attendee->getUser()]);
+            if (null === $exists) {
+                $attendee->setEvent($event);
+                $this->entityManager->persist($attendee);
+                $this->guildLoggerService->eventAttending($event->getGuild(), $event, $attendee);
+            } else {
+                $exists->setClass($attendee->getClass())
+                    ->setRole($attendee->getRole())
+                    ->setSets($attendee->getSets()->toArray());
+                $this->entityManager->persist($exists);
+            }
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Event attendance updated.');
+
+            return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
+        }
+
+        return $this->render(
+            'event/form_attend.html.twig',
+            [
+                'guild' => $event->getGuild(),
+                'event' => $event,
+                'form' => $form->createView(),
+            ]
+        );
     }
 
     /**
