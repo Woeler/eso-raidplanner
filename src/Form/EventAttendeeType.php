@@ -54,12 +54,13 @@ class EventAttendeeType extends AbstractType
                     'class' => \App\Entity\User::class,
                     'label' => 'User',
                     'query_builder' => static function (EntityRepository $er) use ($options) {
-                        return $er->createQueryBuilder('u')
+                        $q = $er->createQueryBuilder('u')
                             ->innerJoin(GuildMembership::class, 'g')
                             ->where('g.guild = :guild')
-                            ->setParameter('guild', $options['event']->getGuild()->getId())
-                            ->orderBy('u.name', 'ASC')
-                            ->orderBy('u.discordDiscriminator', 'ASC');
+                            ->setParameter('guild', $options['event']->getGuild())
+                            ->orderBy('u.username', 'ASC');
+
+                        return $q;
                     },
                 ]
             );
