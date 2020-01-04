@@ -15,6 +15,7 @@ use App\Entity\GuildMembership;
 use App\Utility\EsoClassUtility;
 use App\Utility\EsoRoleUtility;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -55,7 +56,7 @@ class EventAttendeeType extends AbstractType
                     'label' => 'User',
                     'query_builder' => static function (EntityRepository $er) use ($options) {
                         $q = $er->createQueryBuilder('u')
-                            ->innerJoin(GuildMembership::class, 'g')
+                            ->join(GuildMembership::class, 'g', Join::WITH, 'u.id = g.user')
                             ->where('g.guild = :guild')
                             ->setParameter('guild', $options['event']->getGuild())
                             ->orderBy('u.username', 'ASC');
