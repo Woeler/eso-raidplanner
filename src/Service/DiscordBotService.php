@@ -27,6 +27,7 @@ class DiscordBotService
      * @var DiscordClient
      */
     private $client;
+
     /**
      * @var string
      */
