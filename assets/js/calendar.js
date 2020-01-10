@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             right: '',
         },
         plugins: [ bootstrapPlugin, dayGridPlugin ], // https://fullcalendar.io/docs/plugin-index
-        timeZone: calendarPropsEl.getAttribute('data-first-day-of-week'),
+        timeZone: calendarPropsEl.getAttribute('timezone'),
         eventRender: function(info) {
             var tooltip = new Tooltip(info.el, {
                 title: '<strong>Guild: </strong>'+info.event.extendedProps.guild+'<br>'+info.event.title+'<br>'+info.event.extendedProps.attending+' people attending',
