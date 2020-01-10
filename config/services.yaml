@@ -51,6 +51,7 @@ services:
       public: true
       arguments:
         $botToken: '%env(DISCORD_BOT_TOKEN)%'
+        $botId: '%env(DISCORD_BOT_CLIENT_ID)%'
 
     App\EventSubscriber\DiscordBotSubscriber:
       class: App\EventSubscriber\DiscordBotSubscriber

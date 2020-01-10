@@ -153,10 +153,15 @@ class GuildController extends AbstractController
 
         try {
             $channels = $discordBotService->getChannels($guild->getId());
+            $roles = $discordBotService->getServerRoles($guild->getId());
+            $userRoles = $discordBotService->getBotUser($guild->getId())['roles'];
             $existingChannels = new ArrayCollection();
 
             foreach ($channels as $channel) {
                 if (DiscordChannel::CHANNEL_TYPE_TEXT !== $channel['type']) {
+                    continue;
+                }
+                if (!$discordBotService->canViewChannel($roles, $userRoles, $channel['permission_overwrites'])) {
                     continue;
                 }
 

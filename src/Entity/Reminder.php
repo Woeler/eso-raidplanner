@@ -33,7 +33,7 @@ class Reminder
 
     /**
      * @ManyToOne(targetEntity="DiscordChannel")
-     * @ORM\JoinColumn(name="discord_channel_id", referencedColumnName="id", nullable=true)
+     * @ORM\JoinColumn(name="discord_channel_id", referencedColumnName="id", nullable=true,onDelete="SET NULL")
      * @var DiscordChannel
      */
     private $channel;

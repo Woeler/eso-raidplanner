@@ -27,15 +27,21 @@ class DiscordBotService
      * @var DiscordClient
      */
     private $client;
+    /**
+     * @var string
+     */
+    private $botId;
 
     /**
      * @param string $botToken
+     * @param string $botId
      * @param DiscordClient $client
      */
-    public function __construct(string $botToken, DiscordClient $client)
+    public function __construct(string $botToken, string $botId, DiscordClient $client)
     {
         $this->botToken = $botToken;
         $this->client = $client;
+        $this->botId = $botId;
     }
 
     /**
@@ -138,11 +144,69 @@ class DiscordBotService
 
     /**
      * @param string $serverId
+     * @return array
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function getBotUser(string $serverId): array
+    {
+        return $this->request('guilds/'.$serverId.'/members/'.$this->botId);
+    }
+
+    /**
+     * @param string $serverId
+     * @return array
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function getServerRoles(string $serverId): array
+    {
+        return $this->request('guilds/'.$serverId.'/roles');
+    }
+
+    /**
+     * @param string $serverId
      * @throws UnexpectedDiscordApiResponseException
      */
     public function leaveServer(string $serverId): void
     {
         $this->request('users/@me/guilds/'.$serverId, 'DELETE');
+    }
+
+    public function canViewChannel(array $roles, array $userRoles = [], array $channelOverwrites = []): bool
+    {
+        $everyone = $roles[0];
+        unset($roles[0]);
+        $userperms = $everyone['permissions'];
+        foreach ($roles as $role) {
+            if (!in_array($role['id'] ?? null, $userRoles, true)) {
+                continue;
+            }
+            $userperms |= $role['permissions'];
+        }
+        $allow = 0;
+        $deny = 0;
+        foreach ($channelOverwrites as $overwrite) {
+            if ('role' === $overwrite['type'] && $overwrite['id'] === $everyone['id']) {
+                $userperms &= ~$overwrite['deny'];
+                $userperms |= $overwrite['allow'];
+            }
+        }
+        foreach ($channelOverwrites as $overwrite) {
+            if ('role' === $overwrite['type'] && in_array($overwrite['id'], $userRoles, true)) {
+                $allow |= $overwrite['allow'];
+                $deny |= $overwrite['deny'];
+            }
+        }
+        $userperms &= ~$deny;
+        $userperms |= $allow;
+        foreach ($channelOverwrites as $overwrite) {
+            if ('member' === $overwrite['type'] && $this->botId === $overwrite['id']) {
+                $userperms &= ~$overwrite['deny'];
+                $userperms |= $overwrite['allow'];
+                break;
+            }
+        }
+
+        return 0 !== ($userperms & 0x400);
     }
 
     /**
