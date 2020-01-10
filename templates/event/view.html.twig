@@ -125,6 +125,38 @@
         {% if guild.isAdmin(app.user) %}
             {{ form_end(attendeeForm) }}
         {% endif %}
+        <div class="card">
+            <div class="card-header"><strong>Comments</strong></div>
+            <div class="card-body">
+                {% for comment in event.comments %}
+                    <div class="row">
+                        <div class="col-md-1">
+                            <img class="avatar rounded-circle" width="32px" alt="Avatar"
+                                 src="https://cdn.discordapp.com/avatars/{{ comment.user.discordId }}/{{ comment.user.avatar }}.png"/>
+                        </div>
+                        <div class="col-md-11">
+                            {% if is_granted('delete', comment) %}
+                                <div class="float-right">
+                                    {{ macros.linkbutton(
+                                        path('guild_event_comment_remove', {guildId: guild.id, eventId: event.id, commentId: comment.id}),
+                                        '',
+                                        'danger',
+                                        'trash'
+                                    ) }}
+                                </div>
+                            {% endif %}
+                            <strong>{{ comment.user.username }}</strong><small>#{{ comment.user.discordDiscriminator }} - {{ app.user.toUserTimeString(comment.createdAt) }}</small><br>
+                            {{ comment.text }}
+                        </div>
+                    </div>
+                    <hr>
+                {% endfor %}
+                {{ form_start(commentForm) }}
+                {{ form_widget(commentForm.text) }}<br>
+                {{ form_row(commentForm.submit) }}
+                {{ form_end(commentForm) }}
+            </div>
+        </div>
     </div>
     <div class="col-md-4">
         <div class="card">

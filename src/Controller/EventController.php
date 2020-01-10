@@ -10,13 +10,17 @@
 namespace App\Controller;
 
 use App\Entity\CharacterPreset;
+use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
+use App\Form\CommentType;
 use App\Form\EventAttendeesStatusType;
 use App\Form\EventAttendeeType;
+use App\Repository\CommentRepository;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventAttendeeRepository;
 use App\Repository\EventRepository;
+use App\Security\Voter\CommentVoter;
 use App\Security\Voter\EventVoter;
 use App\Security\Voter\GuildVoter;
 use App\Service\GuildLoggerService;
@@ -132,6 +136,7 @@ class EventController extends AbstractController
                 'attending' => $attending,
                 'roles' => EsoRoleUtility::toArray(),
                 'attendeeForm' => $attendeeForm->createView(),
+                'commentForm' => $this->createForm(CommentType::class, null, ['event' => $event])->createView(),
             ]
         );
     }
@@ -356,6 +361,61 @@ class EventController extends AbstractController
             }
             $this->entityManager->flush();
         }
+
+        return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
+    }
+
+    /**
+     * @Route("/{guildId}/event/{eventId}/comment/create", name="event_comment_create")
+     * @IsGranted("ROLE_USER")
+     *
+     * @param Request $request
+     * @param string $guildId
+     * @param int $eventId
+     * @return Response
+     */
+    public function addComment(Request $request, string $guildId, int $eventId): Response
+    {
+        $event = $this->eventRepository->find($eventId);
+        $this->denyAccessUnlessGranted(EventVoter::ADD_COMMENT, $event);
+        $comment = new Comment();
+        $form = $this->createForm(
+            CommentType::class,
+            $comment,
+            ['event' => $event]
+        );
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setUser($this->getUser())
+                ->setEvent($event);
+            $this->entityManager->persist($comment);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Comment posted.');
+        }
+
+        return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $event->getId()]);
+    }
+
+    /**
+     * @Route("/{guildId}/event/{eventId}/comment/{commentId}/delete", name="event_comment_remove")
+     * @IsGranted("ROLE_USER")
+     *
+     * @param Request $request
+     * @param string $guildId
+     * @param int $eventId
+     * @param int $commentId
+     * @param CommentRepository $commentRepository
+     * @return Response
+     */
+    public function deleteComment(Request $request, string $guildId, int $eventId, int $commentId, CommentRepository $commentRepository): Response
+    {
+        $comment = $commentRepository->find($commentId);
+        $this->denyAccessUnlessGranted(CommentVoter::DELETE, $comment);
+
+        $this->entityManager->remove($comment);
+        $this->entityManager->flush();
+        $this->addFlash('danger', 'Comment removed.');
 
         return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
     }

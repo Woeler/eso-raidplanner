@@ -31,11 +31,13 @@ class EventVoter extends Voter
 
     public const ATTEND_OTHER = 'attend_other';
 
+    public const ADD_COMMENT = 'add_comment';
+
     protected function supports($attribute, $subject)
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
-        return in_array($attribute, [self::VIEW, self::UNATTEND, self::UPDATE, self::DELETE, self::ATTEND, self::CHANGE_ATTENDEE_STATUS, self::ATTEND_OTHER], true)
+        return in_array($attribute, [self::VIEW, self::UNATTEND, self::UPDATE, self::DELETE, self::ATTEND, self::CHANGE_ATTENDEE_STATUS, self::ATTEND_OTHER, self::ADD_COMMENT], true)
             && $subject instanceof \App\Entity\Event;
     }
 
@@ -63,6 +65,8 @@ class EventVoter extends Voter
                 return $this->canChangeAttendeeStatus($subject, $user);
             case self::ATTEND_OTHER:
                 return $this->canAttendOther($subject, $user);
+            case self::ADD_COMMENT:
+                return $this->canAddComment($subject, $user);
         }
 
         return false;
@@ -101,5 +105,10 @@ class EventVoter extends Voter
     private function canAttendOther(Event $event, User $user): bool
     {
         return $event->getGuild()->isAdmin($user);
+    }
+
+    public function canAddComment(Event $event, User $user): bool
+    {
+        return $event->getGuild()->isMember($user);
     }
 }
