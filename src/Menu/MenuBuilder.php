@@ -182,6 +182,19 @@ class MenuBuilder
             ]
         );
 
+        if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
+            $menu->addChild(
+                'admin',
+                [
+                    'uri' => '/admin',
+                    'label' => 'Admin',
+                    'extras' => [
+                        'icon' => 'cog',
+                    ],
+                ]
+            );
+        }
+
         return $menu;
     }
 
