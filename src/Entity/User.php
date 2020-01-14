@@ -143,6 +143,11 @@ class User implements UserInterface
      */
     private $characterPresets;
 
+    /**
+     * @ORM\Column(type="json")
+     */
+    private $roles = [];
+
     public function __construct()
     {
         $this->events = new ArrayCollection();
@@ -157,11 +162,22 @@ class User implements UserInterface
     }
 
     /**
+     * @param array $roles
+     * @return $this
+     */
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getRoles()
     {
-        return ['ROLE_USER'];
+        return $this->roles;
     }
 
     /**

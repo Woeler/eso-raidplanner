@@ -56,13 +56,19 @@ class DiscordBotSubscriber implements EventSubscriberInterface
      */
     private $discordBotCommands;
 
+    /**
+     * @var array
+     */
+    private $defaultRoles;
+
     public function __construct(
         DiscordBotService $discordBotService,
         DiscordGuildRepository $guildRepository,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         string $token,
-        array $discordBotCommands
+        array $discordBotCommands,
+        array $defaultRoles
     ) {
         $this->discordBotService = $discordBotService;
         $this->guildRepository = $guildRepository;
@@ -70,6 +76,7 @@ class DiscordBotSubscriber implements EventSubscriberInterface
         $this->token = $token;
         $this->entityManager = $entityManager;
         $this->discordBotCommands = $discordBotCommands;
+        $this->defaultRoles = $defaultRoles;
     }
 
     public function onTalksWithDiscordController(ControllerEvent $event): void
@@ -118,7 +125,8 @@ class DiscordBotSubscriber implements EventSubscriberInterface
                     ->setDiscordId($userId)
                     ->setUsername($userInfo['username'])
                     ->setDiscordDiscriminator($userInfo['discriminator'])
-                    ->setAvatar($userInfo['avatar'] ?? 'unknown');
+                    ->setAvatar($userInfo['avatar'] ?? 'unknown')
+                    ->setRoles($this->defaultRoles);
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
 

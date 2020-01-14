@@ -54,13 +54,32 @@ class DiscordAuthenticator extends SocialAuthenticator
      */
     private $discordClient;
 
-    public function __construct(ClientRegistry $clientRegistry, EntityManagerInterface $em, RouterInterface $router, GuildMembershipRepository $guildMembershipRepository, DiscordClient $discordClient)
-    {
+    /**
+     * @var array
+     */
+    private $defaultRoles;
+
+    /**
+     * @var array
+     */
+    private $admins;
+
+    public function __construct(
+        ClientRegistry $clientRegistry,
+        EntityManagerInterface $em,
+        RouterInterface $router,
+        GuildMembershipRepository $guildMembershipRepository,
+        DiscordClient $discordClient,
+        array $defaultRoles,
+        array $admins
+    ) {
         $this->clientRegistry = $clientRegistry;
         $this->em = $em;
         $this->router = $router;
         $this->guildMembershipRepository = $guildMembershipRepository;
         $this->discordClient = $discordClient;
+        $this->defaultRoles = $defaultRoles;
+        $this->admins = $admins;
     }
 
     /**
@@ -167,7 +186,13 @@ class DiscordAuthenticator extends SocialAuthenticator
                 )
             )
             ->setDiscordToken($credentials->getToken())
-            ->setDiscordRefreshToken($credentials->getRefreshToken());
+            ->setDiscordRefreshToken($credentials->getRefreshToken())
+            ->setRoles($this->defaultRoles);
+
+        if (in_array($user->getDiscordId(), $this->admins, true)) {
+            $user->setRoles(array_merge($user->getRoles(), ['ROLE_ADMIN']));
+        }
+
         $this->em->persist($user);
         $this->em->flush();
 

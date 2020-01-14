@@ -12,6 +12,7 @@ services:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
         bind:
+          $defaultRoles: ['ROLE_USER']
           $patreonServer: '342583943838826497'
           $patreonRoles:
             1: '653216508478095360'
@@ -65,6 +66,11 @@ services:
       arguments:
         $clientId: '%env(OAUTH_DISCORD_CLIENT_ID)%'
         $clientSecret: '%env(OAUTH_DISCORD_CLIENT_SECRET)%'
+
+    App\Security\DiscordAuthenticator:
+      class: App\Security\DiscordAuthenticator
+      arguments:
+        $admins: '%env(json:ADMINS)%'
 
     App\Service\GuildLoggerService:
       class: App\Service\GuildLoggerService
