@@ -22,6 +22,17 @@ easy_admin:
         DiscordGuild:
             class: App\Entity\DiscordGuild
             label: Discord Guilds
+            list:
+                sort: ['name', 'ASC']
+                dql_filter: 'entity.active = 1'
+                fields:
+                    - { property: 'fullIconUrl', type: 'image' }
+                    - { property: 'name' }
+                    - { property: 'id' }
+                    - { property: 'owner' }
+                    - { property: 'members' }
+                    - { property: 'active' }
+                    - { property: 'botActive' }
         Event:
             class: App\Entity\Event
             label: Events
@@ -38,6 +49,7 @@ easy_admin:
             class: App\Entity\User
             label: Users
             list:
+                sort: ['username', 'ASC']
                 fields:
                     - { property: 'id' }
                     - { property: 'fullAvatarUrl', type: 'image' }
