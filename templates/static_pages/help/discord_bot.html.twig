@@ -15,27 +15,29 @@
                 </ul>
 
                 <br><h4>Using bot commands</h4><hr>
-                <strong>!help</strong> will return a message describing how to use all commands.<br><br>
+                <strong>!help</strong> will return a message describing how to use all commands.<br>
+                Example: <code>!help</code><br><br>
 
-                <strong>!events</strong> will return a list of all upcoming events.<br><br>
+                <strong>!events</strong> will return a list of all upcoming events.<br>
+                Example: <code>!events</code><br><br>
 
                 <strong>!event [eventId]</strong> will return information on a specific event.<br>
-                Example: <i>!event 123</i><br><br>
+                Example: <code>!event 123</code><br><br>
 
                 <strong>!attend [eventId] [class] [role]</strong> will set the user to attend a certain event.<br>
                 The following options are possible as classes: <i>{{ classes|join(', ') }}</i><br>
                 The following options are possible as roles: <i>{{ roles|join(', ') }}</i><br>
-                Example: <i>!attend 123 dragonknight tank</i><br><br>
+                Example: <code>!attend 123 dragonknight tank</code><br><br>
 
                 <strong>!unattend [eventId]</strong> will set the user to not attend a certain event.<br>
-                Example: <i>!unattend 123</i><br><br>
+                Example: <code>!unattend 123</code><br><br>
 
                 <strong>!timezone [timezone]</strong> will set the user's timezone to the specified value.<br>
-                Example: <i>!timezone Europe/Berlin</i><br>
+                Example: <code>!timezone Europe/Berlin</code><br>
                 NOTE: Timezones are <u>case sensitive</u>.<br><br>
 
                 <strong>!characters</strong> will show all the character presets for the user.<br>
-                Example: <i>!characters</i><br>
+                Example: <code>!characters</code><br>
             </div>
         </div>
     </div>
