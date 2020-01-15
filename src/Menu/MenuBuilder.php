@@ -213,7 +213,7 @@ class MenuBuilder
                     'label' => $user->getUsername(),
                     'uri' => '#',
                     'extras' => [
-                        'image' => 'https://cdn.discordapp.com/avatars/'.$user->getDiscordId().'/'.($user->getAvatar() ?? 'unknown').'.png',
+                        'image' => $user->getFullAvatarUrl(),
                     ],
                 ]
             );

@@ -256,6 +256,18 @@ class User implements UserInterface
     }
 
     /**
+     * @return string
+     */
+    public function getFullAvatarUrl(): string
+    {
+        if (null !== $this->avatar && 'unknown' !== $this->avatar) {
+            return 'https://cdn.discordapp.com/avatars/'.$this->discordId.'/'.$this->avatar.'.png';
+        }
+
+        return '/build/images/default_avatar.png';
+    }
+
+    /**
      * @param string $avatar
      * @return User
      */

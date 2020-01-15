@@ -167,6 +167,18 @@ class DiscordGuild
     }
 
     /**
+     * @return string
+     */
+    public function getFullIconUrl(): string
+    {
+        if (null !== $this->icon) {
+            return 'https://cdn.discordapp.com/icons/'.$this->id.'/'.$this->icon.'.png';
+        }
+
+        return '/build/images/default_avatar.png';
+    }
+
+    /**
      * @param mixed $icon
      * @return DiscordGuild
      */

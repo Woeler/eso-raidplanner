@@ -24,7 +24,7 @@
                             <td>
                                 {% if guild.icon is not null %}
                                 <img class="avatar rounded-circle"
-                                     src="https://cdn.discordapp.com/icons/{{ guild.discordId }}/{{ guild.icon }}.png"
+                                     src="{{ guild.getFullIconUrl() }}"
                                      width="32" height="32" alt="{{ guild.name }}"/>
                                 {% endif %}
                             </td>

@@ -1,4 +1,7 @@
 easy_admin:
+    site_name: 'ESO-Raidplanner'
+    user:
+        avatar_property_path: 'fullAvatarUrl'
     entities:
         # List the entity class name you want to manage
         - App\Entity\ArmorSet
