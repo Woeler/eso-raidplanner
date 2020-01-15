@@ -35,6 +35,13 @@ easy_admin:
                     - { property: 'members' }
                     - { property: 'active' }
                     - { property: 'botActive' }
+            form:
+                fields:
+                    - { property: 'name' }
+                    - { property: 'id' }
+                    - { property: 'owner' }
+                    - { property: 'active' }
+                    - { property: 'botActive' }
         Event:
             class: App\Entity\Event
             label: Events
@@ -60,6 +67,16 @@ easy_admin:
                     - { property: 'discordId' }
                     - { property: 'clock' }
                     - { property: 'timezone' }
+            form:
+                fields:
+                    - { property: 'username' }
+                    - { property: 'discordDiscriminator' }
+                    - { property: 'discordId' }
+                    - { property: 'clock' }
+                    - { property: 'timezone' }
+                    - { property: 'darkmode' }
+                    - { property: 'firstDayOfWeek' }
+                    - { property: 'patreonMembership' }
 
     design:
         assets:
