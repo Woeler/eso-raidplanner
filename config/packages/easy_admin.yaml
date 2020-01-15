@@ -2,9 +2,11 @@ easy_admin:
     site_name: 'ESO-Raidplanner'
     user:
         avatar_property_path: 'fullAvatarUrl'
-    design:
-        assets:
-            favicon: '/build/images/favicon/favicon-96x96.png'
+    formats:
+        date: 'd-m-Y'
+        time: 'H:i:s'
+        datetime: 'd-m-y H:i:s'
+
     entities:
         # List the entity class name you want to manage
         ArmorSet:
@@ -58,3 +60,20 @@ easy_admin:
                     - { property: 'discordId' }
                     - { property: 'clock' }
                     - { property: 'timezone' }
+
+    design:
+        assets:
+            favicon: '/build/images/favicon/favicon-96x96.png'
+        menu:
+            - { label: Application }
+            - {label: Armor Sets, icon: shield, entity: ArmorSet}
+            - {label: Character Presets, icon: users, entity: CharacterPreset}
+            - {label: Comments, icon: comment, entity: Comment}
+            - {label: Events, icon: calendar, entity: Event}
+            - {label: Event Attendees, icon: user-clock, entity: EventAttendee}
+            - {label: Recurring Events, icon: sync, entity: RecurringEvent}
+            - {label: Reminders, icon: exclamation, entity: Reminder}
+            - { label: Discord}
+            - {label: Discord Channels, icon: bullhorn, entity: DiscordChannel}
+            - {label: Discord Guilds, icon: university, entity: DiscordGuild}
+            - {label: Users, icon: user, entity: User}
