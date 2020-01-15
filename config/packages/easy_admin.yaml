@@ -2,15 +2,47 @@ easy_admin:
     site_name: 'ESO-Raidplanner'
     user:
         avatar_property_path: 'fullAvatarUrl'
+    design:
+        assets:
+            favicon: '/build/images/favicon/favicon-96x96.png'
     entities:
         # List the entity class name you want to manage
-        - App\Entity\ArmorSet
-        - App\Entity\CharacterPreset
-        - App\Entity\Comment
-        - App\Entity\DiscordChannel
-        - App\Entity\DiscordGuild
-        - App\Entity\Event
-        - App\Entity\EventAttendee
-        - App\Entity\RecurringEvent
-        - App\Entity\Reminder
-        - App\Entity\User
+        ArmorSet:
+            class: App\Entity\ArmorSet
+            label: Armor Sets
+        CharacterPreset:
+            class: App\Entity\CharacterPreset
+            label: Character Presets
+        Comment:
+            class: App\Entity\Comment
+            label: Comments
+        DiscordChannel:
+            class: App\Entity\DiscordChannel
+            label: Discord Channels
+        DiscordGuild:
+            class: App\Entity\DiscordGuild
+            label: Discord Guilds
+        Event:
+            class: App\Entity\Event
+            label: Events
+        EventAttendee:
+            class: App\Entity\EventAttendee
+            label: Event Attendees
+        RecurringEvent:
+            class: App\Entity\RecurringEvent
+            label: Recurring Events
+        Reminder:
+            class: App\Entity\Reminder
+            label: Reminders
+        User:
+            class: App\Entity\User
+            label: Users
+            list:
+                fields:
+                    - { property: 'id' }
+                    - { property: 'fullAvatarUrl', type: 'image' }
+                    - { property: 'username' }
+                    - { property: 'discordDiscriminator' }
+                    - { property: 'discordId' }
+                    - { property: 'clock' }
+                    - { property: 'timezone' }
