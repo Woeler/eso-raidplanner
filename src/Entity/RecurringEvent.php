@@ -181,4 +181,9 @@ class RecurringEvent
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return $this->name.' ('.$this->guild->getName().')';
+    }
 }

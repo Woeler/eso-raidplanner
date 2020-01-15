@@ -141,4 +141,9 @@ class GuildMembership
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return $this->user->getUsername().'#'.$this->user->getDiscordDiscriminator().' ('.$this->guild->getName().')';
+    }
 }

@@ -110,4 +110,9 @@ class Comment
             $this->setCreatedAt(new DateTime('now'));
         }
     }
+
+    public function __toString()
+    {
+        return $this->user->getUsername().'#'.$this->user->getDiscordDiscriminator().' at '.$this->createdAt->format('Y-m-d H:i:s e');
+    }
 }

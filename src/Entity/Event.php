@@ -296,4 +296,9 @@ class Event
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return $this->name.' '.$this->start->format('Y-m-d H:i:s e');
+    }
 }

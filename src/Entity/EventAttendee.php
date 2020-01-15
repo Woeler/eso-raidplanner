@@ -297,4 +297,9 @@ class EventAttendee
 
         $this->setUpdatedAt(new DateTime('now'));
     }
+
+    public function __toString()
+    {
+        return $this->user->getUsername().'#'.$this->user->getDiscordDiscriminator();
+    }
 }
