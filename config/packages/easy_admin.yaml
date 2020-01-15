@@ -2,5 +2,12 @@ easy_admin:
     entities:
         # List the entity class name you want to manage
         - App\Entity\ArmorSet
+        - App\Entity\CharacterPreset
+        - App\Entity\Comment
+        - App\Entity\DiscordChannel
         - App\Entity\DiscordGuild
+        - App\Entity\Event
+        - App\Entity\EventAttendee
+        - App\Entity\RecurringEvent
+        - App\Entity\Reminder
         - App\Entity\User
