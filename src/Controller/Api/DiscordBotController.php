@@ -148,15 +148,6 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
             return Response::create('', Response::HTTP_BAD_REQUEST);
         }
 
-        if (isset($json['userNick'])) {
-            $membership = $this->guildMembershipRepository->findOneBy(['guild' => $json['guildId'], 'user' => $json['userId']]);
-            if (null !== $membership) {
-                $membership->setNickname($json['userNick']);
-                $this->entityManager->persist($membership);
-                $this->entityManager->flush();
-            }
-        }
-
         return Response::create('ok', Response::HTTP_OK);
     }
 

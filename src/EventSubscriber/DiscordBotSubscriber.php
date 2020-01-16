@@ -14,6 +14,7 @@ use App\Entity\GuildMembership;
 use App\Entity\User;
 use App\Exception\UnexpectedDiscordApiResponseException;
 use App\Repository\DiscordGuildRepository;
+use App\Repository\GuildMembershipRepository;
 use App\Repository\UserRepository;
 use App\Service\DiscordBotService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -61,11 +62,17 @@ class DiscordBotSubscriber implements EventSubscriberInterface
      */
     private $defaultRoles;
 
+    /**
+     * @var GuildMembershipRepository
+     */
+    private $guildMembershipRepository;
+
     public function __construct(
         DiscordBotService $discordBotService,
         DiscordGuildRepository $guildRepository,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
+        GuildMembershipRepository $guildMembershipRepository,
         string $token,
         array $discordBotCommands,
         array $defaultRoles
@@ -77,6 +84,7 @@ class DiscordBotSubscriber implements EventSubscriberInterface
         $this->entityManager = $entityManager;
         $this->discordBotCommands = $discordBotCommands;
         $this->defaultRoles = $defaultRoles;
+        $this->guildMembershipRepository = $guildMembershipRepository;
     }
 
     public function onTalksWithDiscordController(ControllerEvent $event): void
@@ -140,6 +148,14 @@ class DiscordBotSubscriber implements EventSubscriberInterface
                     $user->getDiscordMention().' Welcome to ESO Raidplanner. This is your first time interacting with the system, so we have configured some basic things for you. You should be all set to use ESO Raidplanner in this guild now. Your timezone has been set to UTC by default. You may change this by using the `!timezone` command.',
                     $channelId
                 );
+            }
+            if (isset($json['userNick'])) {
+                $membership = $this->guildMembershipRepository->findOneBy(['guild' => $guild, 'user' => $user]);
+                if (null !== $membership) {
+                    $membership->setNickname($json['userNick']);
+                    $this->entityManager->persist($membership);
+                    $this->entityManager->flush();
+                }
             }
         }
     }
