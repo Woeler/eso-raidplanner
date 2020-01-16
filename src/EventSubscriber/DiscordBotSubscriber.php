@@ -152,7 +152,9 @@ class DiscordBotSubscriber implements EventSubscriberInterface
             if (isset($json['userNick'])) {
                 $membership = $this->guildMembershipRepository->findOneBy(['guild' => $guild, 'user' => $user]);
                 if (null !== $membership) {
-                    $membership->setNickname($json['userNick']);
+                    $membership->setNickname(
+                        $json['userNick'] === $user->getUsername() ? null : $json['userNick']
+                    );
                     $this->entityManager->persist($membership);
                     $this->entityManager->flush();
                 }
