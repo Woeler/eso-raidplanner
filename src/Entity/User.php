@@ -418,6 +418,15 @@ class User implements UserInterface
         return new ArrayCollection(iterator_to_array($iterator));
     }
 
+    public function getGuildNickname(DiscordGuild $guild): string
+    {
+        $active = $this->guildMemberships->filter(static function (GuildMembership $guildMembership) use ($guild) {
+            return $guildMembership->getGuild()->getId() === $guild->getId();
+        });
+
+        return $active->first()->getNickname();
+    }
+
     /**
      * @param Collection $guildMemberships
      * @return User

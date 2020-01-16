@@ -37,12 +37,14 @@ class GuildVoter extends Voter
 
     public const DEACTIVATE = 'deactivate';
 
+    public const UPDATE_NICKNAME = 'update_nickname';
+
     protected function supports($attribute, $subject)
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
         return in_array($attribute, [
-            self::VIEW_SETTINGS, self::VIEW, self::VIEW_MEMBERS, self::CREATE_EVENT, self::CREATE_REMINDER, self::SYNC_DISCORD_CHANNELS, self::PROMOTE, self::DEMOTE, self::CREATE_RECURRING_EVENT, self::DEACTIVATE,
+            self::VIEW_SETTINGS, self::VIEW, self::VIEW_MEMBERS, self::CREATE_EVENT, self::CREATE_REMINDER, self::SYNC_DISCORD_CHANNELS, self::PROMOTE, self::DEMOTE, self::CREATE_RECURRING_EVENT, self::DEACTIVATE, self::UPDATE_NICKNAME,
             ], true)
             && $subject instanceof \App\Entity\DiscordGuild;
     }
@@ -77,6 +79,8 @@ class GuildVoter extends Voter
                 return $this->canDemote($subject, $user);
             case self::DEACTIVATE:
                 return $this->canDeactivate($subject, $user);
+            case self::UPDATE_NICKNAME:
+                return $this->canUpdateNickname($subject, $user);
         }
 
         return false;
@@ -130,5 +134,10 @@ class GuildVoter extends Voter
     public function canDeactivate(DiscordGuild $guild, User $user): bool
     {
         return $guild->getOwner()->getId() === $user->getId();
+    }
+
+    public function canUpdateNickname(DiscordGuild $guild, User $user): bool
+    {
+        return $guild->isMember($user);
     }
 }

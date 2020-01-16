@@ -82,7 +82,7 @@
                                     <td style="vertical-align: middle;word-break: break-all;" width="30%">
                                         <img class="avatar rounded-circle" width="32px" alt="Avatar"
                                              src="https://cdn.discordapp.com/avatars/{{ attendee.user.discordId }}/{{ attendee.user.avatar }}.png"/>
-                                        <strong>{{ attendee.user.username }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small>
+                                        <strong>{{ attendee.user.getGuildNickname(guild) }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small>
                                         {% if attendee.user.patreonMembership > constant('App\\Entity\\User::PATREON_NONE') %}
                                             <li class="fa fa-gem patreon-{{ attendee.user.patreonMembership }}"
                                                 title="{{ constant('App\\Entity\\User::PATREON')[attendee.user.patreonMembership] }} Supporter"></li>
@@ -145,7 +145,7 @@
                                     ) }}
                                 </div>
                             {% endif %}
-                            <strong>{{ comment.user.username }}</strong><small>#{{ comment.user.discordDiscriminator }} - {{ app.user.toUserTimeString(comment.createdAt) }}</small><br>
+                            <strong>{{ comment.user.getGuildNickname(guild) }}</strong><small>#{{ comment.user.discordDiscriminator }} - {{ app.user.toUserTimeString(comment.createdAt) }}</small><br>
                             {{ comment.text }}
                         </div>
                     </div>

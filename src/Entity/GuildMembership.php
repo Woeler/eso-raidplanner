@@ -56,6 +56,11 @@ class GuildMembership
      */
     private $role;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $nickname;
+
     public function __construct()
     {
         $this->role = self::ROLE_MEMBER;
@@ -145,5 +150,17 @@ class GuildMembership
     public function __toString()
     {
         return $this->user->getUsername().'#'.$this->user->getDiscordDiscriminator().' ('.$this->guild->getName().')';
+    }
+
+    public function getNickname(): string
+    {
+        return $this->nickname ?? $this->user->getUsername();
+    }
+
+    public function setNickname(?string $nickname): self
+    {
+        $this->nickname = $nickname;
+
+        return $this;
     }
 }

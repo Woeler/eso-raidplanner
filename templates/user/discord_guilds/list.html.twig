@@ -18,6 +18,15 @@
                 Discord servers you own</div>
             <div class="card-body">
                 <table class="table">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Your Nickname</th>
+                        <th></th>
+                    </tr>
+                    </thead>
                     <tbody>
                     {% for guild in guilds %}
                         <tr>
@@ -36,6 +45,14 @@
                                     <span class="badge badge-success">Active on Raidplanner</span>
                                 {% else %}
                                     <span class="badge badge-danger">Inactive on Raidplanner</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ app.user.getGuildNickname(guild) }}
+                                {% if guild.isActive() %}
+                                    <a href="{{ path('user_guild_update_nickname', {guildId: guild.id}) }}">
+                                        <li class="fa fa-sync" title="Refresh nickname"></li>
+                                    </a>
                                 {% endif %}
                             </td>
                             <td class="text-right">
@@ -67,6 +84,14 @@
             <div class="card-header">Discord servers you are a member of</div>
             <div class="card-body">
                 <table class="table">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Your Nickname</th>
+                    </tr>
+                    </thead>
                     <tbody>
                     {% for membership in app.user.guildMemberships %}
                         {% if membership.guild.owner is null or membership.guild.owner.id != app.user.id %}
@@ -86,6 +111,16 @@
                                     <span class="badge badge-success">Active on Raidplanner</span>
                                 {% else %}
                                     <span class="badge badge-danger">Inactive on Raidplanner</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if membership.guild.isActive() %}
+                                    {{ membership.nickname }}
+                                    <a href="{{ path('user_guild_update_nickname', {guildId: membership.guild.id}) }}">
+                                        <li class="fa fa-sync" title="Refresh nickname"></li>
+                                    </a>
+                                {% else %}
+                                    N/A
                                 {% endif %}
                             </td>
                         </tr>

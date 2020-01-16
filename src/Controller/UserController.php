@@ -16,6 +16,7 @@ use App\Form\User;
 use App\Repository\DiscordChannelRepository;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\GuildMembershipRepository;
+use App\Security\Voter\GuildVoter;
 use App\Service\DiscordBotService;
 use App\Service\DiscordOauthService;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -203,5 +204,37 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/discord_guilds/bot_check.html.twig', ['guild' => $guild, 'clientId' => $this->getParameter('discord.bot.clientid')]);
+    }
+
+    /**
+     * @Route("/guilds/{guildId}/nickname", name="guild_update_nickname")
+     *
+     * @param string $guildId
+     * @param DiscordBotService $discordBotService
+     * @param GuildMembershipRepository $guildMembershipRepository
+     * @return Response
+     */
+    public function updateNickname(
+        string $guildId,
+        DiscordBotService $discordBotService,
+        GuildMembershipRepository $guildMembershipRepository
+    ): Response {
+        $guild = $this->discordGuildRepository->find($guildId);
+        $this->denyAccessUnlessGranted(GuildVoter::UPDATE_NICKNAME, $guild);
+        try {
+            $userdata = $discordBotService->getMember($guildId, $this->getUser()->getDiscordId());
+            $membership = $guildMembershipRepository->findOneBy(['user' => $this->getUser(), 'guild' => $guild]);
+
+            if (null !== $membership) {
+                $membership->setNickname($userdata['nick'] ?? null);
+                $this->entityManager->persist($membership);
+                $this->entityManager->flush();
+                $this->addFlash('success', 'Your nickname in the guild ' . $guild->getName() . ' was updated to ' . $membership->getNickname());
+            }
+        } catch (UnexpectedDiscordApiResponseException $e) {
+            $this->addFlash('danger', 'Could not get nickname information from Discord');
+        }
+
+        return $this->redirectToRoute('user_guilds');
     }
 }

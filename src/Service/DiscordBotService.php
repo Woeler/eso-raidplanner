@@ -134,6 +134,17 @@ class DiscordBotService
     }
 
     /**
+     * @param string $serverId
+     * @param string $userId
+     * @return array
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function getMember(string $serverId, string $userId): array
+    {
+        return $this->request('guilds/'.$serverId.'/members/'.$userId);
+    }
+
+    /**
      * @param string $userId
      * @return array
      * @throws UnexpectedDiscordApiResponseException
