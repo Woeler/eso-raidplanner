@@ -16,6 +16,7 @@ use App\Repository\CharacterPresetRepository;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventAttendeeRepository;
 use App\Repository\EventRepository;
+use App\Repository\GuildMembershipRepository;
 use App\Repository\UserRepository;
 use App\Service\DiscordBotService;
 use App\Service\GuildLoggerService;
@@ -76,6 +77,11 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      */
     private $characterPresetRepository;
 
+    /**
+     * @var GuildMembershipRepository
+     */
+    private $guildMembershipRepository;
+
     public function __construct(
         DiscordBotService $discordBotService,
         DiscordGuildRepository $discordGuildRepository,
@@ -84,7 +90,8 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         GuildLoggerService $guildLoggerService,
-        CharacterPresetRepository $characterPresetRepository
+        CharacterPresetRepository $characterPresetRepository,
+        GuildMembershipRepository $guildMembershipRepository
     ) {
         $this->discordBotService = $discordBotService;
         $this->discordGuildRepository = $discordGuildRepository;
@@ -94,6 +101,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         $this->entityManager = $entityManager;
         $this->guildLoggerService = $guildLoggerService;
         $this->characterPresetRepository = $characterPresetRepository;
+        $this->guildMembershipRepository = $guildMembershipRepository;
     }
 
     /**
@@ -138,6 +146,15 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
             }
 
             return Response::create('', Response::HTTP_BAD_REQUEST);
+        }
+
+        if (isset($json['userNick'])) {
+            $membership = $this->guildMembershipRepository->findOneBy(['guild' => $json['guildId'], 'user' => $json['userId']]);
+            if (null !== $membership) {
+                $membership->setNickname($json['userNick']);
+                $this->entityManager->persist($membership);
+                $this->entityManager->flush();
+            }
         }
 
         return Response::create('ok', Response::HTTP_OK);
