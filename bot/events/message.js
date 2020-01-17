@@ -28,7 +28,7 @@ module.exports = (client, message) => {
         guildId: message.guild.id,
         query: args.join(' '),
         command: '!'+command,
-        userNick: message.guild.member(message.author).displayName
+        userNick: encodeURI(message.guild.member(message.author).displayName)
     };
 
     const requestData = JSON.stringify(data);

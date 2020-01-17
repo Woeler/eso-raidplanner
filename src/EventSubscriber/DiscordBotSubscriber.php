@@ -105,7 +105,7 @@ class DiscordBotSubscriber implements EventSubscriberInterface
             if ($this->token !== base64_decode($token)) {
                 throw new UnauthorizedHttpException('Invalid token');
             }
-            $json = json_decode($event->getRequest()->getContent(), true);
+            $json = json_decode($event->getRequest()->getContent(), true, 512, JSON_THROW_ON_ERROR);
             if (!in_array($json['command'], $this->discordBotCommands, true)) {
                 throw new PreconditionFailedHttpException('Unknown command');
             }
@@ -153,7 +153,7 @@ class DiscordBotSubscriber implements EventSubscriberInterface
                 $membership = $this->guildMembershipRepository->findOneBy(['guild' => $guild, 'user' => $user]);
                 if (null !== $membership) {
                     $membership->setNickname(
-                        $json['userNick'] === $user->getUsername() ? null : $json['userNick']
+                        urldecode($json['userNick']) === $user->getUsername() ? null : urldecode($json['userNick'])
                     );
                     $this->entityManager->persist($membership);
                     $this->entityManager->flush();
