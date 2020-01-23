@@ -255,7 +255,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         } elseif (null === $role) {
             $this->replyWithText(
                 $user->getDiscordMention().' I don\'t know that role.',
-                $data['chanelId']
+                $data['channelId']
             );
 
             return;
