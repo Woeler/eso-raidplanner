@@ -258,6 +258,32 @@ class GuildController extends AbstractController
     }
 
     /**
+     * @Route("/{guildId}/member/{userId}/remove", name="member_remove")
+     * @IsGranted("ROLE_USER")
+     *
+     * @param string $guildId
+     * @param string $userId
+     * @param UserRepository $userRepository
+     * @param GuildMembershipRepository $guildMembershipRepository
+     * @return Response
+     */
+    public function removeMembership(string $guildId, string $userId, UserRepository $userRepository, GuildMembershipRepository $guildMembershipRepository): Response
+    {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::REMOVE_MEMBER, $guild);
+
+        if ($this->getUser()->getDiscordId() !== (int)$userId) {
+            $user = $userRepository->findOneBy(['discordId' => $userId]);
+            $membership = $guildMembershipRepository->findOneBy(['user' => $user, 'guild' => $guild]);
+            $this->entityManager->remove($membership);
+            $this->entityManager->flush();
+            $this->addFlash('success', $user->getUsername() . ' was removed.');
+        }
+
+        return $this->redirectToRoute('guild_members', ['guildId' => $guildId]);
+    }
+
+    /**
      * @Route("/{guildId}/deactivate", name="deactivate")
      * @IsGranted("ROLE_USER")
      *

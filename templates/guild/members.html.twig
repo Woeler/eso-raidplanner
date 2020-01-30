@@ -51,6 +51,12 @@
                                                 'arrow-up'
                                             ) }}
                                         {% endif %}
+                                        {{ macros.linkbutton(
+                                            path('guild_member_remove', {'guildId': guild.id, 'userId': member.user.discordId}),
+                                            'Remove',
+                                            'danger',
+                                            'trash'
+                                        ) }}
                                     {% endif %}
                                 {% endif %}
                             </td>
