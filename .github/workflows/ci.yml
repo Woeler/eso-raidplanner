@@ -41,3 +41,7 @@ jobs:
   
       - name: Yarn build
         run: yarn build
+
+      - name: Trigger deployment
+        if: github.ref == 'refs/heads/master'
+        run: wget -q ${{ secrets.DEPLOYMENT_TRIGGER_URL }}
