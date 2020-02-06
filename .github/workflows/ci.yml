@@ -26,6 +26,9 @@ jobs:
 
       - name: composer --version
         run: composer --version
+      
+      - name: Copy .env
+        run: cp .env.example .env
 
       - name: (COMPOSER) Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest --no-interaction
