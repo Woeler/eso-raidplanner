@@ -5,7 +5,6 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-
     strategy:
       fail-fast: false
       matrix:
@@ -34,13 +33,43 @@ jobs:
 
       - name: (CGL) PHP
         run: php bin/php-cs-fixer fix --config build/.php_cs -v --dry-run --diff
+        
+  package:
+    runs-on: [ubuntu-latest]
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    needs: build
+    strategy:
+        fail-fast: false
+        matrix:
+          php-versions:
+            - '7.3'
+
+    steps:
+      - uses: actions/checkout@v2
+          
+      - uses: shivammathur/setup-php@v1
+        with:
+          php-version: ${{ matrix.php-versions }}
+          
+      - name: Set app env
+        run: echo "APP_ENV=prod" > .env.local
+
+      - name: (COMPOSER) Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest --no-interaction --no-dev
 
       - name: Yarn install
-        run: yarn install --silent --non-interactive
+        run: yarn install
   
       - name: Yarn build
         run: yarn build
+      
+      - name: Install bot via npm
+        run: cd bot/ && npm install
 
-      - name: Trigger deployment
-        if: github.ref == 'refs/heads/master'
-        run: wget -q ${{ secrets.DEPLOYMENT_TRIGGER_URL }}
+      - name: Tar files
+        run: tar -czf dist.tar.gz bin bot config public src templates vendor .env
+      
+      - uses: actions/upload-artifact@v1
+        with:
+          name: dist
+          path: dist.tar.gz
