@@ -73,3 +73,44 @@ jobs:
         with:
           name: dist
           path: dist.tar.gz
+
+  deploy-live:
+    runs-on: [ubuntu-latest]
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    needs: package
+    strategy:
+        fail-fast: false
+
+    steps:
+      - name: Download dist
+        uses: actions/download-artifact@v1
+        with:
+          name: dist
+
+      - name: Copy dist.tar.gz to server via scp
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: dist/dist.tar.gz
+          remote: ${{ secrets.DEPLOY_PATH }}/dist.tar.gz
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          privateKey: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+
+      - name: Extract and cleanup on server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          port: 22
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            rm -rf bin bot config public src templates vendor .env
+            tar -xf dist.tar.gz
+            rm -rf var/cache
+            cp config.json bot/config.json
+            php7.3 bin/console doctrine:migrations:migrate --no-interaction
+            rm dist.tar.gz
+            cd bot/ && pm2 stop "Raidplanner2" && pm2 delete "Raidplanner2" && pm2 start ecosystem.config.js
