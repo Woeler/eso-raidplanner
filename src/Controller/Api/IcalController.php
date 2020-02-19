@@ -101,17 +101,10 @@ class IcalController extends AbstractController
             );
         }
 
-        return new Response(
-            $this->render(
-                'ical/ical.html.twig',
-                [
-                    'calendar' => $calendar,
-                ]
-            ),
-            Response::HTTP_OK,
+        return $this->render(
+            'ical/ical.html.twig',
             [
-                'Content-Type' => 'text/calendar; charset=utf-8',
-                'Content-Disposition' => 'attachment; filename="cal.ics"',
+                'calendar' => $calendar,
             ]
         );
     }
@@ -155,17 +148,10 @@ class IcalController extends AbstractController
             );
         }
 
-        return new Response(
-            $this->render(
-                'ical/ical.html.twig',
-                [
-                    'calendar' => $calendar,
-                ]
-            ),
-            Response::HTTP_OK,
+        return $this->render(
+            'ical/ical.html.twig',
             [
-                'Content-Type' => 'text/calendar; charset=utf-8',
-                'Content-Disposition' => 'attachment; filename="cal.ics"',
+                'calendar' => $calendar,
             ]
         );
     }
