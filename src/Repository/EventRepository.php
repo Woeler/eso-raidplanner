@@ -129,4 +129,24 @@ class EventRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @param DiscordGuild $guild
+     * @param DateTime $start
+     * @param DateTime $end
+     * @return Event[]
+     */
+    public function findEventsForGuildBetween(DiscordGuild $guild, DateTime $start, DateTime $end): array
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.start >= :start')
+            ->andWhere('e.start < :end')
+            ->andWhere('e.guild = :guild')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter('guild', $guild)
+            ->orderBy('e.start', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -296,6 +296,7 @@ class DiscordAuthenticator extends SocialAuthenticator
             } else {
                 $newGuild->addMember($user);
             }
+            $newGuild->generateIcalId();
 
             $this->em->persist($newGuild);
             $existingGuilds->add($newGuild);

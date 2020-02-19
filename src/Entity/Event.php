@@ -233,6 +233,19 @@ class Event
     }
 
     /**
+     * @param User $user
+     * @return bool
+     */
+    public function isAttending(User $user): bool
+    {
+        $attending = $this->attendees->filter(static function (EventAttendee $attendee) use ($user) {
+            return $attendee->getUser()->getId() === $user->getId();
+        });
+
+        return 0 < $attending->count();
+    }
+
+    /**
      * @param int $roleId
      * @return Collection|EventAttendee[]
      */

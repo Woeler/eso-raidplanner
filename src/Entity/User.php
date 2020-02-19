@@ -20,6 +20,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class User implements UserInterface
 {
@@ -147,6 +148,11 @@ class User implements UserInterface
      * @ORM\Column(type="json")
      */
     private $roles = [];
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $icalId;
 
     public function __construct()
     {
@@ -583,5 +589,28 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+    public function getIcalId(): ?string
+    {
+        return $this->icalId;
+    }
+
+    public function setIcalId(?string $icalId): self
+    {
+        $this->icalId = $icalId;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function generateIcalId(): void
+    {
+        if (null === $this->getIcalId()) {
+            $this->setIcalId(bin2hex(random_bytes(20)));
+        }
     }
 }

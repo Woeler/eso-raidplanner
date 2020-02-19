@@ -112,6 +112,9 @@
     "egulias/email-validator": {
         "version": "2.1.11"
     },
+    "eluceo/ical": {
+        "version": "0.16.0"
+    },
     "friendsofphp/php-cs-fixer": {
         "version": "2.2",
         "recipe": {

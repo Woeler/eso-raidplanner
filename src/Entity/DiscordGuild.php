@@ -101,6 +101,11 @@ class DiscordGuild
      */
     private $eventCreateChannel;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $icalId;
+
     public function __construct()
     {
         $this->active = false;
@@ -401,5 +406,24 @@ class DiscordGuild
     public function __toString()
     {
         return $this->name;
+    }
+
+    public function getIcalId(): ?string
+    {
+        return $this->icalId;
+    }
+
+    public function setIcalId(?string $icalId): self
+    {
+        $this->icalId = $icalId;
+
+        return $this;
+    }
+
+    public function generateIcalId(): void
+    {
+        if (null === $this->getIcalId()) {
+            $this->setIcalId(bin2hex(random_bytes(20)));
+        }
     }
 }

@@ -8,6 +8,7 @@
         "ext-json": "*",
         "doctrine/doctrine-cache-bundle": "^1.4",
         "easycorp/easyadmin-bundle": "^2.3",
+        "eluceo/ical": "^0.16.0",
         "knplabs/knp-menu-bundle": "^2.2",
         "knpuniversity/oauth2-client-bundle": "^1.28",
         "pathfindermediagroup/api-library": "^1.2",
