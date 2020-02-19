@@ -86,8 +86,9 @@ class IcalController extends AbstractController
             if ($onlyAttending && !$event->isAttending($user)) {
                 continue;
             }
-            $calendar->addEvent(
+            $calendar->addComponent(
                 (new Event())
+                    ->setSummary($event->getName().' ('.$event->getGuild()->getName().')')
                     ->setDtStart($event->getStart())
                     ->setUrl($this->router->generate(
                         'guild_event_view',
@@ -135,8 +136,9 @@ class IcalController extends AbstractController
         );
 
         foreach ($events as $event) {
-            $calendar->addEvent(
+            $calendar->addComponent(
                 (new Event())
+                    ->setSummary($event->getName())
                     ->setDtStart($event->getStart())
                     ->setUrl($this->router->generate(
                         'guild_event_view',
