@@ -76,6 +76,12 @@ class IcalController extends AbstractController
             throw new NotFoundHttpException();
         }
 
+        $calendar
+            ->setName('ESO Raidplanner')
+            ->setDescription(
+                'ESO Raidplanner personal calendar for '.$user->getUsername().'#'.$user->getDiscordDiscriminator()
+            );
+
         $events = $this->eventRepository->findEventsForUserBetween(
             $user,
             new \DateTime('-50 days'),
@@ -128,6 +134,10 @@ class IcalController extends AbstractController
         if (null === $guild) {
             throw new NotFoundHttpException();
         }
+
+        $calendar
+            ->setName('ESO Raidplanner')
+            ->setDescription('ESO Raidplanner guild calendar for '.$guild->getName());
 
         $events = $this->eventRepository->findEventsForGuildBetween(
             $guild,
