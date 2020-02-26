@@ -130,6 +130,12 @@ class EventRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @param User $user
+     * @param DateTime $start
+     * @param DateTime $end
+     * @return Event[]
+     */
     public function findCalendarEvents(User $user, DateTime $start, DateTime $end): array
     {
         $guilds = new ArrayCollection();

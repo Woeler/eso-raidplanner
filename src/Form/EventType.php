@@ -60,6 +60,17 @@ class EventType extends AbstractType
                 'time_widget' => 'single_text',
                 'view_timezone' => $options['timezone'],
             ])
+            ->add('end', DateTimeType::class, [
+                'placeholder' => [
+                    'year' => 'Year', 'month' => 'Month', 'day' => 'Day',
+                    'hour' => 'Hour', 'minute' => 'Minute', 'second' => 'Second',
+                ],
+                'date_widget' => 'single_text',
+                'time_widget' => 'single_text',
+                'view_timezone' => $options['timezone'],
+                'label' => 'Event end time (not required)',
+                'required' => false,
+            ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Save',
                 'attr' => ['class' => 'btn btn-primary pull-right'],

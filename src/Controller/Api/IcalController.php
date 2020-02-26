@@ -92,20 +92,22 @@ class IcalController extends AbstractController
             if ($onlyAttending && !$event->isAttending($user)) {
                 continue;
             }
-            $calendar->addComponent(
-                (new Event())
-                    ->setSummary($event->getName().' ('.$event->getGuild()->getName().')')
-                    ->setDtStart($event->getStart())
-                    ->setUrl($this->router->generate(
-                        'guild_event_view',
-                        [
-                            'guildId' => $event->getGuild()->getDiscordId(),
-                            'eventId' => $event->getId(),
-                        ],
-                        UrlGeneratorInterface::ABSOLUTE_URL
-                    ))
-                    ->setDescription($event->getName().' ('.$event->getGuild()->getName().')')
-            );
+            $calEvent = (new Event())
+                ->setSummary($event->getName().' ('.$event->getGuild()->getName().')')
+                ->setDtStart($event->getStart())
+                ->setUrl($this->router->generate(
+                    'guild_event_view',
+                    [
+                        'guildId' => $event->getGuild()->getDiscordId(),
+                        'eventId' => $event->getId(),
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ))
+                ->setDescription($event->getName().' ('.$event->getGuild()->getName().')');
+            if (null !== $event->getEnd()) {
+                $calEvent->setDtEnd($event->getEnd());
+            }
+            $calendar->addComponent($calEvent);
         }
 
         return new Response(
@@ -146,20 +148,22 @@ class IcalController extends AbstractController
         );
 
         foreach ($events as $event) {
-            $calendar->addComponent(
-                (new Event())
-                    ->setSummary($event->getName())
-                    ->setDtStart($event->getStart())
-                    ->setUrl($this->router->generate(
-                        'guild_event_view',
-                        [
-                            'guildId' => $event->getGuild()->getDiscordId(),
-                            'eventId' => $event->getId(),
-                        ],
-                        UrlGeneratorInterface::ABSOLUTE_URL
-                    ))
-                    ->setDescription($event->getName())
-            );
+            $calEvent = (new Event())
+                ->setSummary($event->getName())
+                ->setDtStart($event->getStart())
+                ->setUrl($this->router->generate(
+                    'guild_event_view',
+                    [
+                        'guildId' => $event->getGuild()->getDiscordId(),
+                        'eventId' => $event->getId(),
+                    ],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ))
+                ->setDescription($event->getName());
+            if (null !== $event->getEnd()) {
+                $calEvent->setDtEnd($event->getEnd());
+            }
+            $calendar->addComponent($calEvent);
         }
 
         return new Response(

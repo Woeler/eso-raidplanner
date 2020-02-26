@@ -84,6 +84,11 @@ class Event
      */
     private $comments;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $end;
+
     public function __construct()
     {
         $this->locked = false;
@@ -313,5 +318,17 @@ class Event
     public function __toString()
     {
         return $this->name.' '.$this->start->format('Y-m-d H:i:s e');
+    }
+
+    public function getEnd(): ?\DateTimeInterface
+    {
+        return $this->end;
+    }
+
+    public function setEnd(?\DateTimeInterface $end): self
+    {
+        $this->end = $end;
+
+        return $this;
     }
 }

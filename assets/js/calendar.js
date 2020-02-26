@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         themeSystem: 'bootstrap',
         firstDay: parseInt(calendarPropsEl.getAttribute('data-first-day-of-week')),
         contentHeight: 'auto',
+        displayEventTime: false,
         eventSources: [
             {
                 url: "/fc-load-events",
@@ -33,7 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
         timeZone: calendarPropsEl.getAttribute('timezone'),
         eventRender: function(info) {
             var tooltip = new Tooltip(info.el, {
-                title: '<strong>Guild: </strong>'+info.event.extendedProps.guild+'<br>'+info.event.title+'<br>'+info.event.extendedProps.attending+' people attending',
+                title: '<strong>Guild: </strong>'+info.event.extendedProps.guild+'<br>'
+                    +info.event.extendedProps['start-time']
+                    +(info.event.extendedProps['end-time'] !== undefined ? ' - '+info.event.extendedProps['end-time'] : '')+'<br>'
+                    +info.event.extendedProps.attending
+                    +' people attending',
                 placement: 'top',
                 trigger: 'hover',
                 container: 'body',

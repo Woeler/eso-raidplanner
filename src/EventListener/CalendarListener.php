@@ -61,10 +61,16 @@ class CalendarListener
             if ($event->getStart()->getTimestamp() >= $start->getTimestamp() && $event->getStart()->getTimestamp() < $end->getTimestamp()) {
                 $eventTime = $event->getStart();
                 $eventTime->setTimezone(new \DateTimeZone($user->getTimezone()));
+                $eventEnd = null;
+                if (null !== $event->getEnd()) {
+                    $eventEnd = $event->getEnd();
+                    $eventEnd->setTimezone(new \DateTimeZone($user->getTimezone()));
+                }
 
                 $calendarEvent = new Event(
                     $eventTime->format(24 === $user->getClock() ? 'H:i' : 'g:ia').': '.$event->getName(),
-                    $eventTime
+                    $eventTime,
+                    $eventEnd
                 );
                 $calendarEvent->addOption('url', $this->router->generate(
                     'guild_event_view',
@@ -75,6 +81,11 @@ class CalendarListener
                 ));
                 $calendarEvent->addOption('guild', $event->getGuild()->getName());
                 $calendarEvent->addOption('attending', count($event->getAttendees()));
+                $calendarEvent->addOption('start-time', $eventTime->format(24 === $user->getClock() ? 'H:i' : 'g:ia'));
+
+                if (null !== $event->getEnd()) {
+                    $calendarEvent->addOption('end-time', $eventEnd->format(24 === $user->getClock() ? 'H:i' : 'g:ia'));
+                }
 
                 $calendar->addEvent($calendarEvent);
             }
