@@ -9,7 +9,8 @@
         <div class="card">
             <div class="card-header">Upcoming events</div>
             <div class="card-body">
-                <div id="calendar-props" data-first-day-of-week="{{ app.user.firstDayOfWeek }}" data-timezone="{{ app.user.timezone }}"></div>
+                <div id="calendar-props" data-first-day-of-week="{{ app.user.firstDayOfWeek }}"
+                     data-timezone="{{ app.user.timezone }}"></div>
                 {% include '@Calendar/calendar.html' %}
             </div>
         </div>
@@ -17,29 +18,26 @@
     <div class="col-md-3">
         <div class="card">
             <div class="card-header">Guilds</div>
-            <div class="card-body">
-                {% if app.user.getActiveGuildMemberships()|length < 1 %}
+            {% if app.user.getActiveGuildMemberships()|length < 1 %}
+                <div class="card-body">
                     You seem to have no active guilds. Turn one of your Discord servers into an active guild? <a
-                        href="{{ path('user_guilds') }}">Click here</a>!
-                {% else %}
-                    <table class="table">
-                        <tbody>
-                        {% for guild in app.user.getActiveGuildMemberships() %}
-                            <tr>
-                                <td style="vertical-align: middle">
-                                        <img class="avatar rounded-circle"
-                                             src="{{ guild.guild.getFullIconUrl() }}"
-                                             width="32" height="32"/>
-                                </td>
-                                <td style="vertical-align: middle">
-                                    <strong><a href="{{ path('guild_view', {guildId: guild.guild.id}) }}">{{ guild.guild.name }}</a></strong>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                {% endif %}
-            </div>
+                            href="{{ path('user_guilds') }}">Click here</a>!
+                </div>
+            {% else %}
+                <ul class="list-group list-group-flush">
+                    {% for guild in app.user.getActiveGuildMemberships() %}
+                        <li class="list-group-item">
+                            <img class="avatar rounded-circle"
+                                 src="{{ guild.guild.getFullIconUrl() }}"
+                                 width="32" height="32"/>
+                            <strong><a href="{{ path('guild_view', {guildId: guild.guild.id}) }}">{{ guild.guild.name }}</a></strong>
+                            {% if not guild.showOnCalendar %}
+                                <span title="Events hidden from calendar" class="fa fa-eye-slash"></span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
