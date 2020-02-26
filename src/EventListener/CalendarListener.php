@@ -54,7 +54,7 @@ class CalendarListener
         $user = $this->tokenStorage->getToken()->getUser();
         $start = $calendar->getStart();
         $end = $calendar->getEnd();
-        $events = $this->eventRepository->findEventsForUserBetween($user, $start, $end);
+        $events = $this->eventRepository->findCalendarEvents($user, $start, $end);
         $filters = $calendar->getFilters();
 
         foreach ($events as $event) {

@@ -61,6 +61,11 @@ class GuildMembership
      */
     private $nickname;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default":1})
+     */
+    private $showOnCalendar = true;
+
     public function __construct()
     {
         $this->role = self::ROLE_MEMBER;
@@ -160,6 +165,18 @@ class GuildMembership
     public function setNickname(?string $nickname): self
     {
         $this->nickname = $nickname;
+
+        return $this;
+    }
+
+    public function getShowOnCalendar(): bool
+    {
+        return $this->showOnCalendar;
+    }
+
+    public function setShowOnCalendar(bool $showOnCalendar): self
+    {
+        $this->showOnCalendar = $showOnCalendar;
 
         return $this;
     }

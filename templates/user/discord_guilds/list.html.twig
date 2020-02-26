@@ -90,11 +90,11 @@
                         <th>Name</th>
                         <th>Status</th>
                         <th>Your Nickname</th>
+                        <th class="text-center">Show events on Calendar</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for membership in app.user.guildMemberships %}
-                        {% if membership.guild.owner is null or membership.guild.owner.id != app.user.id %}
+                    {% for membership in app.user.getActiveGuildMemberships() %}
                         <tr>
                             <td>
                                 {% if membership.guild.icon is not null %}
@@ -123,8 +123,17 @@
                                     N/A
                                 {% endif %}
                             </td>
+                            <td align="center">
+                                <div class="checkbox">
+                                    <input class="guild-calendar-checkbox" type="checkbox" value="1"
+                                           id="guild-calendar-checkbox-{{ membership.guild.id }}" data-guild="{{ membership.guild.id }}"
+                                           {% if membership.showOnCalendar %}
+                                               checked=true
+                                           {% endif %}
+                                    >
+                                </div>
+                            </td>
                         </tr>
-                        {% endif %}
                     {% endfor %}
                     </tbody>
                 </table>

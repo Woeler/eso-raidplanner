@@ -130,6 +130,27 @@ class EventRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    public function findCalendarEvents(User $user, DateTime $start, DateTime $end): array
+    {
+        $guilds = new ArrayCollection();
+        foreach ($user->getGuildMemberships() as $membership) {
+            if ($membership->getShowOnCalendar()) {
+                $guilds->add($membership->getGuild());
+            }
+        }
+
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.start >= :start')
+            ->andWhere('e.start < :end')
+            ->andWhere('e.guild IN (:guilds)')
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->setParameter('guilds', $guilds)
+            ->orderBy('e.start', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     /**
      * @param DiscordGuild $guild
      * @param DateTime $start

@@ -9,6 +9,7 @@
         "node-sass": "^4.12.0",
         "popper.js": "^1.15.0",
         "postcss-loader": "^3.0.0",
+        "regenerator-runtime": "^0.13.3",
         "sass-loader": "^7.1.0",
         "webpack-notifier": "^1.6.0"
     },
@@ -24,6 +25,7 @@
         "@fullcalendar/bootstrap": "^4.3.0",
         "@fullcalendar/core": "^4.3.1",
         "@fullcalendar/daygrid": "^4.3.0",
+        "axios": "^0.19.2",
         "select2": "^4.0.10"
     }
 }

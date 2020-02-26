@@ -15,6 +15,7 @@ global.$ = global.jQuery = require('jquery');
 require('bootstrap');
 require('./libs/navbar.js');
 require('select2');
+import apiclient from "./libs/apiclient";
 
 $(document).ready(function () {
     let presetField = document.getElementById('event_attendee_preset');
@@ -23,6 +24,13 @@ $(document).ready(function () {
         presetField.addEventListener('change', function () {
             buildAttendanceForm(presetField.value);
         })
+    }
+    let checkboxElems = document.getElementsByClassName('guild-calendar-checkbox');
+    for (var i = 0; i < checkboxElems.length; i++) {
+        checkboxElems[i].addEventListener("click", function () {
+            console.log(this.dataset.guild);
+            updateCalendarSettings(this.checked, this.dataset.guild);
+        });
     }
 });
 
@@ -36,4 +44,8 @@ function buildAttendanceForm(value) {
         document.getElementById('event_attendee_role').parentElement.style.display = 'block';
         document.getElementById('event_attendee_sets').parentElement.style.display = 'block';
     }
+}
+
+async function updateCalendarSettings(value, guildId) {
+    const response = await apiclient.get('/user/guilds/'+guildId+'/calendarvisibility?show=' + (value ? '1' : '0'));
 }

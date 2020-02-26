@@ -237,4 +237,29 @@ class UserController extends AbstractController
 
         return $this->redirectToRoute('user_guilds');
     }
+
+    /**
+     * @Route("/guilds/{guildId}/calendarvisibility", name="guild_update_guild_calendar_visibility")
+     * @IsGranted("ROLE_USER")
+     *
+     * @param Request $request
+     * @param string $guildId
+     * @param GuildMembershipRepository $guildMembershipRepository
+     * @return Response
+     */
+    public function updateGuildCalendarVisibility(Request $request, string $guildId, GuildMembershipRepository $guildMembershipRepository): Response
+    {
+        $guild = $this->discordGuildRepository->find($guildId);
+        $membership = $guildMembershipRepository->findOneBy(['user' => $this->getUser(), 'guild' => $guild]);
+
+        if (null !== $membership) {
+            $membership->setShowOnCalendar((bool)$request->get('show'));
+            $this->entityManager->persist($membership);
+            $this->entityManager->flush();
+
+            return Response::create('Ok', Response::HTTP_OK);
+        }
+
+        return Response::create('Forbidden', Response::HTTP_FORBIDDEN);
+    }
 }
