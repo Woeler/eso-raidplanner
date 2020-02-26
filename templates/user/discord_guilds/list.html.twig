@@ -15,58 +15,60 @@
                 </div>
                 Discord servers you own
             </div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Your Nickname</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for guild in guilds %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
                     <tr>
-                        <td>
-                            {% if guild.icon is not null %}
-                                <img class="avatar rounded-circle"
-                                     src="{{ guild.getFullIconUrl() }}"
-                                     width="32" height="32" alt="{{ guild.name }}"/>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ guild.name }}
-                        </td>
-                        <td>
-                            {% if guild.isActive() %}
-                                <span class="badge badge-success">Active on Raidplanner</span>
-                            {% else %}
-                                <span class="badge badge-danger">Inactive on Raidplanner</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ app.user.getGuildNickname(guild) }}
-                            {% if guild.isActive() %}
-                                <a href="{{ path('user_guild_update_nickname', {guildId: guild.id}) }}">
-                                    <li class="fa fa-sync" title="Refresh nickname"></li>
-                                </a>
-                            {% endif %}
-                        </td>
-                        <td class="text-right">
-                            {% if not guild.isActive() %}
-                                {{ macros.linkbutton(
-                                    path('user_guild_bot_check', {guildId: guild.id}),
-                                    'Create guild from server',
-                                    'success',
-                                    'plus'
-                                ) }}
-                            {% endif %}
-                        </td>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Your Nickname</th>
+                        <th></th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for guild in guilds %}
+                        <tr>
+                            <td>
+                                {% if guild.icon is not null %}
+                                    <img class="avatar rounded-circle"
+                                         src="{{ guild.getFullIconUrl() }}"
+                                         width="32" height="32" alt="{{ guild.name }}"/>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ guild.name }}
+                            </td>
+                            <td>
+                                {% if guild.isActive() %}
+                                    <span class="badge badge-success">Active on Raidplanner</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inactive on Raidplanner</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ app.user.getGuildNickname(guild) }}
+                                {% if guild.isActive() %}
+                                    <a href="{{ path('user_guild_update_nickname', {guildId: guild.id}) }}">
+                                        <li class="fa fa-sync" title="Refresh nickname"></li>
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                {% if not guild.isActive() %}
+                                    {{ macros.linkbutton(
+                                        path('user_guild_bot_check', {guildId: guild.id}),
+                                        'Create guild from server',
+                                        'success',
+                                        'plus'
+                                    ) }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
             {% if guilds|length < 1 %}
                 <div class="card-body">
@@ -79,61 +81,63 @@
 
         <div class="card">
             <div class="card-header">Discord servers you are a member of</div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Your Nickname</th>
-                    <th class="text-center">Show events on Calendar</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for membership in app.user.getActiveGuildMemberships() %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
                     <tr>
-                        <td>
-                            {% if membership.guild.icon is not null %}
-                                <img class="avatar rounded-circle"
-                                     src="https://cdn.discordapp.com/icons/{{ membership.guild.discordId }}/{{ membership.guild.icon }}.png"
-                                     width="32" height="32" alt="{{ membership.guild.name }}"/>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ membership.guild.name }}
-                        </td>
-                        <td>
-                            {% if membership.guild.isActive() %}
-                                <span class="badge badge-success">Active on Raidplanner</span>
-                            {% else %}
-                                <span class="badge badge-danger">Inactive on Raidplanner</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if membership.guild.isActive() %}
-                                {{ membership.nickname }}
-                                <a href="{{ path('user_guild_update_nickname', {guildId: membership.guild.id}) }}">
-                                    <li class="fa fa-sync" title="Refresh nickname"></li>
-                                </a>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                        </td>
-                        <td align="center">
-                            <div class="checkbox">
-                                <input class="guild-calendar-checkbox" type="checkbox" value="1"
-                                       id="guild-calendar-checkbox-{{ membership.guild.id }}"
-                                       data-guild="{{ membership.guild.id }}"
-                                        {% if membership.showOnCalendar %}
-                                            checked=true
-                                        {% endif %}
-                                >
-                            </div>
-                        </td>
+                        <th></th>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Your Nickname</th>
+                        <th class="text-center">Show events on Calendar</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for membership in app.user.getActiveGuildMemberships() %}
+                        <tr>
+                            <td>
+                                {% if membership.guild.icon is not null %}
+                                    <img class="avatar rounded-circle"
+                                         src="https://cdn.discordapp.com/icons/{{ membership.guild.discordId }}/{{ membership.guild.icon }}.png"
+                                         width="32" height="32" alt="{{ membership.guild.name }}"/>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ membership.guild.name }}
+                            </td>
+                            <td>
+                                {% if membership.guild.isActive() %}
+                                    <span class="badge badge-success">Active on Raidplanner</span>
+                                {% else %}
+                                    <span class="badge badge-danger">Inactive on Raidplanner</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if membership.guild.isActive() %}
+                                    {{ membership.nickname }}
+                                    <a href="{{ path('user_guild_update_nickname', {guildId: membership.guild.id}) }}">
+                                        <li class="fa fa-sync" title="Refresh nickname"></li>
+                                    </a>
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                            <td align="center">
+                                <div class="checkbox">
+                                    <input class="guild-calendar-checkbox" type="checkbox" value="1"
+                                           id="guild-calendar-checkbox-{{ membership.guild.id }}"
+                                           data-guild="{{ membership.guild.id }}"
+                                            {% if membership.showOnCalendar %}
+                                                checked=true
+                                            {% endif %}
+                                    >
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 {% endblock %}

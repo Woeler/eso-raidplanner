@@ -15,33 +15,35 @@
                     </a>
                     - Events</strong>
             </div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Attendees</th>
-                    <th>Date/Time</th>
-                    <th class="text-right"></th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for event in events %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
                     <tr>
-                        <td style="vertical-align: middle">{{ event.name }}</td>
-                        <td style="vertical-align: middle">{{ event.attendees|length }}</td>
-                        <td style="vertical-align: middle">{{ app.user.toUserTimeString(event.start) }}</td>
-                        <td class="text-right">
-                            {{ macros.linkbutton(
-                                path('guild_event_view', {guildId: guild.id, eventId: event.id}),
-                                'View Event',
-                                'info',
-                                'eye'
-                            ) }}
-                        </td>
+                        <th>Event</th>
+                        <th>Attendees</th>
+                        <th>Date/Time</th>
+                        <th class="text-right"></th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for event in events %}
+                        <tr>
+                            <td style="vertical-align: middle">{{ event.name }}</td>
+                            <td style="vertical-align: middle">{{ event.attendees|length }}</td>
+                            <td style="vertical-align: middle">{{ app.user.toUserTimeString(event.start) }}</td>
+                            <td class="text-right">
+                                {{ macros.linkbutton(
+                                    path('guild_event_view', {guildId: guild.id, eventId: event.id}),
+                                    'View Event',
+                                    'info',
+                                    'eye'
+                                ) }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <div class="col-md-4">
