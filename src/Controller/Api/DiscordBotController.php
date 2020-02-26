@@ -206,9 +206,9 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
             if (0 < count($attendees)) {
                 $text = '';
                 foreach ($attendees as $attendee) {
-                    $text .= $attendee->getStatusEmoji().' '
+                    $text .= trim($attendee->getStatusEmoji().' '
                         .$attendee->getUser()->getDiscordMention().' '
-                        .EsoClassUtility::getClassDiscordEmoji($attendee->getClass()).PHP_EOL;
+                        .EsoClassUtility::getClassDiscordEmoji($attendee->getClass())).PHP_EOL;
                 }
                 $message->addField($roleName, $text, true);
             }

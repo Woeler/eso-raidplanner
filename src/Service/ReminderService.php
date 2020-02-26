@@ -11,6 +11,7 @@ namespace App\Service;
 
 use App\Entity\Event;
 use App\Entity\Reminder;
+use App\Utility\EsoClassUtility;
 use App\Utility\EsoRoleUtility;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
@@ -70,7 +71,9 @@ class ReminderService
                 if (0 < count($attendees)) {
                     $text = '';
                     foreach ($attendees as $attendee) {
-                        $text .= $attendee->getUser()->getDiscordMention().PHP_EOL;
+                        $text .= trim($attendee->getStatusEmoji().' '
+                            .$attendee->getUser()->getDiscordMention().' '
+                            .EsoClassUtility::getClassDiscordEmoji($attendee->getClass())).PHP_EOL;
                     }
                     $embeds->addField($roleName, $text, true);
                 }
