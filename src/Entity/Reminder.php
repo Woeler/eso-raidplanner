@@ -11,6 +11,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToOne;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
@@ -28,6 +29,9 @@ class Reminder
     /**
      * @ORM\Column(type="string", length=255)
      * @var string
+     * @Assert\NotNull()
+     * @Assert\NotBlank()
+     * @Assert\Length(min=1,max=200)
      */
     private $name;
 
@@ -48,24 +52,29 @@ class Reminder
     /**
      * @ORM\Column(type="text")
      * @var string
+     * @Assert\Length(max=2000)
      */
     private $text;
 
     /**
      * @ORM\Column(type="integer")
      * @var int
+     * @Assert\NotNull()
+     * @Assert\Positive()
      */
     private $minutesToTrigger;
 
     /**
      * @ORM\Column(type="boolean")
      * @var bool
+     * @Assert\NotNull()
      */
     private $detailedInfo;
 
     /**
      * @ORM\Column(type="boolean")
      * @var bool
+     * @Assert\NotNull()
      */
     private $pingAttendees;
 

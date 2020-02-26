@@ -15,6 +15,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OrderBy;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\EventRepository")
@@ -32,18 +33,25 @@ class Event
     /**
      * @ORM\Column(type="string", length=255)
      * @var string
+     * @Assert\NotNull()
+     * @Assert\NotBlank()
+     * @Assert\Length(min=1,max=200)
      */
     private $name;
 
     /**
      * @ORM\Column(type="datetime")
      * @var DateTime
+     * @Assert\NotNull()
+     * @Assert\DateTime
+     * @Assert\GreaterThan("yesterday")
      */
     private $start;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      * @var string|null
+     * @Assert\Length(max=2000)
      */
     private $description;
 
@@ -61,7 +69,7 @@ class Event
     private $locked;
 
     /**
-     * @ORM\Column(type="json_array")
+     * @ORM\Column(type="json")
      * @var array
      */
     private $tags;
@@ -86,6 +94,7 @@ class Event
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
+     * @Assert\GreaterThan(propertyPath="start")
      */
     private $end;
 

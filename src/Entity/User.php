@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OrderBy;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -95,18 +96,23 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="integer")
      * @var int
+     * @Assert\NotNull()
+     * @Assert\Positive()
      */
     private $clock = 24;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @var string
+     * @Assert\NotNull()
+     * @Assert\NotBlank()
      */
     private $timezone = 'UTC';
 
     /**
      * @ORM\Column(type="boolean")
      * @var bool
+     * @Assert\NotNull()
      */
     private $darkmode = false;
 
@@ -134,6 +140,8 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotNull()
+     * @Assert\PositiveOrZero()
      * 1 defaults to Monday, 0 is Sunday
      */
     private $firstDayOfWeek = 1;

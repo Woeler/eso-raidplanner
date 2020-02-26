@@ -11,6 +11,7 @@ namespace App\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CommentRepository")
@@ -27,6 +28,9 @@ class Comment
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotNull()
+     * @Assert\NotBlank()
+     * @Assert\Length(min=1,max=2000)
      */
     private $text;
 

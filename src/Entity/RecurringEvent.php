@@ -10,6 +10,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\RecurringEventRepository")
@@ -25,11 +26,15 @@ class RecurringEvent
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull()
+     * @Assert\NotBlank()
+     * @Assert\Length(min=1,max=200)
      */
     private $name;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Assert\Length(max=2000)
      */
     private $description;
 
@@ -41,11 +46,16 @@ class RecurringEvent
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotNull()
+     * @Assert\Positive()
      */
     private $createInAdvanceAmount;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Assert\NotNull()
+     * @Assert\DateTime
+     * @Assert\GreaterThan("yesterday")
      */
     private $date;
 
@@ -61,11 +71,15 @@ class RecurringEvent
 
     /**
      * @ORM\Column(type="json")
+     * @Assert\NotNull()
+     * @Assert\Count(min=1)
      */
     private $days = [];
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotNull()
+     * @Assert\Positive()
      */
     private $weekInterval = 1;
 

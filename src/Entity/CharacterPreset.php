@@ -14,6 +14,7 @@ use App\Entity\Traits\HasEsoRole;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CharacterPresetRepository")
@@ -31,16 +32,23 @@ class CharacterPreset
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotNull()
+     * @Assert\NotBlank()
+     * @Assert\Length(min=1,max=200)
      */
     private $name;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotNull()
+     * @Assert\Positive()
      */
     private $class;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\NotNull()
+     * @Assert\Positive()
      */
     private $role;
 
