@@ -42,7 +42,7 @@ class HomeController extends AbstractController
                 .'">your user settings</a>.'
             );
         }
-        if (0 < $user->getDiscordGuilds()->count() && 0 === $user->getActiveDiscordGuilds()->count()) {
+        if (0 < $user->getDiscordGuilds()->count() && 0 === $user->getActiveGuildMemberships()->count()) {
             $this->addFlash(
                 'info',
                 'You are not in any active guilds, but you do own Discord servers. You can start the setup process for your Discord servers <a href="'
