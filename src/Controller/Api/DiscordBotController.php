@@ -400,7 +400,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
     protected function replyWith(AbstractDiscordMessage $message, string $chanelId): void
     {
         if ($message instanceof DiscordEmbedsMessage) {
-            $message->setFooterIcon('https://esoraidplanner.com/favicon/appicon.jpg');
+            $message->setFooterIcon('https://esoraidplanner.com/build/images/favicon/appicon.jpg');
             $message->setFooterText('ESO Raidplanner by Woeler');
             $message->setColor(9660137);
         }
