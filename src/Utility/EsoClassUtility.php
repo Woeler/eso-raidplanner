@@ -90,6 +90,30 @@ class EsoClassUtility
     }
 
     /**
+     * @param int $classId
+     * @return string
+     */
+    public static function getClassDiscordEmoji(int $classId): string
+    {
+        switch ($classId) {
+            case self::CLASS_DRAGONKNIGHT:
+                return '<:dragonknight:682336633348948022>';
+            case self::CLASS_SORCERER:
+                return '<:sorcerer:682336719454208005>';
+            case self::CLASS_NIGHTBLADE:
+                return '<:nightblade:682336718996635704>';
+            case self::CLASS_WARDEN:
+                return '<:warden:682336719390900227>';
+            case self::CLASS_NECROMANCER:
+                return '<:necromancer:682336719475048524>';
+            case self::CLASS_TEMPLAR:
+                return '<:templar:682336719424716934>';
+            default:
+                return '';
+        }
+    }
+
+    /**
      * @return array
      */
     public static function toArray(): array
