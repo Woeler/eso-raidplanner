@@ -194,6 +194,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         $message = (new DiscordEmbedsMessage())
             ->setTitle($event->getName())
             ->setAuthorIcon('https://cdn.discordapp.com/icons/'.$guild->getId().'/'.$guild->getIcon().'.png')
+            ->setAuthorName($guild->getName())
             ->setDescription($event->getDescription() ?? '')
             ->addField(
                 'Date and Time',
