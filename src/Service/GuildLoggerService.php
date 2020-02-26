@@ -69,6 +69,11 @@ class GuildLoggerService
     {
         $message = new DiscordEmbedsMessage();
         $message->setTitle('Event created')
+            ->setUrl($this->router->generate(
+                'guild_event_view',
+                ['guildId' => $guild->getId(), 'eventId' => $event->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ))
             ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription())
             ->addField('Event ID', $event->getId());
 
@@ -80,6 +85,11 @@ class GuildLoggerService
     {
         $message = new DiscordEmbedsMessage();
         $message->setTitle('Event updated')
+            ->setUrl($this->router->generate(
+                'guild_event_view',
+                ['guildId' => $guild->getId(), 'eventId' => $event->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ))
             ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription());
 
         $this->persistLog($message, $guild->getLogChannel());
@@ -98,8 +108,17 @@ class GuildLoggerService
     {
         $message = new DiscordEmbedsMessage();
         $message->setTitle('User is attending event')
-            ->addField('Event', $event->getName(), true)
-            ->addField('User', $attendee->getUser()->getDiscordMention());
+            ->addField(
+                'Event',
+                '['.$event->getName().']('.
+                $this->router->generate(
+                    'guild_event_view',
+                    ['guildId' => $guild->getId(), 'eventId' => $event->getId()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ).')',
+                true
+            )
+            ->addField('User', $attendee->getUser()->getDiscordMention(), true);
 
         $this->persistLog($message, $guild->getLogChannel());
     }
@@ -108,7 +127,16 @@ class GuildLoggerService
     {
         $message = new DiscordEmbedsMessage();
         $message->setTitle('User is no longer attending event')
-            ->addField('Event', $event->getName(), true)
+            ->addField(
+                'Event',
+                '['.$event->getName().']('.
+                $this->router->generate(
+                    'guild_event_view',
+                    ['guildId' => $guild->getId(), 'eventId' => $event->getId()],
+                    UrlGeneratorInterface::ABSOLUTE_URL
+                ).')',
+                true
+            )
             ->addField('User', $attendee->getUser()->getDiscordMention());
 
         $this->persistLog($message, $guild->getLogChannel());
