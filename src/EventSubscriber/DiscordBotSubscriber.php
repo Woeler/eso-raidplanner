@@ -144,10 +144,17 @@ class DiscordBotSubscriber implements EventSubscriberInterface
                     ->setRole(GuildMembership::ROLE_MEMBER);
                 $this->entityManager->persist($membership);
                 $this->entityManager->flush();
-                $this->replyWithText(
-                    $user->getDiscordMention().' Welcome to ESO Raidplanner. This is your first time interacting with the system, so we have configured some basic things for you. You should be all set to use ESO Raidplanner in this guild now. Your timezone has been set to UTC by default. You may change this by using the `!timezone` command.',
-                    $channelId
-                );
+                try {
+                    $this->replyWithDm(
+                        $user->getDiscordMention().' Welcome to ESO Raidplanner. This is your first time interacting with the system, so we have configured some basic things for you. You should be all set to use ESO Raidplanner in this guild now. Your timezone has been set to UTC by default. You may change this by using the `!timezone` command in your guild.',
+                        $userId
+                    );
+                } catch (UnexpectedDiscordApiResponseException $e) {
+                    $this->replyWithText(
+                        $user->getDiscordMention() . ' Welcome to ESO Raidplanner. This is your first time interacting with the system, so we have configured some basic things for you. You should be all set to use ESO Raidplanner in this guild now. Your timezone has been set to UTC by default. You may change this by using the `!timezone` command.',
+                        $channelId
+                    );
+                }
             } elseif (!$guild->isMember($user)) {
                 $membership = (new GuildMembership())
                     ->setGuild($guild)
@@ -194,5 +201,18 @@ class DiscordBotSubscriber implements EventSubscriberInterface
         $message->setContent($text);
 
         $this->discordBotService->sendMessage($channelId, $message);
+    }
+
+    /**
+     * @param string $text
+     * @param string $userId
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    protected function replyWithDm(string $text, string $userId): void
+    {
+        $message = new DiscordTextMessage();
+        $message->setContent($text);
+
+        $this->discordBotService->sendDirectMessage($userId, $message);
     }
 }

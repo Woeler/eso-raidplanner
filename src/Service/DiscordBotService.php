@@ -70,6 +70,22 @@ class DiscordBotService
     }
 
     /**
+     * @param string $userId
+     * @param AbstractDiscordMessage $message
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function sendDirectMessage(string $userId, AbstractDiscordMessage $message): void
+    {
+        $content = $message->formatForDiscord();
+        if (isset($content['embeds'])) {
+            $content['embed'] = $content['embeds'][0];
+            unset($content['embeds']);
+        }
+        $channelId = $this->openDirectMessageChannel($userId);
+        $this->request('channels/' . $channelId . '/messages', 'POST', $content);
+    }
+
+    /**
      * @param string $serverId
      * @return array
      * @throws UnexpectedDiscordApiResponseException
@@ -219,6 +235,18 @@ class DiscordBotService
         }
 
         return 0 !== ($userperms & 0x400);
+    }
+
+    /**
+     * @param string $userId
+     * @return string
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    private function openDirectMessageChannel(string $userId): string
+    {
+        $response = $this->request('users/@me/channels', 'POST', ['recipient_id' => $userId]);
+
+        return $response['id'];
     }
 
     /**
