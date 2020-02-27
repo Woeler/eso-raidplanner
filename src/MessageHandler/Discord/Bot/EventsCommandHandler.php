@@ -66,7 +66,10 @@ class EventsCommandHandler implements MessageHandlerInterface
             ->setAuthorIcon('https://cdn.discordapp.com/icons/'.$guild->getId().'/'.$guild->getIcon().'.png')
             ->setAuthorName($guild->getName())
             ->addField('Times displayed in your timezone', $user->getTimezone())
-            ->setDescription($desc);
+            ->setDescription($desc)
+            ->setFooterIcon('https://esoraidplanner.com/build/images/favicon/appicon.jpg')
+            ->setFooterText('ESO Raidplanner by Woeler')
+            ->setColor(9660137);
         $discordMessage->setContent($user->getDiscordMention());
 
         $this->discordBotService->sendMessage($message->getChannelId(), $discordMessage);

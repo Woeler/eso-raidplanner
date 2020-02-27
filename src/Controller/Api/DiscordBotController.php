@@ -10,8 +10,8 @@
 namespace App\Controller\Api;
 
 use App\Controller\Checks\TalksWithDiscordBotController;
-use App\Entity\EventAttendee;
 use App\Exception\UnexpectedDiscordApiResponseException;
+use App\Message\Discord\Bot\AttendCommandMessage;
 use App\Message\Discord\Bot\EventCommandMessage;
 use App\Message\Discord\Bot\EventsCommandMessage;
 use App\Repository\CharacterPresetRepository;
@@ -133,7 +133,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
                     $this->bus->dispatch(new EventCommandMessage($json['channelId'], $json));
                     break;
                 case '!attend':
-                    $this->attend($json);
+                    $this->bus->dispatch(new AttendCommandMessage($json['channelId'], $json));
                     break;
                 case '!unattend':
                     $this->unattend($json);
@@ -159,149 +159,6 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         }
 
         return Response::create('ok', Response::HTTP_OK);
-    }
-
-    /**
-     * @param array $data
-     * @throws UnexpectedDiscordApiResponseException
-     */
-    protected function events(array $data): void
-    {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $data['guildId']]);
-        $events = $this->eventRepository->findFutureEventsForGuild($guild);
-        $user = $this->userRepository->findOneBy(['discordId' => $data['userId']]);
-        $desc = '';
-        foreach ($events as $event) {
-            $desc .= $event->getId().': **'.$event->getName().'**'.PHP_EOL.$user->toUserTimeString($event->getStart()).PHP_EOL.PHP_EOL;
-        }
-
-        $message = (new DiscordEmbedsMessage())
-            ->setTitle('Upcoming events')
-            ->setAuthorIcon('https://cdn.discordapp.com/icons/'.$guild->getId().'/'.$guild->getIcon().'.png')
-            ->setAuthorName($guild->getName())
-            ->addField('Times displayed in your timezone', $user->getTimezone())
-            ->setDescription($desc);
-        $message->setContent($user->getDiscordMention());
-
-        $this->replyWith($message, $data['channelId']);
-    }
-
-    /**
-     * @param array $data
-     * @throws UnexpectedDiscordApiResponseException
-     */
-    public function event(array $data): void
-    {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $data['guildId']]);
-        $event = $this->eventRepository->find(trim($data['query']));
-        $user = $this->userRepository->findOneBy(['discordId' => $data['userId']]);
-        if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
-            $this->replyWithText('I don\'t know that event.', $data['channelId']);
-
-            return;
-        }
-
-        $message = (new DiscordEmbedsMessage())
-            ->setTitle($event->getName())
-            ->setAuthorIcon('https://cdn.discordapp.com/icons/'.$guild->getId().'/'.$guild->getIcon().'.png')
-            ->setAuthorName($guild->getName())
-            ->setDescription($event->getDescription() ?? '')
-            ->addField(
-                'Date and Time',
-                $user->toUserTimeString($event->getStart()).PHP_EOL.'(in your timezone: '.$user->getTimezone().')'
-            );
-        $message->setContent($user->getDiscordMention());
-        foreach (EsoRoleUtility::toArray() as $roleId => $roleName) {
-            $attendees = $event->getAttendeesByRole($roleId);
-            if (0 < count($attendees)) {
-                $text = '';
-                foreach ($attendees as $attendee) {
-                    $text .= trim($attendee->getStatusEmoji().' '
-                        .$attendee->getUser()->getDiscordMention().' '
-                        .EsoClassUtility::getClassDiscordEmoji($attendee->getClass())).PHP_EOL;
-                }
-                $message->addField($roleName, $text, true);
-            }
-        }
-
-        $this->replyWith($message, $data['channelId']);
-    }
-
-    /**
-     * @param array $data
-     * @throws UnexpectedDiscordApiResponseException
-     */
-    public function attend(array $data): void
-    {
-        $guild = $this->discordGuildRepository->findOneBy(['id' => $data['guildId']]);
-        $exploded = explode(' ', trim($data['query']));
-        $event = $this->eventRepository->find($exploded[0]);
-        unset($exploded[0]);
-        $user = $this->userRepository->findOneBy(['discordId' => $data['userId']]);
-
-        $preset = $this->characterPresetRepository->findOneBy(
-            [
-                'name' => implode(' ', $exploded),
-                'user' => $user,
-            ]
-        );
-        if (null === $preset) {
-            $class = EsoClassUtility::getClassIdByAlias($exploded[1] ?? '');
-            $role = EsoRoleUtility::getRoleIdByAlias($exploded[2] ?? '');
-            $sets = [];
-        } else {
-            $role = $preset->getRole();
-            $class = $preset->getClass();
-            $sets = $preset->getSets()->toArray();
-        }
-
-        if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
-            $this->replyWithText(
-                $user->getDiscordMention().' I don\'t know that event.',
-                $data['channelId']
-            );
-
-            return;
-        } elseif (null === $class) {
-            $this->replyWithText(
-                $user->getDiscordMention().' I don\'t know that class.',
-                $data['channelId']
-            );
-
-            return;
-        } elseif (null === $role) {
-            $this->replyWithText(
-                $user->getDiscordMention().' I don\'t know that role.',
-                $data['channelId']
-            );
-
-            return;
-        }
-
-        $attendee = $this->eventAttendeeRepository->findOneBy(['user' => $user, 'event' => $event]);
-        $oldRole = null;
-        if (null === $attendee) {
-            $attendee = (new EventAttendee())
-                ->setUser($user)
-                ->setEvent($event);
-        } else {
-            $oldRole = $attendee->getRole();
-        }
-        $attendee->setClass($class)
-            ->setRole($role)
-            ->setSets($sets);
-        if ($oldRole !== $attendee->getRole()) {
-            $attendee->setStatus(EventAttendee::STATUS_ATTENDING);
-        }
-
-        $this->entityManager->persist($attendee);
-        $this->entityManager->flush();
-
-        $this->replyWithText(
-            $user->getDiscordMention().' you are now attending '.$event->getName().' as a '.EsoClassUtility::getClassName($class).' '.EsoRoleUtility::getRoleName($role),
-            $data['channelId']
-        );
-        $this->guildLoggerService->eventAttending($guild, $event, $attendee);
     }
 
     /**

@@ -15,6 +15,7 @@ use App\Exception\UnexpectedDiscordApiResponseException;
 use GuzzleHttp\Exception\BadResponseException;
 use Symfony\Component\HttpFoundation\Response;
 use Woeler\DiscordPhp\Message\AbstractDiscordMessage;
+use Woeler\DiscordPhp\Message\DiscordTextMessage;
 
 class DiscordBotService
 {
@@ -43,6 +44,18 @@ class DiscordBotService
         $this->botToken = $botToken;
         $this->client = $client;
         $this->botId = $botId;
+    }
+
+    /**
+     * @param string $channelId
+     * @param string $message
+     * @throws UnexpectedDiscordApiResponseException
+     */
+    public function sendTextMessage(string $channelId, string $message): void
+    {
+        $m = new DiscordTextMessage();
+        $m->setContent($message);
+        $this->sendMessage($channelId, $m);
     }
 
     /**

@@ -75,7 +75,10 @@ class EventCommandHandler implements MessageHandlerInterface
             ->addField(
                 'Date and Time',
                 $user->toUserTimeString($event->getStart()).PHP_EOL.'(in your timezone: '.$user->getTimezone().')'
-            );
+            )
+            ->setFooterIcon('https://esoraidplanner.com/build/images/favicon/appicon.jpg')
+            ->setFooterText('ESO Raidplanner by Woeler')
+            ->setColor(9660137);
         $discordMessage->setContent($user->getDiscordMention());
         foreach (EsoRoleUtility::toArray() as $roleId => $roleName) {
             $attendees = $event->getAttendeesByRole($roleId);
