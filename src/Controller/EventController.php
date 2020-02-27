@@ -92,9 +92,12 @@ class EventController extends AbstractController
 
         $attendee = $this->eventAttendeeRepository->findOneBy(['user' => $this->getUser()->getId(), 'event' => $eventId]);
         $attending = true;
+        $oldRole = null;
         if (null === $attendee) {
             $attendee = new EventAttendee();
             $attending = false;
+        } else {
+            $oldRole = $attendee->getRole();
         }
         $form = $this->createForm(EventAttendeeType::class, $attendee, ['user' => $this->getUser()]);
         $form->handleRequest($request);
@@ -107,6 +110,9 @@ class EventController extends AbstractController
                 $attendee->setRole($preset->getRole())
                     ->setClass($preset->getClass())
                     ->setSets($preset->getSets()->toArray());
+            }
+            if ($oldRole !== $attendee->getRole()) {
+                $attendee->setStatus(EventAttendee::STATUS_ATTENDING);
             }
 
             $attendee->setUser($this->getUser())
