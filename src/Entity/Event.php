@@ -98,6 +98,12 @@ class Event
      */
     private $end;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\DiscordChannel")
+     * @ORM\JoinColumn(onDelete="SET NULL")
+     */
+    private $reminderRerouteChannel;
+
     public function __construct()
     {
         $this->locked = false;
@@ -337,6 +343,18 @@ class Event
     public function setEnd(?\DateTimeInterface $end): self
     {
         $this->end = $end;
+
+        return $this;
+    }
+
+    public function getReminderRerouteChannel(): ?DiscordChannel
+    {
+        return $this->reminderRerouteChannel;
+    }
+
+    public function setReminderRerouteChannel(?DiscordChannel $reminderRerouteChannel): self
+    {
+        $this->reminderRerouteChannel = $reminderRerouteChannel;
 
         return $this;
     }

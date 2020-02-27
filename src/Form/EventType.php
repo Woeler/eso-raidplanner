@@ -9,6 +9,9 @@
 
 namespace App\Form;
 
+use App\Entity\DiscordChannel;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -71,6 +74,24 @@ class EventType extends AbstractType
                 'label' => 'Event end time (not required)',
                 'required' => false,
             ])
+            ->add(
+                'reminderRerouteChannel',
+                EntityType::class,
+                [
+                    'class' => DiscordChannel::class,
+                    'empty_data' => '',
+                    'label' => 'Re-route reminders to the following channel for this event',
+                    'placeholder' => 'Use default channels',
+                    'help' => 'If empty, guild default is used.',
+                    'required' => false,
+                    'query_builder' => static function (EntityRepository $er) use ($options) {
+                        return $er->createQueryBuilder('u')
+                            ->where('u.guild = :guild')
+                            ->setParameter('guild', $options['guild']->getId())
+                            ->orderBy('u.name', 'ASC');
+                    },
+                ]
+            )
             ->add('submit', SubmitType::class, [
                 'label' => 'Save',
                 'attr' => ['class' => 'btn btn-primary pull-right'],
@@ -84,6 +105,7 @@ class EventType extends AbstractType
             'csrf_protection' => 'test' !== getenv('APP_ENV'),
             'timezone' => 'UTC',
             'clock' => 24,
+            'guild' => null,
         ]);
     }
 }

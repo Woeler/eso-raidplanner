@@ -16,6 +16,7 @@ use App\Entity\EventAttendee;
 use App\Form\CommentType;
 use App\Form\EventAttendeesStatusType;
 use App\Form\EventAttendeeType;
+use App\Form\EventType;
 use App\Repository\CommentRepository;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventAttendeeRepository;
@@ -162,7 +163,15 @@ class EventController extends AbstractController
         $this->denyAccessUnlessGranted(GuildVoter::CREATE_EVENT, $guild);
 
         $event = new Event();
-        $form = $this->createForm(\App\Form\EventType::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'clock' => $this->getUser()->getClock()]);
+        $form = $this->createForm(
+            EventType::class,
+            $event,
+            [
+                'timezone' => $this->getUser()->getTimezone(),
+                'clock' => $this->getUser()->getClock(),
+                'guild' => $guild,
+            ]
+        );
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -199,7 +208,15 @@ class EventController extends AbstractController
         $event = $this->eventRepository->find($eventId);
         $this->denyAccessUnlessGranted(EventVoter::UPDATE, $event);
 
-        $form = $this->createForm(\App\Form\EventType::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'clock' => $this->getUser()->getClock()]);
+        $form = $this->createForm(
+            EventType::class,
+            $event,
+            [
+                'timezone' => $this->getUser()->getTimezone(),
+                'clock' => $this->getUser()->getClock(),
+                'guild' => $guild,
+            ]
+        );
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

@@ -84,7 +84,10 @@ class TriggerRemindersCommand extends Command
                         continue;
                     }
                     try {
-                        $this->discordBotService->sendMessage($channel->getId(), $message);
+                        $this->discordBotService->sendMessage(
+                            null !== $event->getReminderRerouteChannel() ? $event->getReminderRerouteChannel()->getId() : $channel->getId(),
+                            $message
+                        );
                         $channel->setError(DiscordChannel::ERROR_NONE);
                     } catch (UnexpectedDiscordApiResponseException $e) {
                         if (false !== strpos($e->getMessage(), '404')) {
