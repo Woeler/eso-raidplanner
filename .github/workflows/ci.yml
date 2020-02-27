@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         php-versions:
-          - '7.3'
+          - '7.4'
 
     steps:
       - uses: actions/checkout@v1
@@ -39,7 +39,7 @@ jobs:
         fail-fast: false
         matrix:
           php-versions:
-            - '7.3'
+            - '7.4'
 
     steps:
       - uses: actions/checkout@v2
@@ -108,7 +108,7 @@ jobs:
             tar -xf dist.tar.gz
             rm -rf var/cache
             cp config.json bot/config.json
-            php7.3 bin/console doctrine:migrations:migrate --no-interaction
-            php7.3 bin/console messenger:stop-workers
+            php7.4 bin/console doctrine:migrations:migrate --no-interaction
+            php7.4 bin/console messenger:stop-workers
             rm dist.tar.gz
             cd bot/ && pm2 stop "Raidplanner2" && pm2 delete "Raidplanner2" && pm2 start ecosystem.config.js
