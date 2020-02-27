@@ -12,6 +12,8 @@ namespace App\Controller\Api;
 use App\Controller\Checks\TalksWithDiscordBotController;
 use App\Entity\EventAttendee;
 use App\Exception\UnexpectedDiscordApiResponseException;
+use App\Message\Discord\Bot\EventCommandMessage;
+use App\Message\Discord\Bot\EventsCommandMessage;
 use App\Repository\CharacterPresetRepository;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventAttendeeRepository;
@@ -27,6 +29,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Woeler\DiscordPhp\Message\AbstractDiscordMessage;
 use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
@@ -82,6 +85,11 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      */
     private $guildMembershipRepository;
 
+    /**
+     * @var MessageBusInterface
+     */
+    private $bus;
+
     public function __construct(
         DiscordBotService $discordBotService,
         DiscordGuildRepository $discordGuildRepository,
@@ -91,7 +99,8 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         EntityManagerInterface $entityManager,
         GuildLoggerService $guildLoggerService,
         CharacterPresetRepository $characterPresetRepository,
-        GuildMembershipRepository $guildMembershipRepository
+        GuildMembershipRepository $guildMembershipRepository,
+        MessageBusInterface $bus
     ) {
         $this->discordBotService = $discordBotService;
         $this->discordGuildRepository = $discordGuildRepository;
@@ -102,6 +111,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         $this->guildLoggerService = $guildLoggerService;
         $this->characterPresetRepository = $characterPresetRepository;
         $this->guildMembershipRepository = $guildMembershipRepository;
+        $this->bus = $bus;
     }
 
     /**
@@ -112,15 +122,15 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      */
     public function entryPoint(Request $request): Response
     {
-        $json = json_decode($request->getContent(), true);
+        $json = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         try {
             switch ($json['command'] ?? null) {
                 case '!events':
-                    $this->events($json);
+                    $this->bus->dispatch(new EventsCommandMessage($json['channelId'], $json));
                     break;
                 case '!event':
-                    $this->event($json);
+                    $this->bus->dispatch(new EventCommandMessage($json['channelId'], $json));
                     break;
                 case '!attend':
                     $this->attend($json);
@@ -269,14 +279,20 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         }
 
         $attendee = $this->eventAttendeeRepository->findOneBy(['user' => $user, 'event' => $event]);
+        $oldRole = null;
         if (null === $attendee) {
             $attendee = (new EventAttendee())
                 ->setUser($user)
                 ->setEvent($event);
+        } else {
+            $oldRole = $attendee->getRole();
         }
         $attendee->setClass($class)
             ->setRole($role)
             ->setSets($sets);
+        if ($oldRole !== $attendee->getRole()) {
+            $attendee->setStatus(EventAttendee::STATUS_ATTENDING);
+        }
 
         $this->entityManager->persist($attendee);
         $this->entityManager->flush();
