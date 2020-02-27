@@ -73,7 +73,7 @@ class GuildMembership
      * @Assert\NotBlank
      * @Assert\NotNull
      */
-    private $colour;
+    private $colour = '3788d8';
 
     public function __construct()
     {
