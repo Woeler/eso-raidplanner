@@ -24,6 +24,7 @@
         "symfony/http-client": "4.4.*",
         "symfony/intl": "4.4.*",
         "symfony/lock": "4.4.*",
+        "symfony/messenger": "4.4.*",
         "symfony/monolog-bundle": "^3.5",
         "symfony/orm-pack": "*",
         "symfony/process": "4.4.*",
