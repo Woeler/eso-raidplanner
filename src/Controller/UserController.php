@@ -21,6 +21,7 @@ use App\Service\DiscordBotService;
 use App\Service\DiscordOauthService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use GuzzleHttp\Exception\BadResponseException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -108,39 +109,43 @@ class UserController extends AbstractController
      */
     public function refreshDiscordGuilds(Request $request, DiscordOauthService $discordOauthService, GuildMembershipRepository $guildMembershipRepository): Response
     {
-        $guilds = $discordOauthService->getGuilds();
-        $user = $this->getUser();
-        $existingGuilds = new ArrayCollection();
+        try {
+            $guilds = $discordOauthService->getGuilds();
+            $user = $this->getUser();
+            $existingGuilds = new ArrayCollection();
 
-        foreach ($guilds as $guild) {
-            $newGuild = $this->entityManager->getRepository(DiscordGuild::class)
-                ->findOneBy(['id' => $guild->id]);
-            if (null === $newGuild) {
-                $newGuild = new DiscordGuild();
+            foreach ($guilds as $guild) {
+                $newGuild = $this->entityManager->getRepository(DiscordGuild::class)
+                    ->findOneBy(['id' => $guild->id]);
+                if (null === $newGuild) {
+                    $newGuild = new DiscordGuild();
+                }
+                $newGuild
+                    ->setName($guild->name)
+                    ->setDiscordId($guild->id)
+                    ->setIcon($guild->icon);
+                if ($guild->owner) {
+                    $newGuild->setOwner($user)
+                        ->makeAdmin($user);
+                } else {
+                    $newGuild->addMember($user);
+                }
+
+                $this->entityManager->persist($newGuild);
+                $existingGuilds->add($newGuild);
             }
-            $newGuild
-                ->setName($guild->name)
-                ->setDiscordId($guild->id)
-                ->setIcon($guild->icon);
-            if ($guild->owner) {
-                $newGuild->setOwner($user)
-                    ->makeAdmin($user);
-            } else {
-                $newGuild->addMember($user);
+            $this->entityManager->flush();
+
+            foreach ($guildMembershipRepository->whereNotIn($user, $existingGuilds) as $membership) {
+                $this->entityManager->remove($membership);
             }
 
-            $this->entityManager->persist($newGuild);
-            $existingGuilds->add($newGuild);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Guilds updated.');
+        } catch (BadResponseException $e) {
+            $this->addFlash('danger', 'There was a problem contacting Discord. Please try again later.');
         }
-        $this->entityManager->flush();
-
-        foreach ($guildMembershipRepository->whereNotIn($user, $existingGuilds) as $membership) {
-            $this->entityManager->remove($membership);
-        }
-
-        $this->entityManager->flush();
-
-        $this->addFlash('success', 'Guilds updated.');
 
         return $this->redirectToRoute('user_guilds');
     }
