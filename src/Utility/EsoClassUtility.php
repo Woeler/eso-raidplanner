@@ -37,7 +37,7 @@ class EsoClassUtility
         self::CLASS_SORCERER => ['sorcerer', 'sorc', 's'],
         self::CLASS_NIGHTBLADE => ['nightblade', 'nb'],
         self::CLASS_WARDEN => ['warden', 'w'],
-        self::CLASS_NECROMANCER => ['necromancer', 'necro'],
+        self::CLASS_NECROMANCER => ['necromancer', 'necro', 'n'],
         self::CLASS_TEMPLAR => ['templar', 'temp', 't'],
     ];
 
