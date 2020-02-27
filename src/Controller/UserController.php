@@ -262,4 +262,29 @@ class UserController extends AbstractController
 
         return Response::create('Forbidden', Response::HTTP_FORBIDDEN);
     }
+
+    /**
+     * @Route("/guilds/{guildId}/calendarcolour", name="guild_update_guild_calendar_colour")
+     * @IsGranted("ROLE_USER")
+     *
+     * @param Request $request
+     * @param string $guildId
+     * @param GuildMembershipRepository $guildMembershipRepository
+     * @return Response
+     */
+    public function updateGuildCalendarColour(Request $request, string $guildId, GuildMembershipRepository $guildMembershipRepository): Response
+    {
+        $guild = $this->discordGuildRepository->find($guildId);
+        $membership = $guildMembershipRepository->findOneBy(['user' => $this->getUser(), 'guild' => $guild]);
+
+        if (null !== $membership) {
+            $membership->setColour($request->get('colour'));
+            $this->entityManager->persist($membership);
+            $this->entityManager->flush();
+
+            return Response::create('Ok', Response::HTTP_OK);
+        }
+
+        return Response::create('Forbidden', Response::HTTP_FORBIDDEN);
+    }
 }

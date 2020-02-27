@@ -10,6 +10,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity()
@@ -65,6 +66,14 @@ class GuildMembership
      * @ORM\Column(type="boolean", options={"default":1})
      */
     private $showOnCalendar = true;
+
+    /**
+     * @ORM\Column(type="string", length=255, options={"default":"3788d8"})
+     * @Assert\Length(min=6,max=6)
+     * @Assert\NotBlank
+     * @Assert\NotNull
+     */
+    private $colour;
 
     public function __construct()
     {
@@ -177,6 +186,18 @@ class GuildMembership
     public function setShowOnCalendar(bool $showOnCalendar): self
     {
         $this->showOnCalendar = $showOnCalendar;
+
+        return $this;
+    }
+
+    public function getColour(): ?string
+    {
+        return $this->colour;
+    }
+
+    public function setColour(string $colour): self
+    {
+        $this->colour = trim($colour, '#');
 
         return $this;
     }

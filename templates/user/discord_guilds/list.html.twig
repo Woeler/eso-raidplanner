@@ -90,6 +90,7 @@
                         <th>Status</th>
                         <th>Your Nickname</th>
                         <th class="text-center">Show events on Calendar</th>
+                        <th class="text-center">Calendar colour</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -132,6 +133,10 @@
                                             {% endif %}
                                     >
                                 </div>
+                            </td>
+                            <td align="center">
+                                <input type="color" class="guild-calendar-colour" id="guild-calendar-colour-{{ membership.guild.id }}"
+                                       data-guild="{{ membership.guild.id }}" value="#{{ membership.colour }}">
                             </td>
                         </tr>
                     {% endfor %}

@@ -28,8 +28,13 @@ $(document).ready(function () {
     let checkboxElems = document.getElementsByClassName('guild-calendar-checkbox');
     for (var i = 0; i < checkboxElems.length; i++) {
         checkboxElems[i].addEventListener("click", function () {
-            console.log(this.dataset.guild);
             updateCalendarSettings(this.checked, this.dataset.guild);
+        });
+    }
+    let colourElems = document.getElementsByClassName('guild-calendar-colour');
+    for (var j = 0; j < colourElems.length; j++) {
+        colourElems[j].addEventListener("change", function () {
+            updateColourSettings(this.value, this.dataset.guild);
         });
     }
 });
@@ -48,4 +53,8 @@ function buildAttendanceForm(value) {
 
 async function updateCalendarSettings(value, guildId) {
     const response = await apiclient.get('/user/guilds/'+guildId+'/calendarvisibility?show=' + (value ? '1' : '0'));
+}
+
+async function updateColourSettings(value, guildId) {
+    const response = await apiclient.get('/user/guilds/'+guildId+'/calendarcolour?colour=' + encodeURI(value.replace('#', '')));
 }

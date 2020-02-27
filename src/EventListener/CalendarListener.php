@@ -9,6 +9,7 @@
 
 namespace App\EventListener;
 
+use App\Entity\GuildMembership;
 use App\Entity\User;
 use App\Repository\EventRepository;
 use CalendarBundle\Entity\Event;
@@ -55,7 +56,6 @@ class CalendarListener
         $start = $calendar->getStart();
         $end = $calendar->getEnd();
         $events = $this->eventRepository->findCalendarEvents($user, $start, $end);
-        $filters = $calendar->getFilters();
 
         foreach ($events as $event) {
             if ($event->getStart()->getTimestamp() >= $start->getTimestamp() && $event->getStart()->getTimestamp() < $end->getTimestamp()) {
@@ -86,6 +86,14 @@ class CalendarListener
                 if (null !== $event->getEnd()) {
                     $calendarEvent->addOption('end-time', $eventEnd->format(24 === $user->getClock() ? 'H:i' : 'g:ia'));
                 }
+
+                $guild = $event->getGuild();
+                $colour = $user->getActiveGuildMemberships()->filter(static function (GuildMembership $m) use ($guild) {
+                    return $m->getGuild()->getId() === $guild->getId();
+                });
+                $colour = $colour->first()->getColour();
+                $calendarEvent->addOption('backgroundColor', '#'.$colour);
+                $calendarEvent->addOption('borderColor', '#'.$colour);
 
                 $calendar->addEvent($calendarEvent);
             }
