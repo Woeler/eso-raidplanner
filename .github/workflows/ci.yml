@@ -109,5 +109,6 @@ jobs:
             rm -rf var/cache
             cp config.json bot/config.json
             php7.3 bin/console doctrine:migrations:migrate --no-interaction
+            php7.3 bin/console messenger:stop-workers
             rm dist.tar.gz
             cd bot/ && pm2 stop "Raidplanner2" && pm2 delete "Raidplanner2" && pm2 start ecosystem.config.js
