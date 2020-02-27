@@ -84,7 +84,7 @@
                                 <tr class="attendee-status-{{ attendee.status }}">
                                     <td style="vertical-align: middle;word-break: break-all;" width="30%">
                                         <img class="avatar rounded-circle" width="32px" alt="Avatar"
-                                             src="https://cdn.discordapp.com/avatars/{{ attendee.user.discordId }}/{{ attendee.user.avatar }}.png"/>
+                                             src="{{ attendee.user.fullAvatarUrl }}"/>
                                         <strong>{{ attendee.user.getGuildNickname(guild) }}</strong><small>#{{ attendee.user.discordDiscriminator }}</small>
                                         {% if attendee.user.patreonMembership > constant('App\\Entity\\User::PATREON_NONE') %}
                                             <li class="fa fa-gem patreon-{{ attendee.user.patreonMembership }}"
@@ -135,7 +135,7 @@
                     <div class="row">
                         <div class="col-md-1">
                             <img class="avatar rounded-circle" width="32px" alt="Avatar"
-                                 src="https://cdn.discordapp.com/avatars/{{ comment.user.discordId }}/{{ comment.user.avatar }}.png"/>
+                                 src="{{ comment.user.fullAvatarUrl }}"/>
                         </div>
                         <div class="col-md-11">
                             {% if is_granted('delete', comment) %}
