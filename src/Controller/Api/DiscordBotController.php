@@ -127,9 +127,11 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         try {
             switch ($json['command'] ?? null) {
                 case '!events':
+                    $this->events($json);
                     $this->bus->dispatch(new EventsCommandMessage($json['channelId'], $json));
                     break;
                 case '!event':
+                    $this->event($json);
                     $this->bus->dispatch(new EventCommandMessage($json['channelId'], $json));
                     break;
                 case '!attend':
