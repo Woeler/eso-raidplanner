@@ -15,6 +15,7 @@ use App\Exception\UnexpectedDiscordApiResponseException;
 use GuzzleHttp\Exception\BadResponseException;
 use Symfony\Component\HttpFoundation\Response;
 use Woeler\DiscordPhp\Message\AbstractDiscordMessage;
+use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 use Woeler\DiscordPhp\Message\DiscordTextMessage;
 
 class DiscordBotService
@@ -65,6 +66,11 @@ class DiscordBotService
      */
     public function sendMessage(string $channelId, AbstractDiscordMessage $content): void
     {
+        if ($content instanceof DiscordEmbedsMessage) {
+            $content->setFooterIcon('https://esoraidplanner.com/build/images/favicon/appicon.jpg');
+            $content->setFooterText('ESO Raidplanner by Woeler');
+            $content->setColor(9660137);
+        }
         $this->sendMessageWithArray($channelId, $content->formatForDiscord());
     }
 
