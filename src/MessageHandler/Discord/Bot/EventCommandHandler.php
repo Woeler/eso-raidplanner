@@ -57,7 +57,11 @@ class EventCommandHandler implements MessageHandlerInterface
     public function __invoke(EventCommandMessage $message)
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $message->getRequestData()['guildId']]);
-        $event = $this->eventRepository->find(trim($message->getRequestData()['query']));
+        if (empty(trim($message->getRequestData()['query']))) {
+            $event = $this->eventRepository->findFirstFutureEvent($guild);
+        } else {
+            $event = $this->eventRepository->find(trim($message->getRequestData()['query']));
+        }
         $user = $this->userRepository->findOneBy(['discordId' => $message->getRequestData()['userId']]);
         if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
             $discordMessage = new DiscordTextMessage();
