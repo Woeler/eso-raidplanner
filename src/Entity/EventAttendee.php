@@ -92,6 +92,11 @@ class EventAttendee
      */
     private $updatedAt;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\CharacterPreset")
+     */
+    private $characterPreset;
+
     public function __construct()
     {
         $this->status = self::STATUS_ATTENDING;
@@ -301,5 +306,17 @@ class EventAttendee
     public function __toString()
     {
         return $this->user->getUsername().'#'.$this->user->getDiscordDiscriminator();
+    }
+
+    public function getCharacterPreset(): ?CharacterPreset
+    {
+        return $this->characterPreset;
+    }
+
+    public function setCharacterPreset(?CharacterPreset $characterPreset): self
+    {
+        $this->characterPreset = $characterPreset;
+
+        return $this;
     }
 }

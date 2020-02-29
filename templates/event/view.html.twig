@@ -90,6 +90,11 @@
                                             <li class="fa fa-gem patreon-{{ attendee.user.patreonMembership }}"
                                                 title="{{ constant('App\\Entity\\User::PATREON')[attendee.user.patreonMembership] }} Supporter"></li>
                                         {% endif %}
+                                        {% if attendee.characterPreset and attendee.characterPreset.notesHtml %}
+                                            <span class="character-preset-notes-button" data-user="{{ attendee.user.id }}">
+                                                <i class="fa fa-sticky-note" title="View notes"></i>
+                                            </span>
+                                        {% endif %}
                                     </td>
                                     <td style="vertical-align: middle" width="10%"><img
                                                 src="{{ asset(attendee.getClassIcon()) }}"
@@ -117,6 +122,15 @@
                                         </td>
                                     {% endif %}
                                 </tr>
+                                {% if attendee.characterPreset and attendee.characterPreset.notesHtml %}
+                                    <tr style="display: none" id="notes-{{ attendee.user.id }}" >
+                                        <td colspan="100%">
+                                            <div class="character-preset-notes">
+                                                {{ attendee.characterPreset.notesHtml|raw }}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endif %}
                             {% endfor %}
                             </tbody>
                         </table>

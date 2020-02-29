@@ -115,6 +115,9 @@
     "eluceo/ical": {
         "version": "0.16.0"
     },
+    "erusev/parsedown": {
+        "version": "1.7.4"
+    },
     "friendsofphp/php-cs-fixer": {
         "version": "2.2",
         "recipe": {

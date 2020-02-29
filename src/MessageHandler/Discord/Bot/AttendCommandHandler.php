@@ -144,6 +144,9 @@ class AttendCommandHandler implements MessageHandlerInterface
         $attendee->setClass($class)
             ->setRole($role)
             ->setSets($sets);
+        if (null !== $preset) {
+            $attendee->setCharacterPreset($preset);
+        }
         if ($oldRole !== $attendee->getRole()) {
             $attendee->setStatus(EventAttendee::STATUS_ATTENDING);
         }

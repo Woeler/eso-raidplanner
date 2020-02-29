@@ -11,13 +11,16 @@ namespace App\Entity;
 
 use App\Entity\Traits\HasEsoClass;
 use App\Entity\Traits\HasEsoRole;
+use App\Utility\HtmlUtility;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Parsedown;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CharacterPresetRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class CharacterPreset
 {
@@ -62,6 +65,23 @@ class CharacterPreset
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     * @Assert\Length(max=5000)
+     */
+    private $notes;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default":"0"})
+     * @Assert\NotNull()
+     */
+    private $notesPublic = false;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $notesHtml;
 
     public function __construct()
     {
@@ -150,5 +170,56 @@ class CharacterPreset
         $this->user = $user;
 
         return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): self
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
+    public function getNotesPublic(): ?bool
+    {
+        return $this->notesPublic;
+    }
+
+    public function setNotesPublic(bool $notesPublic): self
+    {
+        $this->notesPublic = $notesPublic;
+
+        return $this;
+    }
+
+    public function getNotesHtml(): ?string
+    {
+        return $this->notesHtml;
+    }
+
+    public function setNotesHtml(?string $notesHtml): self
+    {
+        $this->notesHtml = $notesHtml;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function updateHtmlNotes(): void
+    {
+        if (null !== $this->notes) {
+            $parser = new Parsedown();
+            $parser->setBreaksEnabled(true);
+            $this->notesHtml = HtmlUtility::removeScriptTags($parser->parse($this->notes));
+        } else {
+            $this->notesHtml = null;
+        }
     }
 }

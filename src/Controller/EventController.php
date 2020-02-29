@@ -110,7 +110,8 @@ class EventController extends AbstractController
                 $preset = $form['preset']->getData();
                 $attendee->setRole($preset->getRole())
                     ->setClass($preset->getClass())
-                    ->setSets($preset->getSets()->toArray());
+                    ->setSets($preset->getSets()->toArray())
+                    ->setCharacterPreset($preset);
             }
             if ($oldRole !== $attendee->getRole()) {
                 $attendee->setStatus(EventAttendee::STATUS_ATTENDING);

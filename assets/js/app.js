@@ -37,6 +37,12 @@ $(document).ready(function () {
             updateColourSettings(this.value, this.dataset.guild);
         });
     }
+    let characterNotes = document.getElementsByClassName('character-preset-notes-button');
+    for (var k = 0; k < characterNotes.length; k++) {
+        characterNotes[k].addEventListener("click", function () {
+            changeCharacterNotesVisibility(this.dataset.user);
+        });
+    }
 });
 
 function buildAttendanceForm(value) {
@@ -57,4 +63,12 @@ async function updateCalendarSettings(value, guildId) {
 
 async function updateColourSettings(value, guildId) {
     const response = await apiclient.get('/user/guilds/'+guildId+'/calendarcolour?colour=' + encodeURI(value.replace('#', '')));
+}
+function changeCharacterNotesVisibility(userId) {
+    let elem = document.getElementById('notes-'+userId);
+    if (elem.style.display === 'table-row') {
+        elem.style.display = 'none';
+    } else {
+        elem.style.display = 'table-row';
+    }
 }

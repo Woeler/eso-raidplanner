@@ -16,6 +16,7 @@ use App\Utility\EsoRoleUtility;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -60,6 +61,22 @@ class CharacterPresetType extends AbstractType
                     'cache_timeout' => 60000, // if 'cache' is true
                     'language' => 'en',
                     'placeholder' => 'Select armor sets',
+                ]
+            )
+            ->add(
+                'notes',
+                TextareaType::class,
+                [
+                    'required' => false,
+                ]
+            )
+            ->add(
+                'notesPublic',
+                ChoiceType::class,
+                [
+                    'required' => true,
+                    'choices' => ['No' => 0, 'Yes' => 1],
+                    'label' => 'Let people read these notes on event pages when I attend with this character',
                 ]
             )
             ->add('submit', SubmitType::class, [
