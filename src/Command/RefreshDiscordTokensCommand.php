@@ -13,6 +13,7 @@ use App\Repository\UserRepository;
 use App\Service\DiscordOauthService;
 use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -61,7 +62,7 @@ class RefreshDiscordTokensCommand extends Command
             }
             try {
                 $newTokens = $this->discordOauthService->refreshOauthToken($user->getDiscordRefreshToken());
-            } catch (ClientException $e) {
+            } catch (ClientException | ServerException $e) {
                 continue;
             }
             $user->setDiscordToken($newTokens['access_token'])
