@@ -73,7 +73,7 @@ class TriggerRemindersCommand extends Command
             $reminders = $event->getGuild()->getReminders();
 
             $diff = $now->diff($event->getStart());
-            $minutes = $diff->i + (60 * $diff->h) + (24 * 60 * $diff->d) + 1;
+            $minutes = $diff->i + (60 * $diff->h) + (24 * 60 * $diff->days) + 1;
 
             foreach ($reminders as $reminder) {
                 if ($minutes === $reminder->getMinutesToTrigger()) {
