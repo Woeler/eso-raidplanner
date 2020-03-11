@@ -438,6 +438,10 @@ class User implements UserInterface
             return $guildMembership->getGuild()->getId() === $guild->getId();
         });
 
+        if (1 > $active->count()) {
+            return $this->getUsername();
+        }
+
         return $active->first()->getNickname();
     }
 
