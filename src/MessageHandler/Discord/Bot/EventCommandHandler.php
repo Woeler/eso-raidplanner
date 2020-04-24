@@ -78,8 +78,7 @@ class EventCommandHandler implements MessageHandlerInterface
             ->setDescription($event->getDescription() ?? '')
             ->addField(
                 'Date and Time',
-                $user->toUserTimeString($event->getStart()).PHP_EOL.'(in your timezone: '.$user->getTimezone().')',
-                true
+                $user->toUserTimeString($event->getStart()).PHP_EOL.'(in your timezone: '.$user->getTimezone().')'
             );
         $discordMessage->setContent($user->getDiscordMention());
         foreach (EsoRoleUtility::toArray() as $roleId => $roleName) {
