@@ -1,4 +1,4 @@
-name: CI
+name: CI & Deployment
 
 on: [push, pull_request]
 
@@ -31,7 +31,7 @@ jobs:
       - name: (CGL) PHP
         run: php bin/php-cs-fixer fix --config build/.php_cs -v --dry-run --diff
         
-  package:
+  deploy:
     runs-on: [ubuntu-latest]
     if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
     needs: build
@@ -66,28 +66,10 @@ jobs:
       - name: Tar files
         run: tar -czf dist.tar.gz bin bot config public src templates vendor .env
       
-      - uses: actions/upload-artifact@v1
-        with:
-          name: dist
-          path: dist.tar.gz
-
-  deploy-live:
-    runs-on: [ubuntu-latest]
-    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
-    needs: package
-    strategy:
-        fail-fast: false
-
-    steps:
-      - name: Download dist
-        uses: actions/download-artifact@v1
-        with:
-          name: dist
-
       - name: Copy dist.tar.gz to server via scp
         uses: garygrossgarten/github-action-scp@release
         with:
-          local: dist/dist.tar.gz
+          local: dist.tar.gz
           remote: ${{ secrets.DEPLOY_PATH }}/dist.tar.gz
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
