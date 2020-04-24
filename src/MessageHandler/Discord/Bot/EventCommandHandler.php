@@ -72,7 +72,7 @@ class EventCommandHandler implements MessageHandlerInterface
         }
 
         $discordMessage = (new DiscordEmbedsMessage())
-            ->setTitle($event->getName())
+            ->setTitle('['.$event->getId().'] '.$event->getName())
             ->setAuthorIcon('https://cdn.discordapp.com/icons/'.$guild->getId().'/'.$guild->getIcon().'.png')
             ->setAuthorName($guild->getName())
             ->setDescription($event->getDescription() ?? '')
@@ -80,8 +80,7 @@ class EventCommandHandler implements MessageHandlerInterface
                 'Date and Time',
                 $user->toUserTimeString($event->getStart()).PHP_EOL.'(in your timezone: '.$user->getTimezone().')',
                 true
-            )
-            ->addField('Event ID', $event->getId(), true);
+            );
         $discordMessage->setContent($user->getDiscordMention());
         foreach (EsoRoleUtility::toArray() as $roleId => $roleName) {
             $attendees = $event->getAttendeesByRole($roleId);
