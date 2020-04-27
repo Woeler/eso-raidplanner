@@ -17,6 +17,7 @@ use App\Service\DiscordBotService;
 use App\Utility\EsoClassUtility;
 use App\Utility\EsoRoleUtility;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 use Woeler\DiscordPhp\Message\DiscordTextMessage;
 
@@ -41,17 +42,24 @@ class EventCommandHandler implements MessageHandlerInterface
      * @var DiscordBotService
      */
     private $discordBotService;
+    
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $router;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,
         EventRepository $eventRepository,
         UserRepository $userRepository,
-        DiscordBotService $discordBotService
+        DiscordBotService $discordBotService,
+        UrlGeneratorInterface $router
     ) {
         $this->discordGuildRepository = $discordGuildRepository;
         $this->eventRepository = $eventRepository;
         $this->userRepository = $userRepository;
         $this->discordBotService = $discordBotService;
+        $this->router = $router;
     }
 
     public function __invoke(EventCommandMessage $message)
@@ -73,6 +81,11 @@ class EventCommandHandler implements MessageHandlerInterface
 
         $discordMessage = (new DiscordEmbedsMessage())
             ->setTitle('['.$event->getId().'] '.$event->getName())
+            ->setUrl($this->router->generate(
+                'guild_event_view',
+                ['guildId' => $guild->getId(), 'eventId' => $event->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ))
             ->setAuthorIcon('https://cdn.discordapp.com/icons/'.$guild->getId().'/'.$guild->getIcon().'.png')
             ->setAuthorName($guild->getName())
             ->setDescription($event->getDescription() ?? '')
