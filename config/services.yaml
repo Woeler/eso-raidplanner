@@ -5,6 +5,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     discord.bot.clientid: '%env(DISCORD_BOT_CLIENT_ID)%'
+    router.request_context.host: 'esoraidplanner.com'
+    router.request_context.scheme: 'https'
 
 services:
     # default configuration for services in *this* file
