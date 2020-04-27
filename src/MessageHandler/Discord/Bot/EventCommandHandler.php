@@ -73,6 +73,11 @@ class EventCommandHandler implements MessageHandlerInterface
 
         $discordMessage = (new DiscordEmbedsMessage())
             ->setTitle('['.$event->getId().'] '.$event->getName())
+            ->setUrl($this->router->generate(
+                'guild_event_view',
+                ['guildId' => $guild->getId(), 'eventId' => $event->getId()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            ))
             ->setAuthorIcon('https://cdn.discordapp.com/icons/'.$guild->getId().'/'.$guild->getIcon().'.png')
             ->setAuthorName($guild->getName())
             ->setDescription($event->getDescription() ?? '')
