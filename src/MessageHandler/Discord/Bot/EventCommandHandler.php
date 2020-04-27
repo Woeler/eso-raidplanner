@@ -42,17 +42,24 @@ class EventCommandHandler implements MessageHandlerInterface
      * @var DiscordBotService
      */
     private $discordBotService;
+    
+    /**
+     * @var UrlGeneratorInterface
+     */
+    private $router;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,
         EventRepository $eventRepository,
         UserRepository $userRepository,
-        DiscordBotService $discordBotService
+        DiscordBotService $discordBotService,
+        UrlGeneratorInterface $router
     ) {
         $this->discordGuildRepository = $discordGuildRepository;
         $this->eventRepository = $eventRepository;
         $this->userRepository = $userRepository;
         $this->discordBotService = $discordBotService;
+        $this->router = $router;
     }
 
     public function __invoke(EventCommandMessage $message)
