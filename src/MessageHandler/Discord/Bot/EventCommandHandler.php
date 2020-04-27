@@ -17,6 +17,7 @@ use App\Service\DiscordBotService;
 use App\Utility\EsoClassUtility;
 use App\Utility\EsoRoleUtility;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 use Woeler\DiscordPhp\Message\DiscordTextMessage;
 
