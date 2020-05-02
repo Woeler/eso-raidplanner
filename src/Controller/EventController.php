@@ -223,7 +223,6 @@ class EventController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->entityManager->persist($event);
             $this->entityManager->flush();
-            $this->guildLoggerService->eventCreated($guild, $event);
             $this->addFlash('success', 'Event '.$event->getName().' updated.');
 
             return $this->redirectToRoute('guild_view', ['guildId' => $guildId]);
