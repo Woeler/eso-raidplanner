@@ -183,16 +183,20 @@
                 {% if attending %}
                     <div class="alert alert-success">You are attending this event.</div>
                 {% endif %}
-                {{ form_start(form) }}
-                {{ form_widget(form) }}
-                {{ form_end(form) }}
-                {% if attending %}
-                    {{ macros.linkbutton(
-                        path('guild_event_unattend', {guildId: guild.id, eventId: event.id}),
-                        'I\'m no longer attending',
-                        'danger btn-block',
-                        'times'
-                    ) }}
+                {% if event.start > new DateTime() %}
+                    {{ form_start(form) }}
+                    {{ form_widget(form) }}
+                    {{ form_end(form) }}
+                    {% if attending %}
+                        {{ macros.linkbutton(
+                            path('guild_event_unattend', {guildId: guild.id, eventId: event.id}),
+                            'I\'m no longer attending',
+                            'danger btn-block',
+                            'times'
+                        ) }}
+                    {% endif %}
+                {% else %}
+                    This event has already passed.
                 {% endif %}
             </div>
         </div>
