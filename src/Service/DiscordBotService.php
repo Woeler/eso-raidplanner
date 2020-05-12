@@ -68,7 +68,7 @@ class DiscordBotService
     {
         if ($content instanceof DiscordEmbedsMessage) {
             $content->setFooterIcon('https://esoraidplanner.com/build/images/favicon/appicon.jpg');
-            $content->setFooterText('ESO Raidplanner by Woeler');
+            //$content->setFooterText('ESO Raidplanner by Woeler');
             $content->setColor(9660137);
         }
         $this->sendMessageWithArray($channelId, $content->formatForDiscord());
