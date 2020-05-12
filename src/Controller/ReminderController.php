@@ -196,7 +196,7 @@ class ReminderController extends AbstractController
                 UrlGeneratorInterface::ABSOLUTE_URL
             ))
             ->setFooterIcon('https://esoraidplanner.com/favicon/appicon.jpg')
-            ->setFooterText('ESO Raidplanner by Woeler');
+            ->setFooterText('Reminder: '.$reminder->getName());
 
         try {
             $discordBotService->sendMessage($reminder->getChannel()->getId(), $message);
