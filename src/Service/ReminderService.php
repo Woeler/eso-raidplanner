@@ -57,7 +57,7 @@ class ReminderService
         $embeds->setAuthorIcon('https://cdn.discordapp.com/icons/'.$this->event->getGuild()->getId().'/'.$this->event->getGuild()->getIcon().'.png');
         $embeds->setAuthorUrl($this->router->generate('guild_view', ['guildId' => $this->event->getGuild()->getId()], UrlGeneratorInterface::ABSOLUTE_URL));
         $embeds->setFooterIcon($this->appUrl.'/build/images/favicon/appicon.jpg');
-        $embeds->setFooterText('ESO Raidplanner by Woeler');
+        $embeds->setFooterText('Reminder: '.$notification->getName());
         if ($notification->isPingAttendees()) {
             $mentions = [];
             foreach ($this->event->getAttendees() as $attendee) {
