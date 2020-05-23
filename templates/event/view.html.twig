@@ -183,16 +183,22 @@
                 {% if attending %}
                     <div class="alert alert-success">You are attending this event.</div>
                 {% endif %}
-                {{ form_start(form) }}
-                {{ form_widget(form) }}
-                {{ form_end(form) }}
-                {% if attending %}
-                    {{ macros.linkbutton(
-                        path('guild_event_unattend', {guildId: guild.id, eventId: event.id}),
-                        'I\'m no longer attending',
-                        'danger btn-block',
-                        'times'
-                    ) }}
+                {% if not is_granted('attend', event) and not is_granted('unattend', event) %}
+                    Attending or changing your attendance information for this event is not possible.
+                {% else %}
+                    {% if is_granted('attend', event) %}
+                        {{ form_start(form) }}
+                        {{ form_widget(form) }}
+                        {{ form_end(form) }}
+                    {% endif %}
+                    {% if attending and is_granted('unattend', event) %}
+                        {{ macros.linkbutton(
+                            path('guild_event_unattend', {guildId: guild.id, eventId: event.id}),
+                            'I\'m no longer attending',
+                            'danger btn-block',
+                            'times'
+                        ) }}
+                    {% endif %}
                 {% endif %}
             </div>
         </div>

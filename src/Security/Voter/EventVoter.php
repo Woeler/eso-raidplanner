@@ -89,12 +89,16 @@ class EventVoter extends Voter
 
     private function canAttend(Event $event, User $user): bool
     {
-        return $event->getGuild()->isMember($user) && !$event->getLocked();
+        return $event->getGuild()->isMember($user)
+            && !$event->getLocked()
+            && $event->getStart()->getTimestamp() > (new \DateTime())->getTimestamp();
     }
 
     private function canUnattend(Event $event, User $user): bool
     {
-        return $event->getGuild()->isMember($user) && !$event->getLocked();
+        return $event->getGuild()->isMember($user)
+            && !$event->getLocked()
+            && $event->getStart()->getTimestamp() > (new \DateTime())->getTimestamp();
     }
 
     private function canChangeAttendeeStatus(Event $event, User $user): bool
