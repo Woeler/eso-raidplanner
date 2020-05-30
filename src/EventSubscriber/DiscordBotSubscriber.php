@@ -95,7 +95,7 @@ class DiscordBotSubscriber implements EventSubscriberInterface
          * $controller passed can be either a class or a Closure.
          * This is not usual in Symfony but it may happen.
          * If it is a class, it comes in array format
-         */
+         */;
         if (!is_array($controller)) {
             return;
         }
@@ -105,76 +105,79 @@ class DiscordBotSubscriber implements EventSubscriberInterface
             if ($this->token !== base64_decode($token)) {
                 throw new UnauthorizedHttpException('Invalid token');
             }
-            $json = json_decode($event->getRequest()->getContent(), true, 512, JSON_THROW_ON_ERROR);
-            if (!in_array($json['command'], $this->discordBotCommands, true)) {
-                throw new PreconditionFailedHttpException('Unknown command');
-            }
-            $guildId = $json['guildId'];
-            $userId = $json['userId'];
-            $channelId = $json['channelId'];
-            $guild = $this->guildRepository->find($guildId);
-            $user = $this->userRepository->findOneBy(['discordId' => $userId]);
 
-            if (null === $guild) {
-                $this->replyWithText(
-                    $user->getDiscordMention().' I do not know this guild.',
-                    $channelId
-                );
-                throw new PreconditionFailedHttpException('Guild unknown');
-            } elseif (!$guild->isActive()) {
-                $this->replyWithText(
-                    $user->getDiscordMention().' I know this guild, but the owner has not activated it yet.',
-                    $channelId
-                );
-                throw new PreconditionFailedHttpException('Guild inactive');
-            } elseif (null === $user) {
-                $userInfo = $this->discordBotService->getUser($userId);
-                $user = (new User())
-                    ->setDiscordId($userId)
-                    ->setUsername($userInfo['username'])
-                    ->setDiscordDiscriminator($userInfo['discriminator'])
-                    ->setAvatar($userInfo['avatar'] ?? 'unknown')
-                    ->setRoles($this->defaultRoles);
-                $this->entityManager->persist($user);
-                $this->entityManager->flush();
+            if ('entryPoint' === $controller[1]) {
+                $json = json_decode($event->getRequest()->getContent(), true, 512, JSON_THROW_ON_ERROR);
+                if (!in_array($json['command'], $this->discordBotCommands, true)) {
+                    throw new PreconditionFailedHttpException('Unknown command');
+                }
+                $guildId = $json['guildId'];
+                $userId = $json['userId'];
+                $channelId = $json['channelId'];
+                $guild = $this->guildRepository->find($guildId);
+                $user = $this->userRepository->findOneBy(['discordId' => $userId]);
 
-                $membership = (new GuildMembership())
-                    ->setGuild($guild)
-                    ->setUser($user)
-                    ->setRole(GuildMembership::ROLE_MEMBER);
-                $this->entityManager->persist($membership);
-                $this->entityManager->flush();
-                try {
-                    $this->replyWithDm(
-                        $user->getDiscordMention().' Welcome to ESO Raidplanner. This is your first time interacting with the system, so we have configured some basic things for you. You should be all set to use ESO Raidplanner in this guild now. Your timezone has been set to UTC by default. You may change this by using the `!timezone` command in your guild.',
-                        $userId
-                    );
-                } catch (UnexpectedDiscordApiResponseException $e) {
+                if (null === $guild) {
                     $this->replyWithText(
-                        $user->getDiscordMention() . ' Welcome to ESO Raidplanner. This is your first time interacting with the system, so we have configured some basic things for you. You should be all set to use ESO Raidplanner in this guild now. Your timezone has been set to UTC by default. You may change this by using the `!timezone` command.',
+                        $user->getDiscordMention() . ' I do not know this guild.',
+                        $channelId
+                    );
+                    throw new PreconditionFailedHttpException('Guild unknown');
+                } elseif (!$guild->isActive()) {
+                    $this->replyWithText(
+                        $user->getDiscordMention() . ' I know this guild, but the owner has not activated it yet.',
+                        $channelId
+                    );
+                    throw new PreconditionFailedHttpException('Guild inactive');
+                } elseif (null === $user) {
+                    $userInfo = $this->discordBotService->getUser($userId);
+                    $user = (new User())
+                        ->setDiscordId($userId)
+                        ->setUsername($userInfo['username'])
+                        ->setDiscordDiscriminator($userInfo['discriminator'])
+                        ->setAvatar($userInfo['avatar'] ?? 'unknown')
+                        ->setRoles($this->defaultRoles);
+                    $this->entityManager->persist($user);
+                    $this->entityManager->flush();
+
+                    $membership = (new GuildMembership())
+                        ->setGuild($guild)
+                        ->setUser($user)
+                        ->setRole(GuildMembership::ROLE_MEMBER);
+                    $this->entityManager->persist($membership);
+                    $this->entityManager->flush();
+                    try {
+                        $this->replyWithDm(
+                            $user->getDiscordMention() . ' Welcome to ESO Raidplanner. This is your first time interacting with the system, so we have configured some basic things for you. You should be all set to use ESO Raidplanner in this guild now. Your timezone has been set to UTC by default. You may change this by using the `!timezone` command in your guild.',
+                            $userId
+                        );
+                    } catch (UnexpectedDiscordApiResponseException $e) {
+                        $this->replyWithText(
+                            $user->getDiscordMention() . ' Welcome to ESO Raidplanner. This is your first time interacting with the system, so we have configured some basic things for you. You should be all set to use ESO Raidplanner in this guild now. Your timezone has been set to UTC by default. You may change this by using the `!timezone` command.',
+                            $channelId
+                        );
+                    }
+                } elseif (!$guild->isMember($user)) {
+                    $membership = (new GuildMembership())
+                        ->setGuild($guild)
+                        ->setUser($user)
+                        ->setRole(GuildMembership::ROLE_MEMBER);
+                    $this->entityManager->persist($membership);
+                    $this->entityManager->flush();
+                    $this->replyWithText(
+                        $user->getDiscordMention() . ' You were not yet a member of this guild on ESO Raidplanner, you have now been added to this guild.',
                         $channelId
                     );
                 }
-            } elseif (!$guild->isMember($user)) {
-                $membership = (new GuildMembership())
-                    ->setGuild($guild)
-                    ->setUser($user)
-                    ->setRole(GuildMembership::ROLE_MEMBER);
-                $this->entityManager->persist($membership);
-                $this->entityManager->flush();
-                $this->replyWithText(
-                    $user->getDiscordMention().' You were not yet a member of this guild on ESO Raidplanner, you have now been added to this guild.',
-                    $channelId
-                );
-            }
-            if (isset($json['userNick'])) {
-                $membership = $this->guildMembershipRepository->findOneBy(['guild' => $guild, 'user' => $user]);
-                if (null !== $membership) {
-                    $membership->setNickname(
-                        urldecode($json['userNick']) === $user->getUsername() ? null : urldecode($json['userNick'])
-                    );
-                    $this->entityManager->persist($membership);
-                    $this->entityManager->flush();
+                if (isset($json['userNick'])) {
+                    $membership = $this->guildMembershipRepository->findOneBy(['guild' => $guild, 'user' => $user]);
+                    if (null !== $membership) {
+                        $membership->setNickname(
+                            urldecode($json['userNick']) === $user->getUsername() ? null : urldecode($json['userNick'])
+                        );
+                        $this->entityManager->persist($membership);
+                        $this->entityManager->flush();
+                    }
                 }
             }
         }

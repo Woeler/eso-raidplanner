@@ -17,6 +17,10 @@ use App\Message\Discord\Bot\EventsCommandMessage;
 use App\Message\Discord\Bot\HelpCommandMessage;
 use App\Message\Discord\Bot\TimezoneCommandMessage;
 use App\Message\Discord\Bot\UnattendCommandMessage;
+use App\Repository\DiscordGuildRepository;
+use App\Repository\GuildMembershipRepository;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -72,6 +76,47 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
                 break;
             default:
                 return Response::create('Unknown command', Response::HTTP_BAD_REQUEST);
+        }
+
+        return Response::create('ok', Response::HTTP_OK);
+    }
+
+    /**
+     * @Route("/nickname", name="bot_nickname", methods={"POST"})
+     *
+     * @param Request $request
+     * @param GuildMembershipRepository $guildMembershipRepository
+     * @param DiscordGuildRepository $guildRepository
+     * @param UserRepository $userRepository
+     * @param EntityManagerInterface $entityManager
+     * @return Response
+     */
+    public function nicknameChange(
+        Request $request,
+        GuildMembershipRepository $guildMembershipRepository,
+        DiscordGuildRepository $guildRepository,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $json = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+
+        if (!array_key_exists('userId', $json) || !array_key_exists('guildId', $json) || !array_key_exists('userNick', $json)) {
+            return Response::create('Missing parameters', Response::HTTP_BAD_REQUEST);
+        }
+
+        $user = $userRepository->findOneBy(['discordId' => $json['userId']]);
+        $guild = $guildRepository->findOneBy(['id' => $json['guildId']]);
+
+        if (null === $user || null === $guild) {
+            return Response::create('Missing entities', Response::HTTP_BAD_REQUEST);
+        }
+
+        $membership = $guildMembershipRepository->findOneBy(['guild' => $guild, 'user' => $user]);
+
+        if (null !== $membership) {
+            $membership->setNickname(urldecode($json['userNick']) === $user->getUsername() ? null : urldecode($json['userNick']));
+            $entityManager->persist($membership);
+            $entityManager->flush();
         }
 
         return Response::create('ok', Response::HTTP_OK);
