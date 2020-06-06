@@ -78,7 +78,7 @@
                         'calendar-week'
                     ) }}
                 {% endif %}
-                {% if guild.owner.discordId == app.user.discordId %}
+                {% if is_granted('view_settings', guild) %}
                     {{ macros.linkbutton(
                         path('guild_settings', {guildId: guild.id}),
                         'Guild Settings',

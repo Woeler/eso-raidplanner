@@ -41,3 +41,4 @@ yarn-error.log
 /bot/node_modules/
 /bot/config.json
 /.ddev/commands/host/launch
+/bin/sql-formatter

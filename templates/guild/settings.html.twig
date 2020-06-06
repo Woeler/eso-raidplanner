@@ -35,51 +35,54 @@
                 <div class="mt-3"></div>
             {% endif %}
 
-            <div class="card">
-                <div class="card-header">
-                    <div class="float-right">
+            {% if is_granted('sync_discord_channels', guild) %}
+                <div class="card">
+                    <div class="card-header">
+                        <div class="float-right">
+                            {{
+                            macros.linkbutton(
+                                path('guild_settings_discord_sync', {guildId: guild.id}),
+                                'Refresh channels list',
+                                'info',
+                                'sync'
+                            )
+                            }}
+                        </div>
+                        Discord Channels
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            The channels listed are the channels <strong>to which the bot has access</strong>.
+                        </div>
+                        <table class="table">
+                            {% for channel in guild.discordChannels %}
+                                <tr>
+                                    <td>{{ channel.name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+                <div class="mt-3"></div>
+            {% endif %}
+
+            {% if is_granted('deactivate', guild) %}
+                <div class="card">
+                    <div class="card-header">
+                        Danger zone
+                    </div>
+                    <div class="card-body">
                         {{
                         macros.linkbutton(
-                            path('guild_settings_discord_sync', {guildId: guild.id}),
-                            'Refresh channels list',
-                            'info',
-                            'sync'
+                            path('guild_deactivate', {guildId: guild.id}),
+                            'Deactivate Guild',
+                            'danger btn-block',
+                            'trash'
                         )
                         }}
                     </div>
-                    Discord Channels
                 </div>
-                <div class="card-body">
-                    <div class="alert alert-info">
-                        The channels listed are the channels <strong>to which the bot has access</strong>.
-                    </div>
-                    <table class="table">
-                        {% for channel in guild.discordChannels %}
-                            <tr>
-                                <td>{{ channel.name }}</td>
-                            </tr>
-                        {% endfor %}
-                    </table>
-                </div>
-            </div>
-
-            <div class="mt-3"></div>
-
-            <div class="card">
-                <div class="card-header">
-                    Danger zone
-                </div>
-                <div class="card-body">
-                    {{
-                    macros.linkbutton(
-                        path('guild_deactivate', {guildId: guild.id}),
-                        'Deactivate Guild',
-                        'danger btn-block',
-                        'trash'
-                    )
-                    }}
-                </div>
-            </div>
+            {% endif %}
         </div>
     {% endif %}
 {% endblock %}
