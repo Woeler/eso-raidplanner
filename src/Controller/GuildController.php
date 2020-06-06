@@ -22,6 +22,7 @@ use App\Security\Voter\GuildVoter;
 use App\Service\DiscordBotService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -130,6 +131,36 @@ class GuildController extends AbstractController
             'guild/members.html.twig',
             [
                 'guild' => $guild,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/{guildId}/past-events", name="past_events")
+     * @IsGranted("ROLE_USER")
+     *
+     * @param Request $request
+     * @param string $guildId
+     * @param PaginatorInterface $paginator
+     * @return Response
+     */
+    public function pastEvents(Request $request, string $guildId, PaginatorInterface $paginator): Response
+    {
+        $guild = $this->discordGuildRepository->findOneBy(['id' => $guildId]);
+        $this->denyAccessUnlessGranted(GuildVoter::VIEW_PAST_EVENTS, $guild);
+        $events = $this->eventRepository->findPastEventsForGuild($guild);
+
+        $pagination = $paginator->paginate(
+            $events,
+            $request->query->getInt('page', 1),
+            25
+        );
+
+        return $this->render(
+            'guild/past_events.html.twig',
+            [
+                'guild' => $guild,
+                'paginator' => $pagination,
             ]
         );
     }

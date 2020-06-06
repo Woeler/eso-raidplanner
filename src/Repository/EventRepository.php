@@ -103,6 +103,24 @@ class EventRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param DiscordGuild $guild
+     * @return Event[]
+     */
+    public function findPastEventsForGuild(DiscordGuild $guild): array
+    {
+        $dateTime = new DateTime('now', new DateTimeZone('UTC'));
+
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.start < :now')
+            ->andWhere('e.guild = :guild')
+            ->setParameter('now', $dateTime->format('Y-m-d H:i:s'))
+            ->setParameter('guild', $guild)
+            ->orderBy('e.start', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @param User $user
      * @return Event[]
      */

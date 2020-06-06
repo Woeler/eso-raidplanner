@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+{% import 'macros/macros.html.twig' as macros %}
+{% block title %}Past events{% endblock %}
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                {% if guild.icon is not null %}
+                    <img class="avatar rounded-circle"
+                         src="{{ guild.getFullIconUrl() }}" width="32"
+                         height="32"/>
+                {% endif %}
+                <strong><a href="{{ path('guild_view', {'guildId': guild.id}) }}">
+                        {{ guild.name }}
+                    </a>
+                    - Past events</strong>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Attendees</th>
+                        <th>Date/Time</th>
+                        <th class="text-right"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for event in paginator %}
+                        <tr>
+                            <td style="vertical-align: middle">{{ event.name }}</td>
+                            <td style="vertical-align: middle">{{ event.attendees|length }}</td>
+                            <td style="vertical-align: middle">{{ app.user.toUserTimeString(event.start) }}</td>
+                            <td class="text-right">
+                                {{ macros.linkbutton(
+                                    path('guild_event_view', {guildId: guild.id, eventId: event.id}),
+                                    'View Event',
+                                    'info',
+                                    'eye'
+                                ) }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="navigation">
+                {{ knp_pagination_render(paginator) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

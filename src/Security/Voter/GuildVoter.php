@@ -21,6 +21,8 @@ class GuildVoter extends Voter
 
     public const VIEW_MEMBERS = 'view_members';
 
+    public const VIEW_PAST_EVENTS = 'view_past_events';
+
     public const VIEW_SETTINGS = 'view_settings';
 
     public const CREATE_REMINDER = 'create_reminder';
@@ -46,7 +48,7 @@ class GuildVoter extends Voter
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
         return in_array($attribute, [
-            self::VIEW_SETTINGS, self::VIEW, self::VIEW_MEMBERS, self::CREATE_EVENT, self::CREATE_REMINDER, self::SYNC_DISCORD_CHANNELS, self::PROMOTE, self::DEMOTE, self::CREATE_RECURRING_EVENT, self::DEACTIVATE, self::UPDATE_NICKNAME, self::REMOVE_MEMBER,
+            self::VIEW_SETTINGS, self::VIEW, self::VIEW_MEMBERS, self::CREATE_EVENT, self::CREATE_REMINDER, self::SYNC_DISCORD_CHANNELS, self::PROMOTE, self::DEMOTE, self::CREATE_RECURRING_EVENT, self::DEACTIVATE, self::UPDATE_NICKNAME, self::REMOVE_MEMBER, self::VIEW_PAST_EVENTS,
             ], true)
             && $subject instanceof \App\Entity\DiscordGuild;
     }
@@ -85,6 +87,8 @@ class GuildVoter extends Voter
                 return $this->canUpdateNickname($subject, $user);
             case self::REMOVE_MEMBER:
                 return $this->canRemoveMember($subject, $user);
+            case self::VIEW_PAST_EVENTS:
+                return $this->canViewPastEvents($subject, $user);
         }
 
         return false;
@@ -148,5 +152,10 @@ class GuildVoter extends Voter
     public function canRemoveMember(DiscordGuild $guild, User $user): bool
     {
         return $guild->getOwner()->getId() === $user->getId();
+    }
+
+    public function canViewPastEvents(DiscordGuild $guild, User $user): bool
+    {
+        return $guild->isMember($user);
     }
 }

@@ -64,6 +64,12 @@
                     'info btn-block',
                     'users'
                 ) }}
+                {{ macros.linkbutton(
+                    path('guild_past_events', {'guildId': guild.id}),
+                    'Past events',
+                    'info btn-block',
+                    'redo'
+                ) }}
                 {% if guild.isAdmin(app.user) %}
                     {{ macros.linkbutton(
                         path('guild_reminder_list', {guildId: guild.id}),
