@@ -22,6 +22,8 @@ module.exports = (client, message) => {
 
     const https = require('https');
 
+    console.log(command);
+
     const data = {
         userId: message.author.id,
         channelId: message.channel.id,
@@ -45,7 +47,7 @@ module.exports = (client, message) => {
     };
 
     var req = https.request(options, (res) => {
-        //console.log('statusCode:', res.statusCode);
+        console.log('statusCode:', res.statusCode);
         //console.log('headers:', res.headers);
 
         res.on('data', (d) => {
