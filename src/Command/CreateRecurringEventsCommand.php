@@ -114,7 +114,8 @@ class CreateRecurringEventsCommand extends Command
                     ->setGuild($recurringEvent->getGuild())
                     ->setDescription($recurringEvent->getDescription())
                     ->setStart($start)
-                    ->setRecurringParent($recurringEvent);
+                    ->setRecurringParent($recurringEvent)
+                    ->setReminderRerouteChannel($recurringEvent->getReminderRerouteChannel());
 
                 $this->entityManager->persist($event);
                 $this->entityManager->flush();

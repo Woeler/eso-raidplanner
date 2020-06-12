@@ -81,7 +81,13 @@ class RecurringEvent
      * @Assert\NotNull()
      * @Assert\Positive()
      */
-    private $weekInterval = 1;
+    private int $weekInterval = 1;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=DiscordChannel::class)
+     * @ORM\JoinColumn(onDelete="SET NULL")
+     */
+    private ?DiscordChannel $reminderRerouteChannel = null;
 
     public function getId(): ?int
     {
@@ -199,5 +205,17 @@ class RecurringEvent
     public function __toString()
     {
         return $this->name.' ('.$this->guild->getName().')';
+    }
+
+    public function getReminderRerouteChannel(): ?DiscordChannel
+    {
+        return $this->reminderRerouteChannel;
+    }
+
+    public function setReminderRerouteChannel(?DiscordChannel $reminderRerouteChannel): self
+    {
+        $this->reminderRerouteChannel = $reminderRerouteChannel;
+
+        return $this;
     }
 }

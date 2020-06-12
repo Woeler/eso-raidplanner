@@ -9,8 +9,11 @@
 
 namespace App\Form;
 
+use App\Entity\DiscordChannel;
 use App\Entity\RecurringEvent;
 use App\Utility\TimezoneUtility;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -103,6 +106,24 @@ class RecurringEventType extends AbstractType
                     ],
                 ]
             )
+            ->add(
+                'reminderRerouteChannel',
+                EntityType::class,
+                [
+                    'class' => DiscordChannel::class,
+                    'empty_data' => '',
+                    'label' => 'Re-route reminders to the following channel for these events',
+                    'placeholder' => 'Use default channels',
+                    'help' => 'If empty, guild default is used.',
+                    'required' => false,
+                    'query_builder' => static function (EntityRepository $er) use ($options) {
+                        return $er->createQueryBuilder('u')
+                            ->where('u.guild = :guild')
+                            ->setParameter('guild', $options['guild']->getId())
+                            ->orderBy('u.name', 'ASC');
+                    },
+                ]
+            )
             ->add('submit', SubmitType::class, [
                 'label' => 'Save',
                 'attr' => ['class' => 'btn btn-primary pull-right'],
@@ -115,6 +136,7 @@ class RecurringEventType extends AbstractType
         $resolver->setDefaults([
             'data_class' => RecurringEvent::class,
             'timezone' => 'UTC',
+            'guild' => null,
         ]);
     }
 }
