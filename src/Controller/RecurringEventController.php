@@ -76,6 +76,27 @@ class RecurringEventController extends AbstractController
     }
 
     /**
+     * @Route("/{guildId}/recurring/{recurringEventId}", name="recurring_view", requirements={"recurringEventId"="\d+"})
+     * @IsGranted("ROLE_USER")
+     *
+     * @param string $guildId
+     * @param int $recurringEventId
+     * @return Response
+     */
+    public function viewRecurringEvent(string $guildId, int $recurringEventId): Response
+    {
+        $event = $this->recurringEventRepository->find($recurringEventId);
+        $this->denyAccessUnlessGranted(RecurringEventVoter::VIEW, $event);
+
+        return  $this->render(
+            'recurring_event/view.html.twig',
+            [
+                'event' => $event,
+            ]
+        );
+    }
+
+    /**
      * @Route("/{guildId}/recurring/create", name="recurring_create")
      * @IsGranted("ROLE_USER")
      *
@@ -123,6 +144,41 @@ class RecurringEventController extends AbstractController
             [
                 'form' => $form->createView(),
                 'guild' => $guild,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/{guildId}/recurring/{recurringEventId}/update", name="recurring_update", requirements={"recurringEventId"="\d+"})
+     * @IsGranted("ROLE_USER")
+     *
+     * @param Request $request
+     * @param string $guildId
+     * @param int $recurringEventId
+     * @return Response
+     */
+    public function updateRecurringEvent(Request $request, string $guildId, int $recurringEventId): Response
+    {
+        $event = $this->recurringEventRepository->find($recurringEventId);
+        $this->denyAccessUnlessGranted(RecurringEventVoter::UPDATE, $event);
+        $form = $this->createForm(RecurringEventType::class, $event, ['timezone' => $this->getUser()->getTimezone(), 'guild' => $event->getGuild(), 'update' => true]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
+
+            $this->addFlash('success', 'Reminder '.$event->getName().' created.');
+
+            return $this->redirectToRoute('guild_recurring_view', ['guildId' => $guildId, 'recurringEventId' => $recurringEventId]);
+        }
+
+        return $this->render(
+            'recurring_event/form.html.twig',
+            [
+                'form' => $form->createView(),
+                'guild' => $event->getGuild(),
+                'update' => true,
             ]
         );
     }

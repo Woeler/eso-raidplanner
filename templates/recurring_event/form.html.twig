@@ -16,6 +16,14 @@
                 Recurring Event
             </div>
             <div class="card-body">
+                {% if update ?? false %}
+                    <div class="alert alert-warning">
+                        Please note that recurring events only allow editing of their basic settings. If you wish to change dates and times, please create a new recurring event and delete the old one.
+                    </div>
+                    <div class="alert alert-info">
+                        Please note that changes made will only apply to events that will be created in the future. Existing events will not be modified.
+                    </div>
+                {% endif %}
                 {{ form_start(form) }}
                 {{ form_widget(form) }}
                 {{ form_end(form) }}

@@ -10,6 +10,7 @@
 namespace App\Entity;
 
 use DateTime;
+use DateTimeInterface;
 use DateTimeZone;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -529,6 +530,15 @@ class User implements UserInterface
     }
 
     /**
+     * @param DateTimeInterface $dateTime
+     * @return DateTimeInterface
+     */
+    public function toUserTime(DateTimeInterface $dateTime): DateTimeInterface
+    {
+        return $dateTime->setTimezone(new DateTimeZone($this->timezone ?? 'UTC'));
+    }
+
+    /**
      * @return string
      */
     public function getDiscordMention(): string
@@ -536,12 +546,12 @@ class User implements UserInterface
         return '<@'.$this->getDiscordId().'>';
     }
 
-    public function getDiscordTokenExpirationDate(): ?\DateTimeInterface
+    public function getDiscordTokenExpirationDate(): ?DateTimeInterface
     {
         return $this->discordTokenExpirationDate;
     }
 
-    public function setDiscordTokenExpirationDate(\DateTimeInterface $discordTokenExpirationDate): self
+    public function setDiscordTokenExpirationDate(DateTimeInterface $discordTokenExpirationDate): self
     {
         $this->discordTokenExpirationDate = $discordTokenExpirationDate;
 
