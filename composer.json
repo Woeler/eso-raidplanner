@@ -8,6 +8,7 @@
         "ext-iconv": "*",
         "ext-json": "*",
         "doctrine/doctrine-cache-bundle": "^1.4",
+        "doctrine/doctrine-migrations-bundle": "^2.0",
         "easycorp/easyadmin-bundle": "^2.3",
         "eluceo/ical": "^0.16.0",
         "erusev/parsedown": "^1.7",
