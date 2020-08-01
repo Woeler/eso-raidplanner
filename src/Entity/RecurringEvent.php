@@ -55,7 +55,6 @@ class RecurringEvent
      * @ORM\Column(type="datetime")
      * @Assert\NotNull()
      * @Assert\DateTime
-     * @Assert\GreaterThan("yesterday")
      */
     private $date;
 

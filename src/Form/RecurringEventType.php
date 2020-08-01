@@ -23,6 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class RecurringEventType extends AbstractType
 {
@@ -63,6 +64,7 @@ class RecurringEventType extends AbstractType
                         'date_widget' => 'single_text',
                         'time_widget' => 'single_text',
                         'label' => 'Recurring event start date and time',
+                        'constraints' => [new GreaterThan('yesterday')],
                     ]
                 )
                 ->add(
