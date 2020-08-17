@@ -127,7 +127,7 @@ class DiscordAuthenticator extends SocialAuthenticator
         $this->session->set('redirect_url', $routeUrl);
         
         return new RedirectResponse(
-            '/', // might be the site, where users choose their oauth provider
+            $this->router->generate('auth_discord_login'),
             Response::HTTP_TEMPORARY_REDIRECT
         );
     }
