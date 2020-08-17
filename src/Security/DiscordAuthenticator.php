@@ -21,6 +21,8 @@ use League\OAuth2\Client\Token\AccessToken;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -55,6 +57,11 @@ class DiscordAuthenticator extends SocialAuthenticator
     private $discordClient;
 
     /**
+     * @var SessionInterface
+     */
+    private $session;
+    
+    /**
      * @var array
      */
     private $defaultRoles;
@@ -70,6 +77,7 @@ class DiscordAuthenticator extends SocialAuthenticator
         RouterInterface $router,
         GuildMembershipRepository $guildMembershipRepository,
         DiscordClient $discordClient,
+        SessionInterface $session,
         array $defaultRoles,
         array $admins
     ) {
@@ -78,6 +86,7 @@ class DiscordAuthenticator extends SocialAuthenticator
         $this->router = $router;
         $this->guildMembershipRepository = $guildMembershipRepository;
         $this->discordClient = $discordClient;
+        $this->session = $session;
         $this->defaultRoles = $defaultRoles;
         $this->admins = $admins;
     }
@@ -106,8 +115,19 @@ class DiscordAuthenticator extends SocialAuthenticator
      */
     public function start(Request $request, AuthenticationException $authException = null)
     {
+        $routeName = $request->attributes->get('_route');
+        $routeParameters = $request->attributes->get('_route_params');
+
+        $routeUrl = $this->router->generate(
+            $routeName,
+            $routeParameters,
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+
+        $this->session->set('redirect_url', $routeUrl);
+        
         return new RedirectResponse(
-            '/', // might be the site, where users choose their oauth provider
+            $this->router->generate('auth_discord_login'),
             Response::HTTP_TEMPORARY_REDIRECT
         );
     }
@@ -235,7 +255,9 @@ class DiscordAuthenticator extends SocialAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
         // change "app_homepage" to some route in your app
-        $targetUrl = $this->router->generate('home');
+        $defaultTargetUrl = $this->router->generate('home');
+        
+        $targetUrl = $this->session->get('redirect_url', $defaultTargetUrl);
 
         return new RedirectResponse($targetUrl);
 
