@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -24,25 +24,13 @@ class CreateRecurringEventsCommand extends Command
 {
     protected static $defaultName = 'recurring:create';
 
-    /**
-     * @var RecurringEventRepository
-     */
-    private $recurringEventRepository;
+    private RecurringEventRepository $recurringEventRepository;
 
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
+    private EventRepository $eventRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var GuildLoggerService
-     */
-    private $guildLoggerService;
+    private GuildLoggerService $guildLoggerService;
 
     public function __construct(
         RecurringEventRepository $recurringEventRepository,
@@ -57,14 +45,12 @@ class CreateRecurringEventsCommand extends Command
         $this->guildLoggerService = $guildLoggerService;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setDescription('Creates recurring events.')
-        ;
+        $this->setDescription('Creates recurring events.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         foreach ($this->recurringEventRepository->findAll() as $recurringEvent) {
             $events = count($this->eventRepository->findFutureEventsByRecurring($recurringEvent));
@@ -133,5 +119,7 @@ class CreateRecurringEventsCommand extends Command
                 $this->entityManager->flush();
             }
         }
+
+        return 0;
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -23,20 +23,11 @@ class FetchSetsCommand extends Command
 {
     protected static $defaultName = 'sets:fetch';
 
-    /**
-     * @var ArmorSetRepository
-     */
-    private $armorSetRepository;
+    private ArmorSetRepository $armorSetRepository;
 
-    /**
-     * @var string
-     */
-    private $pmgToken;
+    private string $pmgToken;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(ArmorSetRepository $armorSetRepository, EntityManagerInterface $entityManager, string $pmgToken)
     {
@@ -46,12 +37,12 @@ class FetchSetsCommand extends Command
         $this->entityManager = $entityManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Add a short description for your command');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $token = new TokenAuth($this->pmgToken);
         $api = new SetApi($token);
@@ -59,7 +50,7 @@ class FetchSetsCommand extends Command
         try {
             $sets = $api->getAll();
         } catch (FailedPmgRequestException $e) {
-            return;
+            return 1;
         }
 
         foreach ($sets as $set) {
@@ -80,5 +71,7 @@ class FetchSetsCommand extends Command
         }
 
         $this->entityManager->flush();
+
+        return 0;
     }
 }

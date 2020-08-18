@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -25,15 +25,9 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class CharacterPresetController extends AbstractController
 {
-    /**
-     * @var CharacterPresetRepository
-     */
-    private $characterPresetRepository;
+    private CharacterPresetRepository $characterPresetRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(CharacterPresetRepository $characterPresetRepository, EntityManagerInterface $entityManager)
     {

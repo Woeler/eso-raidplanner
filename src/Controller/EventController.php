@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -38,30 +38,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class EventController extends AbstractController
 {
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
+    private DiscordGuildRepository $discordGuildRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
+    private EventRepository $eventRepository;
 
-    /**
-     * @var EventAttendeeRepository
-     */
-    private $eventAttendeeRepository;
+    private EventAttendeeRepository $eventAttendeeRepository;
 
-    /**
-     * @var GuildLoggerService
-     */
-    private $guildLoggerService;
+    private GuildLoggerService $guildLoggerService;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,

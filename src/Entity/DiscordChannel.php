@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -31,52 +31,35 @@ class DiscordChannel
     /**
      * @ORM\Id()
      * @ORM\Column(type="string")
-     * @var string
      */
-    private $id;
+    private ?string $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="DiscordGuild", inversedBy="discordChannels")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     * @var DiscordGuild
      */
-    private $guild;
+    private DiscordGuild $guild;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string
      */
-    private $name;
+    private string $name = '';
 
     /**
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $type;
+    private int $type = self::CHANNEL_TYPE_TEXT;
 
     /**
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $error;
+    private int $error = 0;
 
-    public function __construct()
-    {
-        $this->error = 0;
-    }
-
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @param string $id
-     * @return DiscordChannel
-     */
     public function setId(string $id): DiscordChannel
     {
         $this->id = $id;
@@ -84,18 +67,11 @@ class DiscordChannel
         return $this;
     }
 
-    /**
-     * @return DiscordGuild
-     */
     public function getGuild(): DiscordGuild
     {
         return $this->guild;
     }
 
-    /**
-     * @param DiscordGuild $guild
-     * @return DiscordChannel
-     */
     public function setGuild(DiscordGuild $guild): DiscordChannel
     {
         $this->guild = $guild;
@@ -103,18 +79,11 @@ class DiscordChannel
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     * @return DiscordChannel
-     */
     public function setName(string $name): DiscordChannel
     {
         $this->name = $name;
@@ -122,18 +91,11 @@ class DiscordChannel
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getType(): int
     {
         return $this->type;
     }
 
-    /**
-     * @param int $type
-     * @return DiscordChannel
-     */
     public function setType(int $type): DiscordChannel
     {
         $this->type = $type;
@@ -141,18 +103,11 @@ class DiscordChannel
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getError(): int
     {
         return $this->error;
     }
 
-    /**
-     * @param int $error
-     * @return DiscordChannel
-     */
     public function setError(int $error): DiscordChannel
     {
         $this->error = $error;

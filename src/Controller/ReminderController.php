@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -31,20 +31,11 @@ use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
  */
 class ReminderController extends AbstractController
 {
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
+    private DiscordGuildRepository $discordGuildRepository;
 
-    /**
-     * @var ReminderRepository
-     */
-    private $reminderRepository;
+    private ReminderRepository $reminderRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,

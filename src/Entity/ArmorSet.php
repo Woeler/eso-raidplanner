@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -19,39 +19,29 @@ class ArmorSet
     /**
      * @ORM\Id()
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string
      */
-    private $name;
+    private string $name = '';
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string
      */
-    private $slug;
+    private string $slug = '';
 
     public function __toString()
     {
         return $this->name;
     }
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     * @return ArmorSet
-     */
     public function setId(int $id): ArmorSet
     {
         $this->id = $id;
@@ -59,18 +49,11 @@ class ArmorSet
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     * @return ArmorSet
-     */
     public function setName(string $name): ArmorSet
     {
         $this->name = $name;
@@ -78,18 +61,11 @@ class ArmorSet
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getSlug(): string
     {
         return $this->slug;
     }
 
-    /**
-     * @param string $slug
-     * @return ArmorSet
-     */
     public function setSlug(string $slug): ArmorSet
     {
         $this->slug = $slug;

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -19,15 +19,9 @@ use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 
 class HelpMessageHandler implements MessageHandlerInterface
 {
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
+    private DiscordBotService $discordBotService;
 
     public function __construct(UserRepository $userRepository, DiscordBotService $discordBotService)
     {
@@ -35,9 +29,12 @@ class HelpMessageHandler implements MessageHandlerInterface
         $this->discordBotService = $discordBotService;
     }
 
-    public function __invoke(HelpCommandMessage $message)
+    public function __invoke(HelpCommandMessage $message): void
     {
         $user = $this->userRepository->findOneBy(['discordId' => $message->getRequestData()['userId']]);
+        if (null === $user) {
+            return;
+        }
         $discordMessage = (new DiscordEmbedsMessage())
             ->addField('List all events', '!events')
             ->addField('Show specific event', '!event [eventID]'.PHP_EOL.'**Example**: `!event 1`')

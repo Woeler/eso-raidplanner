@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -22,40 +22,19 @@ use Woeler\DiscordPhp\Message\DiscordTextMessage;
 
 class UnattendCommandHandler implements MessageHandlerInterface
 {
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
+    private DiscordGuildRepository $discordGuildRepository;
 
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
+    private EventRepository $eventRepository;
 
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /**
-     * @var EventAttendeeRepository
-     */
-    private $eventAttendeeRepository;
+    private EventAttendeeRepository $eventAttendeeRepository;
 
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
+    private DiscordBotService $discordBotService;
 
-    /**
-     * @var GuildLoggerService
-     */
-    private $guildLoggerService;
+    private GuildLoggerService $guildLoggerService;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,
@@ -75,12 +54,15 @@ class UnattendCommandHandler implements MessageHandlerInterface
         $this->entityManager = $entityManager;
     }
 
-    public function __invoke(UnattendCommandMessage $message)
+    public function __invoke(UnattendCommandMessage $message): void
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $message->getRequestData()['guildId']]);
         $event = $this->eventRepository->find(trim($message->getRequestData()['query']));
         $user = $this->userRepository->findOneBy(['discordId' => $message->getRequestData()['userId']]);
         $discordMessage =  new DiscordTextMessage();
+        if (null === $user || null === $guild) {
+            return;
+        }
         if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
             $discordMessage->setContent('I don\'t know that event.');
         } else {

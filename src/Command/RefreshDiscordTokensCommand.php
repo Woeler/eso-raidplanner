@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -22,20 +22,11 @@ class RefreshDiscordTokensCommand extends Command
 {
     protected static $defaultName = 'discord:tokens:refresh';
 
-    /**
-     * @var DiscordOauthService
-     */
-    private $discordOauthService;
+    private DiscordOauthService $discordOauthService;
 
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(DiscordOauthService $discordOauthService, UserRepository $userRepository, EntityManagerInterface $entityManager)
     {
@@ -45,14 +36,12 @@ class RefreshDiscordTokensCommand extends Command
         $this->entityManager = $entityManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setDescription('Refreshes Discord tokens that almost expired')
-        ;
+        $this->setDescription('Refreshes Discord tokens that almost expired');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $users = $this->userRepository->findWhereTokenAlmostExpires();
 
@@ -74,5 +63,7 @@ class RefreshDiscordTokensCommand extends Command
         }
 
         $this->entityManager->flush();
+
+        return 0;
     }
 }

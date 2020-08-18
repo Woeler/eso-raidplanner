@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -23,29 +23,29 @@ class GuildLog
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $channel;
+    private string $channel = '';
 
     /**
      * @ORM\Column(type="json")
      */
-    private $data = [];
+    private array $data = [];
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    private \DateTimeInterface $createdAt;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getChannel(): ?string
+    public function getChannel(): string
     {
         return $this->channel;
     }
@@ -57,7 +57,7 @@ class GuildLog
         return $this;
     }
 
-    public function getData(): ?array
+    public function getData(): array
     {
         return $this->data;
     }

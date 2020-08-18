@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -19,20 +19,11 @@ use Woeler\DiscordPhp\Message\DiscordTextMessage;
 
 class TimezoneCommandHandler implements MessageHandlerInterface
 {
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
+    private DiscordBotService $discordBotService;
 
     public function __construct(
         UserRepository $userRepository,
@@ -44,10 +35,14 @@ class TimezoneCommandHandler implements MessageHandlerInterface
         $this->discordBotService = $discordBotService;
     }
 
-    public function __invoke(TimezoneCommandMessage $message)
+    public function __invoke(TimezoneCommandMessage $message): void
     {
         $timezone = trim($message->getRequestData()['query']);
         $user = $this->userRepository->findOneBy(['discordId' => $message->getRequestData()['userId']]);
+
+        if (null === $user) {
+            return;
+        }
 
         $discordMessage = new DiscordTextMessage();
         if (array_key_exists($timezone, TimezoneUtility::timeZones())) {

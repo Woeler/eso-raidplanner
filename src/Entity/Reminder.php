@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -22,80 +22,59 @@ class Reminder
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string
      * @Assert\NotNull()
      * @Assert\NotBlank()
      * @Assert\Length(min=1,max=200)
      */
-    private $name;
+    private string $name = '';
 
     /**
      * @ManyToOne(targetEntity="DiscordChannel")
      * @ORM\JoinColumn(name="discord_channel_id", referencedColumnName="id", nullable=true,onDelete="SET NULL")
-     * @var DiscordChannel
      */
-    private $channel;
+    private ?DiscordChannel $channel = null;
 
     /**
      * @ManyToOne(targetEntity="DiscordGuild", inversedBy="reminders")
      * @ORM\JoinColumn(onDelete="CASCADE")
-     * @var DiscordGuild
      */
-    private $guild;
+    private DiscordGuild $guild;
 
     /**
      * @ORM\Column(type="text")
-     * @var string
      * @Assert\Length(max=2000)
      */
-    private $text;
+    private string $text = '';
 
     /**
      * @ORM\Column(type="integer")
-     * @var int
      * @Assert\NotNull()
      * @Assert\Positive()
      */
-    private $minutesToTrigger;
+    private int $minutesToTrigger = 1;
 
     /**
      * @ORM\Column(type="boolean")
-     * @var bool
      * @Assert\NotNull()
      */
-    private $detailedInfo;
+    private bool $detailedInfo = false;
 
     /**
      * @ORM\Column(type="boolean")
-     * @var bool
      * @Assert\NotNull()
      */
-    private $pingAttendees;
+    private bool $pingAttendees = false;
 
-    public function __construct()
-    {
-        $this->detailedInfo = false;
-        $this->pingAttendees = false;
-    }
-
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     * @return Reminder
-     */
     public function setId(int $id): Reminder
     {
         $this->id = $id;
@@ -103,18 +82,11 @@ class Reminder
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     * @return Reminder
-     */
     public function setName(string $name): Reminder
     {
         $this->name = $name;
@@ -122,18 +94,11 @@ class Reminder
         return $this;
     }
 
-    /**
-     * @return DiscordChannel
-     */
     public function getChannel(): ?DiscordChannel
     {
         return $this->channel;
     }
 
-    /**
-     * @param DiscordChannel $channel
-     * @return Reminder
-     */
     public function setChannel(DiscordChannel $channel): Reminder
     {
         $this->channel = $channel;
@@ -141,18 +106,11 @@ class Reminder
         return $this;
     }
 
-    /**
-     * @return DiscordGuild
-     */
-    public function getGuild(): ?DiscordGuild
+    public function getGuild(): DiscordGuild
     {
         return $this->guild;
     }
 
-    /**
-     * @param DiscordGuild $guild
-     * @return Reminder
-     */
     public function setGuild(DiscordGuild $guild): Reminder
     {
         $this->guild = $guild;
@@ -160,18 +118,11 @@ class Reminder
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getText(): ?string
     {
         return $this->text;
     }
 
-    /**
-     * @param string $text
-     * @return Reminder
-     */
     public function setText(string $text): Reminder
     {
         $this->text = $text;
@@ -179,18 +130,11 @@ class Reminder
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getMinutesToTrigger(): ?int
     {
         return $this->minutesToTrigger;
     }
 
-    /**
-     * @param int $minutesToTrigger
-     * @return Reminder
-     */
     public function setMinutesToTrigger(int $minutesToTrigger): Reminder
     {
         $this->minutesToTrigger = $minutesToTrigger;
@@ -198,18 +142,11 @@ class Reminder
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isDetailedInfo(): bool
     {
         return $this->detailedInfo;
     }
 
-    /**
-     * @param bool $detailedInfo
-     * @return Reminder
-     */
     public function setDetailedInfo(bool $detailedInfo): Reminder
     {
         $this->detailedInfo = $detailedInfo;
@@ -217,18 +154,11 @@ class Reminder
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isPingAttendees(): bool
     {
         return $this->pingAttendees;
     }
 
-    /**
-     * @param bool $pingAttendees
-     * @return Reminder
-     */
     public function setPingAttendees(bool $pingAttendees): Reminder
     {
         $this->pingAttendees = $pingAttendees;

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -11,6 +11,8 @@ namespace App\Entity;
 
 use App\Entity\Traits\HasEsoClass;
 use App\Entity\Traits\HasEsoRole;
+use App\Utility\EsoClassUtility;
+use App\Utility\EsoRoleUtility;
 use App\Utility\HtmlUtility;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -31,7 +33,7 @@ class CharacterPreset
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -39,49 +41,49 @@ class CharacterPreset
      * @Assert\NotBlank()
      * @Assert\Length(min=1,max=200)
      */
-    private $name;
+    private string $name = '';
 
     /**
      * @ORM\Column(type="integer")
      * @Assert\NotNull()
      * @Assert\Positive()
      */
-    private $class;
+    private int $class = EsoClassUtility::CLASS_DRAGONKNIGHT;
 
     /**
      * @ORM\Column(type="integer")
      * @Assert\NotNull()
      * @Assert\Positive()
      */
-    private $role;
+    private int $role = EsoRoleUtility::ROLE_TANK;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\ArmorSet")
      */
-    private $sets;
+    private Collection $sets;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="characterPresets")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
-    private $user;
+    private User $user;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      * @Assert\Length(max=5000)
      */
-    private $notes;
+    private ?string $notes = null;
 
     /**
      * @ORM\Column(type="boolean", options={"default":"0"})
      * @Assert\NotNull()
      */
-    private $notesPublic = false;
+    private bool $notesPublic = false;
 
     /**
      * @ORM\Column(type="text", nullable=true)
      */
-    private $notesHtml;
+    private ?string $notesHtml = null;
 
     public function __construct()
     {
@@ -98,7 +100,7 @@ class CharacterPreset
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -160,12 +162,12 @@ class CharacterPreset
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 

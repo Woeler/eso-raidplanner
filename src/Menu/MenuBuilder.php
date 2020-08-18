@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -9,12 +9,11 @@
 
 namespace App\Menu;
 
-use App\Entity\GuildMembership;
 use App\Entity\User;
 use App\Repository\DiscordGuildRepository;
 use Knp\Menu\FactoryInterface;
+use Knp\Menu\ItemInterface;
 use Knp\Menu\Matcher\MatcherInterface;
-use Knp\Menu\MenuFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -22,46 +21,20 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MenuBuilder
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private ContainerInterface $container;
 
-    /**
-     * @var MenuFactory
-     */
-    private $factory;
+    private FactoryInterface $factory;
 
-    /**
-     * @var MatcherInterface
-     */
-    private $matcher;
+    private MatcherInterface $matcher;
 
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $authorizationChecker;
+    private AuthorizationCheckerInterface $authorizationChecker;
 
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
+    private TokenStorageInterface $tokenStorage;
 
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
+    private TranslatorInterface $translator;
 
-    private $discordGuildRepository;
+    private DiscordGuildRepository $discordGuildRepository;
 
-    /**
-     * @param ContainerInterface $container
-     * @param FactoryInterface $factory
-     * @param MatcherInterface $matcher
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param TokenStorageInterface $tokenStorage
-     * @param TranslatorInterface $translator
-     */
     public function __construct(
         ContainerInterface $container,
         FactoryInterface $factory,
@@ -80,10 +53,7 @@ class MenuBuilder
         $this->discordGuildRepository = $discordGuildRepository;
     }
 
-    /**
-     * @param array $options
-     */
-    public function mainDefault(array $options)
+    public function mainDefault(array $options): ItemInterface
     {
         $menu = $this->factory->createItem('root');
 
@@ -112,18 +82,15 @@ class MenuBuilder
                         ],
                     ]
                 );
-                /** @var GuildMembership $membership */
-                $i = 0;
                 foreach ($user->getActiveGuildMemberships() as $membership) {
                     $menu['guilds']->addChild(
-                        'guilds-' . $i,
+                        'guilds-' . $membership->getGuild()->getId(),
                         [
                             'route' => 'guild_view',
                             'routeParameters' => ['guildId' => $membership->getGuild()->getId()],
                             'label' => $membership->getGuild()->getName(),
                         ]
                     );
-                    $i++;
                 }
             }
         }
@@ -198,10 +165,7 @@ class MenuBuilder
         return $menu;
     }
 
-    /**
-     * @param array $options
-     */
-    public function mainProfile(array $options)
+    public function mainProfile(array $options): ItemInterface
     {
         $menu = $this->factory->createItem('root');
         /** @var User $user */
@@ -275,13 +239,8 @@ class MenuBuilder
         return $menu;
     }
 
-    /**
-     * @param array $options
-     */
-    public function mainFooter(array $options)
+    public function mainFooter(array $options): ItemInterface
     {
-        $menu = $this->factory->createItem('root');
-
-        return $menu;
+        return $this->factory->createItem('root');
     }
 }

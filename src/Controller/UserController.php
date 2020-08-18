@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -33,15 +33,9 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class UserController extends AbstractController
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
+    private DiscordGuildRepository $discordGuildRepository;
 
     public function __construct(EntityManagerInterface $entityManager, DiscordGuildRepository $discordGuildRepository)
     {
@@ -84,7 +78,7 @@ class UserController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function viewDiscordGuilds(Request $request): Response
+    public function viewDiscordGuilds(): Response
     {
         $guilds = $this->getUser()->getDiscordGuilds();
 
@@ -102,12 +96,11 @@ class UserController extends AbstractController
      * @Route("/guilds/refresh", name="guilds_refresh")
      * @IsGranted("ROLE_USER")
      *
-     * @param Request $request
      * @param DiscordOauthService $discordOauthService
      * @param GuildMembershipRepository $guildMembershipRepository
      * @return Response
      */
-    public function refreshDiscordGuilds(Request $request, DiscordOauthService $discordOauthService, GuildMembershipRepository $guildMembershipRepository): Response
+    public function refreshDiscordGuilds(DiscordOauthService $discordOauthService, GuildMembershipRepository $guildMembershipRepository): Response
     {
         try {
             $guilds = $discordOauthService->getGuilds();
@@ -154,14 +147,12 @@ class UserController extends AbstractController
      * @Route("/guilds/{guildId}/botCheck", name="guild_bot_check")
      *
      * @param string $guildId
-     * @param Request $request
      * @param DiscordBotService $discordBotService
      * @param DiscordChannelRepository $discordChannelRepository
      * @return Response
      */
     public function discordGuildBotIsActive(
         string $guildId,
-        Request $request,
         DiscordBotService $discordBotService,
         DiscordChannelRepository $discordChannelRepository
     ): Response {

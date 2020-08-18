@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -19,25 +19,11 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class CalendarListener
 {
-    /**
-     * @var JiraService
-     */
-    private $jiraService;
+    private EventRepository $eventRepository;
 
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
+    private TokenStorageInterface $tokenStorage;
 
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
+    private UrlGeneratorInterface $router;
 
     public function __construct(
         EventRepository $eventRepository,

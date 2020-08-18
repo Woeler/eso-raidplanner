@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -18,15 +18,9 @@ use Woeler\DiscordPhp\Message\DiscordTextMessage;
 
 class CharactersCommandHandler implements MessageHandlerInterface
 {
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
+    private DiscordBotService $discordBotService;
 
     public function __construct(
         UserRepository $userRepository,
@@ -36,9 +30,14 @@ class CharactersCommandHandler implements MessageHandlerInterface
         $this->discordBotService = $discordBotService;
     }
 
-    public function __invoke(CharactersCommandMessage $message)
+    public function __invoke(CharactersCommandMessage $message): void
     {
         $user = $this->userRepository->findOneBy(['discordId' => $message->getRequestData()['userId']]);
+
+        if (null === $user) {
+            return;
+        }
+
         $presets = $user->getCharacterPresets();
 
         if (0 === count($presets)) {

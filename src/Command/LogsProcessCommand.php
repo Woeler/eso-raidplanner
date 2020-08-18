@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -23,20 +23,11 @@ class LogsProcessCommand extends Command
 {
     protected static $defaultName = 'logs:process';
 
-    /**
-     * @var GuildLogRepository
-     */
-    private $guildLogRepository;
+    private GuildLogRepository $guildLogRepository;
 
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
+    private DiscordBotService $discordBotService;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         GuildLogRepository $guildLogRepository,
@@ -49,18 +40,16 @@ class LogsProcessCommand extends Command
         $this->entityManager = $entityManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setDescription('Sends Discord logs')
-        ;
+        $this->setDescription('Sends Discord logs');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $store = new SemaphoreStore();
         $factory = new LockFactory($store);
-        $lock = $factory->createLock(self::$defaultName, 600);
+        $lock = $factory->createLock((string)self::$defaultName, 600);
 
         if ($lock->acquire()) {
             $logs = $this->guildLogRepository->findAll();
@@ -78,5 +67,7 @@ class LogsProcessCommand extends Command
         } else {
             $output->writeln('Process already running.');
         }
+
+        return 0;
     }
 }

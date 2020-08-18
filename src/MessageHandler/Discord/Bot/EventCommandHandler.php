@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -23,30 +23,15 @@ use Woeler\DiscordPhp\Message\DiscordTextMessage;
 
 class EventCommandHandler implements MessageHandlerInterface
 {
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
+    private DiscordGuildRepository $discordGuildRepository;
 
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
+    private EventRepository $eventRepository;
 
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
-    
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
+    private DiscordBotService $discordBotService;
+
+    private UrlGeneratorInterface $router;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,
@@ -62,15 +47,21 @@ class EventCommandHandler implements MessageHandlerInterface
         $this->router = $router;
     }
 
-    public function __invoke(EventCommandMessage $message)
+    public function __invoke(EventCommandMessage $message): void
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $message->getRequestData()['guildId']]);
+        $user = $this->userRepository->findOneBy(['discordId' => $message->getRequestData()['userId']]);
+
+        if (null === $user || null === $guild) {
+            return;
+        }
+
         if (empty(trim($message->getRequestData()['query']))) {
             $event = $this->eventRepository->findFirstFutureEvent($guild);
         } else {
             $event = $this->eventRepository->find(trim($message->getRequestData()['query']));
         }
-        $user = $this->userRepository->findOneBy(['discordId' => $message->getRequestData()['userId']]);
+
         if (null === $event || $event->getGuild()->getId() !== $guild->getId()) {
             $discordMessage = new DiscordTextMessage();
             $discordMessage->setContent($user->getDiscordMention().' I don\'t know that event.');

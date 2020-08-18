@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -11,6 +11,8 @@ namespace App\Entity;
 
 use App\Entity\Traits\HasEsoClass;
 use App\Entity\Traits\HasEsoRole;
+use App\Utility\EsoClassUtility;
+use App\Utility\EsoRoleUtility;
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -36,247 +38,169 @@ class EventAttendee
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="events")
      * @ORM\JoinColumn(onDelete="CASCADE")
-     * @var User
      */
-    private $user;
+    private User $user;
 
     /**
      * @ManyToOne(targetEntity="Event", inversedBy="attendees")
      * @ORM\JoinColumn(onDelete="CASCADE")
-     * @var Event
      */
-    private $event;
+    private Event $event;
 
     /**
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $status;
+    private int $status = EventAttendee::STATUS_ATTENDING;
 
     /**
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $class;
+    private int $class = EsoClassUtility::CLASS_DRAGONKNIGHT;
 
     /**
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $role;
+    private int $role = EsoRoleUtility::ROLE_TANK;
 
     /**
      * @ORM\ManyToMany(targetEntity="ArmorSet")
-     * @var Collection|ArmorSet[]
      */
-    private $sets;
-
-    private $preset;
+    private Collection $sets;
 
     /**
      * @ORM\Column(type="datetime")
-     * @var DateTime
      */
-    private $createdAt;
+    private \DateTimeInterface $createdAt;
 
     /**
      * @ORM\Column(type="datetime")
-     * @var DateTime
      */
-    private $updatedAt;
+    private \DateTimeInterface $updatedAt;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\CharacterPreset")
      */
-    private $characterPreset;
+    private ?CharacterPreset $characterPreset = null;
 
     public function __construct()
     {
-        $this->status = self::STATUS_ATTENDING;
         $this->sets = new ArrayCollection();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     * @return EventAttendee
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    /**
-     * @param mixed $user
-     * @return EventAttendee
-     */
-    public function setUser($user)
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getEvent()
+    public function getEvent(): Event
     {
         return $this->event;
     }
 
-    /**
-     * @param mixed $event
-     * @return EventAttendee
-     */
-    public function setEvent($event)
+    public function setEvent(Event $event): self
     {
         $this->event = $event;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->status;
     }
 
-    /**
-     * @param mixed $status
-     * @return EventAttendee
-     */
-    public function setStatus($status)
+    public function setStatus(int $status): self
     {
         $this->status = $status;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getClass(): ?int
+    public function getClass(): int
     {
         return $this->class;
     }
 
-    /**
-     * @param mixed $class
-     * @return EventAttendee
-     */
-    public function setClass($class)
+    public function setClass(int $class): self
     {
         $this->class = $class;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getRole()
+    public function getRole(): int
     {
         return $this->role;
     }
 
-    /**
-     * @param mixed $role
-     * @return EventAttendee
-     */
-    public function setRole($role)
+    public function setRole(int $role): self
     {
         $this->role = $role;
 
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getSets(): Collection
     {
         return $this->sets;
     }
 
-    /**
-     * @param array $sets
-     * @return EventAttendee
-     */
-    public function setSets(array $sets)
+    public function setSets(array $sets): self
     {
         $this->sets = new ArrayCollection($sets);
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param mixed $createdAt
-     * @return EventAttendee
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): \DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    /**
-     * @param mixed $updatedAt
-     * @return EventAttendee
-     */
-    public function setUpdatedAt($updatedAt)
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getStatusEmoji(): string
     {
         if (self::STATUS_CONFIRMED === $this->status) {

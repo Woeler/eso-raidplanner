@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -32,10 +32,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DiscordBotController extends AbstractController implements TalksWithDiscordBotController
 {
-    /**
-     * @var MessageBusInterface
-     */
-    private $bus;
+    private MessageBusInterface $bus;
 
     public function __construct(MessageBusInterface $bus)
     {

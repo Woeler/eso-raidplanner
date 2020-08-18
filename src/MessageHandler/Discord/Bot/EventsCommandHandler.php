@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -20,30 +20,15 @@ use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 
 class EventsCommandHandler implements MessageHandlerInterface
 {
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
+    private DiscordGuildRepository $discordGuildRepository;
 
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
+    private EventRepository $eventRepository;
 
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
-    
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
+    private DiscordBotService $discordBotService;
+
+    private UrlGeneratorInterface $router;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,
@@ -59,11 +44,16 @@ class EventsCommandHandler implements MessageHandlerInterface
         $this->router = $router;
     }
 
-    public function __invoke(EventsCommandMessage $message)
+    public function __invoke(EventsCommandMessage $message): void
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $message->getRequestData()['guildId']]);
-        $events = $this->eventRepository->findFutureEventsForGuild($guild);
         $user = $this->userRepository->findOneBy(['discordId' => $message->getRequestData()['userId']]);
+
+        if (null === $user || null === $guild) {
+            return;
+        }
+
+        $events = $this->eventRepository->findFutureEventsForGuild($guild);
         $desc = '';
         foreach ($events as $event) {
             $eventUrl = $this->router->generate(

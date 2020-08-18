@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -26,25 +26,13 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class IcalController extends AbstractController
 {
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
+    private EventRepository $eventRepository;
 
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
+    private UrlGeneratorInterface $router;
 
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $guildRepository;
+    private DiscordGuildRepository $guildRepository;
 
     public function __construct(
         UserRepository $userRepository,

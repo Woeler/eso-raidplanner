@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -25,45 +25,21 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class AttendCommandHandler implements MessageHandlerInterface
 {
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
+    private DiscordGuildRepository $discordGuildRepository;
 
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
+    private EventRepository $eventRepository;
 
-    /**
-     * @var CharacterPresetRepository
-     */
-    private $characterPresetRepository;
+    private CharacterPresetRepository $characterPresetRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
+    private DiscordBotService $discordBotService;
 
-    /**
-     * @var EventAttendeeRepository
-     */
-    private $eventAttendeeRepository;
+    private EventAttendeeRepository $eventAttendeeRepository;
 
-    /**
-     * @var GuildLoggerService
-     */
-    private $guildLoggerService;
+    private GuildLoggerService $guildLoggerService;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,
@@ -85,13 +61,18 @@ class AttendCommandHandler implements MessageHandlerInterface
         $this->guildLoggerService = $guildLoggerService;
     }
 
-    public function __invoke(AttendCommandMessage $message)
+    public function __invoke(AttendCommandMessage $message): void
     {
         $guild = $this->discordGuildRepository->findOneBy(['id' => $message->getRequestData()['guildId']]);
+        $user = $this->userRepository->findOneBy(['discordId' => $message->getRequestData()['userId']]);
+
+        if (null === $user || null === $guild) {
+            return;
+        }
+
         $exploded = explode(' ', trim($message->getRequestData()['query']));
         $event = $this->eventRepository->find($exploded[0]);
         unset($exploded[0]);
-        $user = $this->userRepository->findOneBy(['discordId' => $message->getRequestData()['userId']]);
 
         $preset = $this->characterPresetRepository->findOneBy(
             [

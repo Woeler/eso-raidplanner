@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -11,15 +11,9 @@ namespace App\Message\Discord\Bot;
 
 abstract class AbstractBotCommandMessage implements BotCommandMessageInterface
 {
-    /**
-     * @var string
-     */
-    private $channelId;
+    private string $channelId;
 
-    /**
-     * @var array
-     */
-    private $requestData;
+    private array $requestData;
 
     public function __construct(string $channelId, array $requestData)
     {

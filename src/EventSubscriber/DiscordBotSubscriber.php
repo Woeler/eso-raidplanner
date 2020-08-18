@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -27,45 +27,21 @@ use Woeler\DiscordPhp\Message\DiscordTextMessage;
 
 class DiscordBotSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
+    private DiscordBotService $discordBotService;
 
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $guildRepository;
+    private DiscordGuildRepository $guildRepository;
 
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /**
-     * @var string
-     */
-    private $token;
+    private string $token;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    /**
-     * @var array
-     */
-    private $discordBotCommands;
+    private array $discordBotCommands;
 
-    /**
-     * @var array
-     */
-    private $defaultRoles;
+    private array $defaultRoles;
 
-    /**
-     * @var GuildMembershipRepository
-     */
-    private $guildMembershipRepository;
+    private GuildMembershipRepository $guildMembershipRepository;
 
     public function __construct(
         DiscordBotService $discordBotService,
@@ -91,11 +67,6 @@ class DiscordBotSubscriber implements EventSubscriberInterface
     {
         $controller = $event->getController();
 
-        /*
-         * $controller passed can be either a class or a Closure.
-         * This is not usual in Symfony but it may happen.
-         * If it is a class, it comes in array format
-         */;
         if (!is_array($controller)) {
             return;
         }

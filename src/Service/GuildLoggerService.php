@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -75,7 +75,7 @@ class GuildLoggerService
                 UrlGeneratorInterface::ABSOLUTE_URL
             ))
             ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription())
-            ->addField('Event ID', $event->getId());
+            ->addField('Event ID', (string)$event->getId());
 
         $this->persistLog($message, $guild->getLogChannel());
         $this->persistLog($message, $guild->getEventCreateChannel());

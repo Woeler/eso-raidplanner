@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -26,7 +26,7 @@ class DiscordLoginController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function return(Request $request)
+    public function return(Request $request): Response
     {
         return $this->redirectToRoute('home');
     }
@@ -38,11 +38,10 @@ class DiscordLoginController extends AbstractController
      * @param ClientRegistry $clientRegistry
      * @return Response
      */
-    public function login(Request $request, ClientRegistry $clientRegistry)
+    public function login(Request $request, ClientRegistry $clientRegistry): Response
     {
         return $clientRegistry
             ->getClient('discord')
-            ->redirect(['identify', 'guilds'], ['prompt' => 'none'])
-            ;
+            ->redirect(['identify', 'guilds'], ['prompt' => 'none']);
     }
 }

@@ -8,10 +8,12 @@ For the full license, see the license file distributed with this code.
 EOF;
 
 return PhpCsFixer\Config::create()
+    ->setRiskyAllowed(true)
     ->setRules([
     'header_comment' => [
                 'header' => $header
             ],
+   'declare_strict_types' => true,
    'psr0' => false,
    '@PSR2' => true,
    'blank_line_after_namespace' => true,

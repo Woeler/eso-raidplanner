@@ -47,7 +47,9 @@
         "wohali/oauth2-discord-new": "^1.0"
     },
     "require-dev": {
+        "roave/security-advisories": "dev-master",
         "friendsofphp/php-cs-fixer": "^2.15",
+        "phpstan/phpstan": "^0.12.37",
         "symfony/debug-pack": "*",
         "symfony/maker-bundle": "^1.0",
         "symfony/profiler-pack": "*",
@@ -92,6 +94,9 @@
         ],
         "cgl": [
             "mkdir -p var/php-cs-fixer/; php-cs-fixer fix --config build/.php_cs --format=junit > var/php-cs-fixer/php-cs-fixer.xml"
+        ],
+        "phpstan": [
+            "phpstan analyze --configuration build/phpstan.neon"
         ],
         "make:env": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

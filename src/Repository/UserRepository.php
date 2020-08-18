@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -11,7 +11,6 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 /**
@@ -40,7 +39,7 @@ class UserRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Collection $ids
+     * @param array $ids
      * @return array|User[]
      */
     public function findWherePatronAndNotIn(array $ids): array

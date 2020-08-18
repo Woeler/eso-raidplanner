@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -23,93 +23,80 @@ class DiscordGuild
     /**
      * @ORM\Id()
      * @ORM\Column(type="string")
-     * @var string
      */
-    private $id;
+    private ?string $id = null;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="discordGuilds")
      * @ORM\JoinColumn(name="owner_id", referencedColumnName="id", nullable=true)
-     * @var User
      */
-    private $owner;
+    private User $owner;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string
      */
-    private $icon;
+    private ?string $icon = null;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string
      */
-    private $name;
+    private string $name = '';
 
     /**
      * @ORM\OneToMany(targetEntity="GuildMembership", mappedBy="guild", fetch="EXTRA_LAZY", cascade={"persist"})
-     * @var Collection|GuildMembership[]
      */
-    private $members;
+    private Collection $members;
 
     /**
      * @ORM\OneToMany(targetEntity="DiscordChannel", mappedBy="guild")
      * @OrderBy({"name" = "ASC"})
-     * @var Collection|DiscordChannel[]
      */
-    private $discordChannels;
+    private Collection $discordChannels;
 
     /**
      * @ORM\Column(type="boolean")
-     * @var bool
      */
-    private $active;
+    private bool $active = false;
 
     /**
      * @ORM\Column(type="boolean")
-     * @var bool
      */
-    private $botActive;
+    private bool $botActive = false;
 
     /**
      * @ORM\OneToMany(targetEntity="Event", mappedBy="guild")
-     * @var Collection|Event[]
      */
-    private $events;
+    private Collection $events;
 
     /**
      * @ORM\OneToMany(targetEntity="Reminder", mappedBy="guild")
-     * @var Collection|Reminder[]
      */
-    private $reminders;
+    private Collection $reminders;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\DiscordChannel")
      * @ORM\JoinColumn(name="log_channel", referencedColumnName="id", nullable=true, onDelete="SET NULL")
-     * @var DiscordChannel
      */
-    private $logChannel;
+    private ?DiscordChannel $logChannel;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\RecurringEvent", mappedBy="guild", orphanRemoval=true)
      */
-    private $recurringEvents;
+    private Collection $recurringEvents;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\DiscordChannel")
      * @ORM\JoinColumn(name="event_create_channel", referencedColumnName="id", nullable=true, onDelete="SET NULL")
      */
-    private $eventCreateChannel;
+    private ?DiscordChannel $eventCreateChannel;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $icalId;
+    private ?string $icalId = null;
 
     public function __construct()
     {
-        $this->active = false;
-        $this->botActive = false;
         $this->members = new ArrayCollection();
         $this->discordChannels = new ArrayCollection();
         $this->reminders = new ArrayCollection();
@@ -117,63 +104,40 @@ class DiscordGuild
         $this->recurringEvents = new ArrayCollection();
     }
 
-    /**
-     * @return string
-     */
     public function getId(): string
     {
         return $this->getDiscordId();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDiscordId()
+    public function getDiscordId(): string
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $discordId
-     * @return DiscordGuild
-     */
-    public function setDiscordId($discordId)
+    public function setDiscordId(string $discordId): self
     {
         $this->id = $discordId;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getOwner()
+    public function getOwner(): User
     {
         return $this->owner;
     }
 
-    /**
-     * @param mixed $owner
-     * @return DiscordGuild
-     */
-    public function setOwner($owner)
+    public function setOwner(User $owner): self
     {
         $this->owner = $owner;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getIcon()
+    public function getIcon(): ?string
     {
         return $this->icon;
     }
 
-    /**
-     * @return string
-     */
     public function getFullIconUrl(): string
     {
         if (null !== $this->icon) {
@@ -183,48 +147,30 @@ class DiscordGuild
         return '/build/images/default_avatar.png';
     }
 
-    /**
-     * @param mixed $icon
-     * @return DiscordGuild
-     */
-    public function setIcon($icon)
+    public function setIcon(?string $icon): self
     {
         $this->icon = $icon;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param mixed $name
-     * @return DiscordGuild
-     */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isActive(): bool
     {
         return $this->active;
     }
 
-    /**
-     * @param bool $active
-     * @return DiscordGuild
-     */
     public function setActive(bool $active): self
     {
         $this->active = $active;
@@ -232,28 +178,18 @@ class DiscordGuild
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getBotActive()
+    public function getBotActive(): bool
     {
         return $this->botActive;
     }
 
-    /**
-     * @param mixed $botActive
-     * @return DiscordGuild
-     */
-    public function setBotActive($botActive)
+    public function setBotActive(bool $botActive): self
     {
         $this->botActive = $botActive;
 
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getEvents(): Collection
     {
         return $this->events;
@@ -312,7 +248,7 @@ class DiscordGuild
         return 0 !== count($u);
     }
 
-    public function getAdmins($excludeOwner = false): Collection
+    public function getAdmins(bool $excludeOwner = false): Collection
     {
         $u = $this->getMembers()->filter(function (GuildMembership $guildMembership) use ($excludeOwner) {
             if (!$excludeOwner) {
@@ -325,9 +261,6 @@ class DiscordGuild
         return $u;
     }
 
-    /**
-     * @return Collection
-     */
     public function getDiscordChannels(): Collection
     {
         return $this->discordChannels;
@@ -341,18 +274,11 @@ class DiscordGuild
         return $this->reminders;
     }
 
-    /**
-     * @return DiscordChannel
-     */
     public function getLogChannel(): ?DiscordChannel
     {
         return $this->logChannel;
     }
 
-    /**
-     * @param DiscordChannel $logChannel
-     * @return DiscordGuild
-     */
     public function setLogChannel(?DiscordChannel $logChannel): DiscordGuild
     {
         $this->logChannel = $logChannel;

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /*
  * This file is part of the ESO Raidplanner project.
@@ -25,25 +25,13 @@ class TriggerRemindersCommand extends Command
 {
     protected static $defaultName = 'reminders:trigger';
 
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
+    private DiscordBotService $discordBotService;
 
-    /**
-     * @var ReminderService
-     */
-    private $reminderService;
+    private ReminderService $reminderService;
 
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
+    private EventRepository $eventRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         DiscordBotService $discordBotService,
@@ -58,13 +46,12 @@ class TriggerRemindersCommand extends Command
         $this->entityManager = $entityManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
-        $this
-            ->setDescription('Add a short description for your command');
+        $this->setDescription('Add a short description for your command');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $now = new DateTime('now', new DateTimeZone('UTC'));
         $events = $this->eventRepository->findFutureEvents($now);
@@ -102,5 +89,7 @@ class TriggerRemindersCommand extends Command
         }
 
         $this->entityManager->flush();
+
+        return 0;
     }
 }

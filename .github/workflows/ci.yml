@@ -30,6 +30,11 @@ jobs:
 
       - name: (CGL) PHP
         run: php bin/php-cs-fixer fix --config build/.php_cs -v --dry-run --diff
+
+      - name: phpstan
+        run: composer phpstan
+        env:
+          COMPOSER_PROCESS_TIMEOUT: 1200
         
   deploy:
     runs-on: [ubuntu-latest]

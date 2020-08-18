@@ -1,0 +1,10 @@
+includes:
+	- %currentWorkingDirectory%/build/phpstan-baseline.neon
+
+parameters:
+	level: max
+	checkMissingIterableValueType: false
+	checkGenericClassInNonGenericObjectType: false
+
+	paths:
+		- %currentWorkingDirectory%/src/
