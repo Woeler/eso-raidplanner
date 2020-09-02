@@ -60,8 +60,8 @@ jobs:
       - name: Yarn build
         run: yarn build
       
-      - name: Install bot via npm
-        run: cd bot/ && npm install
+      - name: Install bot via yarn
+        run: cd bot/ && yarn install
 
       - name: Tar files
         run: tar -czf dist.tar.gz bin bot config public src templates vendor .env
