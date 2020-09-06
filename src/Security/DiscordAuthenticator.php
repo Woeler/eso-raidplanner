@@ -115,6 +115,11 @@ class DiscordAuthenticator extends SocialAuthenticator
      */
     public function start(Request $request, AuthenticationException $authException = null)
     {
+        $userAgent = $request->headers->get('User-Agent');
+        if (str_contains($userAgent, 'Discordbot')) {
+            return new Response(Response::HTTP_PRECONDITION_FAILED);
+        }
+
         $routeName = $request->attributes->get('_route');
         $routeParameters = $request->attributes->get('_route_params');
 
