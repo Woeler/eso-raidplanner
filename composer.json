@@ -1,6 +1,14 @@
 {
     "type": "project",
-    "license": "proprietary",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Woeler",
+            "email": "woeler@woeler.eu",
+            "role": "Developer",
+            "homepage": "https://woeler.dev"
+        }
+    ],
     "require": {
         "php": "^7.4",
         "ext-ctype": "*",
