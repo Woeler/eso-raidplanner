@@ -13,7 +13,7 @@ use App\Entity\GuildMembership;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method GuildMembership|null find($id, $lockMode = null, $lockVersion = null)

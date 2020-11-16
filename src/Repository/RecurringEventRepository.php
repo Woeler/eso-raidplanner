@@ -11,7 +11,7 @@ namespace App\Repository;
 
 use App\Entity\RecurringEvent;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method RecurringEvent|null find($id, $lockMode = null, $lockVersion = null)
