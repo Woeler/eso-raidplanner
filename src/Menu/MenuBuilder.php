@@ -173,7 +173,7 @@ class MenuBuilder
         $menu->addChild(
             'support',
             [
-                'uri' => 'https://woeler.tech',
+                'uri' => 'https://woeler.dev',
                 'label' => 'Support us',
                 'extras' => [
                     'icon' => 'patreon',
