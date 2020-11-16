@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e88f720d06ad20348bed011db4486483",
+    "content-hash": "da9622fba503cf3c5380a58f042f14e7",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -8736,21 +8736,27 @@
         },
         {
             "name": "tetranz/select2entity-bundle",
-            "version": "v2.10.1",
+            "version": "v3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tetranz/select2entity-bundle.git",
-                "reference": "1d4b184e41bdb76a61d7462b748d9cf0ecade47a"
+                "reference": "66f515417c609f20f49ff27d3980ffcf1b8f347b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tetranz/select2entity-bundle/zipball/1d4b184e41bdb76a61d7462b748d9cf0ecade47a",
-                "reference": "1d4b184e41bdb76a61d7462b748d9cf0ecade47a",
+                "url": "https://api.github.com/repos/tetranz/select2entity-bundle/zipball/66f515417c609f20f49ff27d3980ffcf1b8f347b",
+                "reference": "66f515417c609f20f49ff27d3980ffcf1b8f347b",
                 "shasum": ""
             },
             "require": {
                 "doctrine/orm": ">=2.4",
-                "php": ">=5.4.0",
+                "php": ">=7.1.3",
+                "symfony/config": ">=4.0",
+                "symfony/dependency-injection": ">=4.0",
+                "symfony/form": ">=4.0",
+                "symfony/http-kernel": ">=4.0",
+                "symfony/property-access": ">=4.0",
+                "symfony/routing": ">=4.0",
                 "twig/twig": ">=2.9"
             },
             "type": "symfony-bundle",
@@ -8781,9 +8787,9 @@
             ],
             "support": {
                 "issues": "https://github.com/tetranz/select2entity-bundle/issues",
-                "source": "https://github.com/tetranz/select2entity-bundle/tree/v2.10.1"
+                "source": "https://github.com/tetranz/select2entity-bundle/tree/v3.1.0"
             },
-            "time": "2019-07-14T02:30:34+00:00"
+            "time": "2020-09-28T11:42:58+00:00"
         },
         {
             "name": "twig/twig",

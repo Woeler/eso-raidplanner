@@ -50,7 +50,7 @@
         "symfony/webpack-encore-bundle": "^1.6",
         "symfony/yaml": "4.4.*",
         "tattali/calendar-bundle": "^1.1",
-        "tetranz/select2entity-bundle": "^2.10",
+        "tetranz/select2entity-bundle": "^3.1",
         "woeler/phpdiscord": "^1.1",
         "wohali/oauth2-discord-new": "^1.0"
     },
