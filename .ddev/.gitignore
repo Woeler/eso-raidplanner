@@ -26,3 +26,7 @@
 /nginx_full/nginx-site.conf
 /sequelpro.spf
 /**/README.*
+/apache
+/commands
+/nginx_full/README.nginx_full.txt
+/nginx_full/seconddocroot.conf.example
