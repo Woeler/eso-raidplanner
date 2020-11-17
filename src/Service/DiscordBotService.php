@@ -20,20 +20,11 @@ use Woeler\DiscordPhp\Message\DiscordTextMessage;
 
 class DiscordBotService
 {
-    /**
-     * @var string
-     */
-    private $botToken;
+    private string $botToken;
 
-    /**
-     * @var DiscordClient
-     */
-    private $client;
+    private DiscordClient $client;
 
-    /**
-     * @var string
-     */
-    private $botId;
+    private string $botId;
 
     /**
      * @param string $botToken

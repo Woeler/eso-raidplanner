@@ -52,7 +52,7 @@ class RefreshDiscordTokensCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $users = $this->userRepository->findWhereTokenAlmostExpires();
 
@@ -74,5 +74,7 @@ class RefreshDiscordTokensCommand extends Command
         }
 
         $this->entityManager->flush();
+
+        return 0;
     }
 }

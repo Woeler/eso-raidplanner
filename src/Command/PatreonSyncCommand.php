@@ -24,30 +24,15 @@ class PatreonSyncCommand extends Command
 {
     protected static $defaultName = 'patreon:sync';
 
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
+    private DiscordBotService $discordBotService;
 
-    /**
-     * @var string
-     */
-    private $patreonServer;
+    private string $patreonServer;
 
-    /**
-     * @var array
-     */
-    private $patreonRoles;
+    private array $patreonRoles;
 
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
+    private UserRepository $userRepository;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         DiscordBotService $discordBotService,
@@ -64,14 +49,14 @@ class PatreonSyncCommand extends Command
         $this->entityManager = $entityManager;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setDescription('Add a short description for your command')
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $store = new SemaphoreStore();
         $factory = new LockFactory($store);
@@ -84,7 +69,7 @@ class PatreonSyncCommand extends Command
             } catch (UnexpectedDiscordApiResponseException $e) {
                 $lock->release();
 
-                return;
+                return 1;
             }
 
             foreach ($members as $member) {
@@ -126,5 +111,7 @@ class PatreonSyncCommand extends Command
         } else {
             $output->writeln('Process already running.');
         }
+
+        return 0;
     }
 }

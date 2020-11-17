@@ -56,7 +56,7 @@ class LogsProcessCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $store = new SemaphoreStore();
         $factory = new LockFactory($store);
@@ -78,5 +78,7 @@ class LogsProcessCommand extends Command
         } else {
             $output->writeln('Process already running.');
         }
+
+        return 0;
     }
 }

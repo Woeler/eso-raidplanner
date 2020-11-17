@@ -64,7 +64,7 @@ class CreateRecurringEventsCommand extends Command
         ;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         foreach ($this->recurringEventRepository->findAll() as $recurringEvent) {
             $events = count($this->eventRepository->findFutureEventsByRecurring($recurringEvent));
@@ -133,5 +133,7 @@ class CreateRecurringEventsCommand extends Command
                 $this->entityManager->flush();
             }
         }
+
+        return 0;
     }
 }

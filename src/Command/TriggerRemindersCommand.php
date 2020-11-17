@@ -64,7 +64,7 @@ class TriggerRemindersCommand extends Command
             ->setDescription('Add a short description for your command');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $now = new DateTime('now', new DateTimeZone('UTC'));
         $events = $this->eventRepository->findFutureEvents($now);
@@ -102,5 +102,7 @@ class TriggerRemindersCommand extends Command
         }
 
         $this->entityManager->flush();
+
+        return 0;
     }
 }

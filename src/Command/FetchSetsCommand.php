@@ -51,7 +51,7 @@ class FetchSetsCommand extends Command
         $this->setDescription('Add a short description for your command');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $token = new TokenAuth($this->pmgToken);
         $api = new SetApi($token);
@@ -59,7 +59,7 @@ class FetchSetsCommand extends Command
         try {
             $sets = $api->getAll();
         } catch (FailedPmgRequestException $e) {
-            return;
+            return 1;
         }
 
         foreach ($sets as $set) {
@@ -80,5 +80,7 @@ class FetchSetsCommand extends Command
         }
 
         $this->entityManager->flush();
+
+        return 0;
     }
 }

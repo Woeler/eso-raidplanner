@@ -104,3 +104,14 @@ services:
     App\EventListener\CalendarListener:
       tags:
         - { name: 'kernel.event_listener', event: 'calendar.set_data', method: load }
+
+    discord.bot.patreon:
+      class: App\Service\DiscordBotService
+      arguments:
+        $botToken: '%env(DISCORD_PATREON_BOT_TOKEN)%'
+        $botId: '%env(DISCORD_PATREON_BOT_CLIENT_ID)%'
+
+    App\Command\PatreonSyncCommand:
+      class: App\Command\PatreonSyncCommand
+      arguments:
+        $discordBotService: '@discord.bot.patreon'
