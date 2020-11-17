@@ -11,4 +11,3 @@ framework:
 
         routing:
             # Route your messages to the transports
-            App\Message\Discord\Bot\BotCommandMessageInterface: async
