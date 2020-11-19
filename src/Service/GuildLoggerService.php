@@ -13,56 +13,41 @@ use App\Entity\DiscordChannel;
 use App\Entity\DiscordGuild;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
-use App\Entity\GuildLog;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Message\DiscordMessage;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Woeler\DiscordPhp\Message\AbstractDiscordMessage;
 use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 
 class GuildLoggerService
 {
-    /**
-     * @var string
-     */
-    private $appUrl;
+    private string $appUrl;
+    private UrlGeneratorInterface $router;
+    private MessageBusInterface $messageBus;
 
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
-
-    public function __construct(string $appUrl, EntityManagerInterface $entityManager, UrlGeneratorInterface $router)
+    public function __construct(string $appUrl, MessageBusInterface $messageBus, UrlGeneratorInterface $router)
     {
         $this->appUrl = $appUrl;
-        $this->entityManager = $entityManager;
         $this->router = $router;
+        $this->messageBus = $messageBus;
     }
 
-    private function persistLog(AbstractDiscordMessage $message, ?DiscordChannel $channel): void
+    private function queueMessage(AbstractDiscordMessage $message, ?DiscordChannel $channel): void
     {
         if (null === $channel) {
             return;
         }
 
         if ($message instanceof DiscordEmbedsMessage) {
-            $message->setColor(9660137);
+            $message->setColor(7506394);
             $message->setAuthorName($channel->getGuild()->getName());
             $message->setAuthorIcon('https://cdn.discordapp.com/icons/' . $channel->getGuild()->getId() . '/' . $channel->getGuild()->getIcon() . '.png');
             $message->setAuthorUrl($this->router->generate('guild_view', ['guildId' => $channel->getGuild()->getId()], UrlGeneratorInterface::ABSOLUTE_URL));
-            $message->setFooterIcon($this->appUrl.'/build/images/favicon/appicon.jpg');
-            $message->setFooterText('ESO Raidplanner by Woeler');
+            $message->setFooterIcon($this->appUrl.'/build/images/favicon/apple-icon.png');
+            $message->setFooterText('ESORaidplanner.com by Woeler');
         }
 
-        $entity = (new GuildLog())
-            ->setChannel($channel->getId())
-            ->setData($message->formatForDiscord());
-        $this->entityManager->persist($entity);
-        $this->entityManager->flush();
+        $this->messageBus->dispatch(new DiscordMessage($channel->getId(), $message->formatForDiscord()));
     }
 
     public function eventCreated(DiscordGuild $guild, Event $event): void
@@ -77,8 +62,8 @@ class GuildLoggerService
             ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription())
             ->addField('Event ID', $event->getId());
 
-        $this->persistLog($message, $guild->getLogChannel());
-        $this->persistLog($message, $guild->getEventCreateChannel());
+        $this->queueMessage($message, $guild->getLogChannel());
+        $this->queueMessage($message, $guild->getEventCreateChannel());
     }
 
     public function eventUpdated(DiscordGuild $guild, Event $event): void
@@ -92,7 +77,7 @@ class GuildLoggerService
             ))
             ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription());
 
-        $this->persistLog($message, $guild->getLogChannel());
+        $this->queueMessage($message, $guild->getLogChannel());
     }
 
     public function eventDeleted(DiscordGuild $guild, Event $event): void
@@ -101,7 +86,7 @@ class GuildLoggerService
         $message->setTitle('Event deleted')
             ->setDescription('**'.$event->getName().'**'.PHP_EOL.$event->getDescription());
 
-        $this->persistLog($message, $guild->getLogChannel());
+        $this->queueMessage($message, $guild->getLogChannel());
     }
 
     public function eventAttending(DiscordGuild $guild, Event $event, EventAttendee $attendee): void
@@ -120,7 +105,7 @@ class GuildLoggerService
             )
             ->addField('User', $attendee->getUser()->getDiscordMention(), true);
 
-        $this->persistLog($message, $guild->getLogChannel());
+        $this->queueMessage($message, $guild->getLogChannel());
     }
 
     public function eventUnattending(DiscordGuild $guild, Event $event, EventAttendee $attendee): void
@@ -139,6 +124,6 @@ class GuildLoggerService
             )
             ->addField('User', $attendee->getUser()->getDiscordMention());
 
-        $this->persistLog($message, $guild->getLogChannel());
+        $this->queueMessage($message, $guild->getLogChannel());
     }
 }

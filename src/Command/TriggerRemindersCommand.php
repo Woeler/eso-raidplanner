@@ -9,59 +9,33 @@
 
 namespace App\Command;
 
-use App\Entity\DiscordChannel;
-use App\Exception\UnexpectedDiscordApiResponseException;
+use App\Message\DiscordMessage;
 use App\Repository\EventRepository;
-use App\Service\DiscordBotService;
 use App\Service\ReminderService;
 use DateTime;
 use DateTimeZone;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class TriggerRemindersCommand extends Command
 {
     protected static $defaultName = 'reminders:trigger';
 
-    /**
-     * @var DiscordBotService
-     */
-    private $discordBotService;
-
-    /**
-     * @var ReminderService
-     */
-    private $reminderService;
-
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private ReminderService $reminderService;
+    private EventRepository $eventRepository;
+    private MessageBusInterface $messageBus;
 
     public function __construct(
-        DiscordBotService $discordBotService,
         ReminderService $reminderService,
         EventRepository $eventRepository,
-        EntityManagerInterface $entityManager
+        MessageBusInterface $messageBus
     ) {
         parent::__construct();
-        $this->discordBotService = $discordBotService;
         $this->reminderService = $reminderService;
         $this->eventRepository = $eventRepository;
-        $this->entityManager = $entityManager;
-    }
-
-    protected function configure()
-    {
-        $this
-            ->setDescription('Add a short description for your command');
+        $this->messageBus = $messageBus;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -83,25 +57,13 @@ class TriggerRemindersCommand extends Command
                     if (null === $channel) {
                         continue;
                     }
-                    try {
-                        $this->discordBotService->sendMessage(
-                            null !== $event->getReminderRerouteChannel() ? $event->getReminderRerouteChannel()->getId() : $channel->getId(),
-                            $message
-                        );
-                        $channel->setError(DiscordChannel::ERROR_NONE);
-                    } catch (UnexpectedDiscordApiResponseException $e) {
-                        if (false !== strpos($e->getMessage(), '404')) {
-                            $channel->setError(DiscordChannel::ERROR_NOT_FOUND);
-                        } else {
-                            $channel->setError(DiscordChannel::ERROR_MISSING_PERMISSIONS);
-                        }
-                    }
-                    $this->entityManager->persist($channel);
+                    $this->messageBus->dispatch(new DiscordMessage(
+                        null !== $event->getReminderRerouteChannel() ? $event->getReminderRerouteChannel()->getId() : $channel->getId(),
+                        $message->formatForDiscord()
+                    ));
                 }
             }
         }
-
-        $this->entityManager->flush();
 
         return 0;
     }
