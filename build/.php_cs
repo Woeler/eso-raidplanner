@@ -18,7 +18,7 @@ return PhpCsFixer\Config::create()
    'blank_line_before_return' => true,
    'braces' => true,
    'class_definition' => true,
-   'class_attributes_separation' => true,
+   'class_attributes_separation' => false,
    'elseif' => true,
    'function_declaration' => true,
    'indentation_type' => true,

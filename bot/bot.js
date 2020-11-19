@@ -1,5 +1,4 @@
 const Discord = require('discord.js');
-const Enmap = require("enmap");
 const fs = require("fs");
 const config = require('./config.json');
 
@@ -9,14 +8,14 @@ client.login(config.botToken);
 client.config = config;
 
 client.on('ready', () => {
-    client.user.setActivity(`planning for ${client.guilds.size} guilds`);
+    client.user.setActivity(`planning for ${client.guilds.cache.size} guilds`);
 });
 
 client.on('guildCreate', guild => {
-    client.user.setActivity(`planning for ${client.guilds.size} guilds`);
+    client.user.setActivity(`planning for ${client.guilds.cache.size} guilds`);
 });
 client.on('guildDelete', guild => {
-    client.user.setActivity(`planning for ${client.guilds.size} guilds`);
+    client.user.setActivity(`planning for ${client.guilds.cache.size} guilds`);
 });
 
 fs.readdir("./events", (err, files) => {

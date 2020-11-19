@@ -10,21 +10,20 @@
 namespace App\Controller\Api;
 
 use App\Controller\Checks\TalksWithDiscordBotController;
-use App\Message\Discord\Bot\AttendCommandMessage;
-use App\Message\Discord\Bot\CharactersCommandMessage;
-use App\Message\Discord\Bot\EventCommandMessage;
-use App\Message\Discord\Bot\EventsCommandMessage;
-use App\Message\Discord\Bot\HelpCommandMessage;
-use App\Message\Discord\Bot\TimezoneCommandMessage;
-use App\Message\Discord\Bot\UnattendCommandMessage;
+use App\DTO\DiscordResponse;
+use App\Entity\DiscordGuild;
+use App\Entity\GuildMembership;
+use App\Entity\User;
+use App\Factory\DiscordRequestFactory;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\GuildMembershipRepository;
 use App\Repository\UserRepository;
+use App\Service\DiscordBotService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -32,14 +31,30 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class DiscordBotController extends AbstractController implements TalksWithDiscordBotController
 {
-    /**
-     * @var MessageBusInterface
-     */
-    private $bus;
+    private const ALIASES = [
+        'signup' => 'attend',
+        'signoff' => 'unattend',
+        'presets' => 'characters',
+    ];
 
-    public function __construct(MessageBusInterface $bus)
-    {
-        $this->bus = $bus;
+    private DiscordRequestFactory $requestFactory;
+    private DiscordBotService $discordBotService;
+    private EntityManagerInterface $entityManager;
+    private array $defaultRoles;
+    private iterable $commands;
+
+    public function __construct(
+        DiscordRequestFactory $requestFactory,
+        DiscordBotService $discordBotService,
+        EntityManagerInterface $entityManager,
+        array $defaultRoles,
+        iterable $commands
+    ) {
+        $this->requestFactory = $requestFactory;
+        $this->discordBotService = $discordBotService;
+        $this->entityManager = $entityManager;
+        $this->defaultRoles = $defaultRoles;
+        $this->commands = $commands;
     }
 
     /**
@@ -50,35 +65,36 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
      */
     public function entryPoint(Request $request): Response
     {
-        $json = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
-
-        switch ($json['command'] ?? null) {
-            case '!events':
-                $this->bus->dispatch(new EventsCommandMessage($json['channelId'], $json));
-                break;
-            case '!event':
-                $this->bus->dispatch(new EventCommandMessage($json['channelId'], $json));
-                break;
-            case '!attend':
-                $this->bus->dispatch(new AttendCommandMessage($json['channelId'], $json));
-                break;
-            case '!unattend':
-                $this->bus->dispatch(new UnattendCommandMessage($json['channelId'], $json));
-                break;
-            case '!help':
-                $this->bus->dispatch(new HelpCommandMessage($json['channelId'], $json));
-                break;
-            case '!timezone':
-                $this->bus->dispatch(new TimezoneCommandMessage($json['channelId'], $json));
-                break;
-            case '!characters':
-                $this->bus->dispatch(new CharactersCommandMessage($json['channelId'], $json));
-                break;
-            default:
-                return Response::create('Unknown command', Response::HTTP_BAD_REQUEST);
+        try {
+            $discordRequest = $this->requestFactory->fromRequest($request);
+        } catch (\InvalidArgumentException $e) {
+            if (DiscordRequestFactory::GUILD_NOT_FOUND === $e->getCode()) {
+                return JsonResponse::create((new DiscordResponse())
+                    ->setContent('I do not know this guild.')
+                    ->setOnlyText(true)
+                    ->jsonSerialize(), Response::HTTP_OK);
+            } elseif (DiscordRequestFactory::USER_NOT_FOUND === $e->getCode()) {
+                $this->newUser(json_decode((string)$request->getContent(), true, 512, JSON_THROW_ON_ERROR)['userId']);
+                $discordRequest = $this->requestFactory->fromRequest($request);
+            } else {
+                return Response::create('', Response::HTTP_BAD_REQUEST);
+            }
         }
 
-        return Response::create('ok', Response::HTTP_OK);
+        if (!$discordRequest->getGuild()->isMember($discordRequest->getUser())) {
+            $this->newMembership($discordRequest->getUser(), $discordRequest->getGuild());
+        }
+
+        $commandString = self::ALIASES[$discordRequest->getCommand()] ?? $discordRequest->getCommand();
+        $class = 'App\BotCommand\\'.ucfirst($commandString ?? '').'BotCommand';
+
+        foreach ($this->commands as $command) {
+            if (get_class($command) === $class) {
+                return JsonResponse::create($command->handle($discordRequest)->jsonSerialize(), Response::HTTP_OK);
+            }
+        }
+
+        return Response::create('', Response::HTTP_NO_CONTENT);
     }
 
     /**
@@ -120,5 +136,28 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         }
 
         return Response::create('ok', Response::HTTP_OK);
+    }
+
+    private function newUser(string $userId): void
+    {
+        $userInfo = $this->discordBotService->getUser($userId);
+        $user = (new User())
+            ->setDiscordId($userId)
+            ->setUsername($userInfo['username'])
+            ->setDiscordDiscriminator($userInfo['discriminator'])
+            ->setAvatar($userInfo['avatar'] ?? 'unknown')
+            ->setRoles($this->defaultRoles);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
+
+    private function newMembership(User $user, DiscordGuild $guild): void
+    {
+        $membership = (new GuildMembership())
+            ->setGuild($guild)
+            ->setUser($user)
+            ->setRole(GuildMembership::ROLE_MEMBER);
+        $this->entityManager->persist($membership);
+        $this->entityManager->flush();
     }
 }

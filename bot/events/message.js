@@ -1,4 +1,5 @@
 module.exports = (client, message) => {
+    process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
     // Ignore all bots
     if (message.author.bot) return;
 
@@ -6,30 +7,20 @@ module.exports = (client, message) => {
         return;
     }
 
-    if (!message.channel.permissionsFor(message.guild.me).has("EMBED_LINKS", false) || !message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES", false)) {
-        return;
-    }
-
     // Ignore messages not starting with the prefix (in config.json)
     if (message.content.indexOf(client.config.prefix) !== 0) return;
 
-    const args = message.content.slice(client.config.prefix.length).trim().split(/ +/g);
-    let command = args.shift().toLowerCase();
-
-    if (command === 'signup') command = 'attend';
-    if (command === 'signoff') command = 'unattend';
-    if (command === 'presets') command = 'characters';
+    if (!message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES", false)) {
+        return;
+    }
 
     const https = require('https');
-
-    console.log(command);
 
     const data = {
         userId: message.author.id,
         channelId: message.channel.id,
         guildId: message.guild.id,
-        query: args.join(' '),
-        command: '!'+command,
+        args: message.content,
         userNick: encodeURI(message.guild.member(message.author).displayName)
     };
 
@@ -42,21 +33,41 @@ module.exports = (client, message) => {
         headers: {
             'Content-Type': 'application/json',
             'Content-Length': requestData.length,
-            Authorization: 'Basic '+ new Buffer(client.config.authToken).toString('base64'),
+            'Authorization': 'Bearer '+ client.config.authToken,
         },
     };
 
-    var req = https.request(options, (res) => {
-        console.log('statusCode:', res.statusCode);
-        //console.log('headers:', res.headers);
-
+    let req = https.request(options, (res) => {
+        let interim = '';
         res.on('data', (d) => {
-            //process.stdout.write(d);
+            if (d !== undefined) {
+                interim += d;
+            }
         });
-    });
-
-    req.on('error', (e) => {
-        console.error(e);
+        res.on('error', (e) => {
+            console.error(e);
+        });
+        res.on('end', () => {
+            if (res.statusCode === 200) {
+                if (interim !== undefined) {
+                    try {
+                        if (!message.channel.permissionsFor(message.guild.me).has("EMBED_LINKS", false)) {
+                            message.channel.send('I do not have the "embed links" permissions in this channel I need those to function correctly.')
+                            return;
+                        }
+                        message.channel.send(JSON.parse(interim));
+                    } catch (e) {
+                        message.channel.send('An error occurred. The team has been notified.');
+                        console.log(message.content)
+                        console.log(e);
+                    }
+                }
+            }
+            if (res.statusCode >= 400) {
+                console.log(message.content)
+                console.log('Status: '+res.statusCode);
+            }
+        });
     });
 
     req.write(requestData);

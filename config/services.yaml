@@ -35,6 +35,16 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    _instanceof:
+      App\BotCommand\BotCommandInterface:
+        tags: [ 'bot_command' ]
+        lazy: true
+
+    App\Controller\Api\DiscordBotController:
+      class: App\Controller\Api\DiscordBotController
+      arguments:
+        $commands: !tagged 'bot_command'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
     App\Menu\MenuBuilder:

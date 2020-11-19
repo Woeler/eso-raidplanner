@@ -20,18 +20,17 @@ module.exports = (client, oldMember, newMember) => {
         headers: {
             'Content-Type': 'application/json',
             'Content-Length': requestData.length,
-            Authorization: 'Basic '+ new Buffer(client.config.authToken).toString('base64'),
+            'Authorization': 'Bearer '+ client.config.authToken,
         },
     };
 
-    var req = https.request(options, (res) => {
+    let req = https.request(options, (res) => {
         res.on('data', (d) => {
 
         });
-    });
-
-    req.on('error', (e) => {
-        console.error(e);
+        req.on('error', (e) => {
+            console.error(e);
+        });
     });
 
     req.write(requestData);
