@@ -49,6 +49,7 @@
     {% if app.user is not null and app.user.darkmode %}
         {{ encore_entry_link_tags('darkmode') }}
     {%  endif %}
+    {% block css %}{% endblock %}
 </head>
 <body>
 <div id="app">
@@ -123,5 +124,4 @@
 </div>
 {{ encore_entry_script_tags('app') }}
 {% block javascripts %}{% endblock %}
-<script src="{{ asset('bundles/tetranzselect2entity/js/select2entity.js') }}"></script>
 </body>

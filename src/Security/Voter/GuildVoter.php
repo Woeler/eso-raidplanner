@@ -13,55 +13,38 @@ use App\Entity\DiscordGuild;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class GuildVoter extends Voter
 {
     public const VIEW = 'view';
-
     public const VIEW_MEMBERS = 'view_members';
-
     public const VIEW_PAST_EVENTS = 'view_past_events';
-
     public const VIEW_SETTINGS = 'view_settings';
-
     public const CREATE_REMINDER = 'create_reminder';
-
     public const CREATE_EVENT = 'create_event';
-
     public const CREATE_RECURRING_EVENT = 'create_recurring_event';
-
     public const SYNC_DISCORD_CHANNELS = 'sync_discord_channels';
-
     public const PROMOTE = 'promote';
-
     public const DEMOTE = 'demote';
-
     public const DEACTIVATE = 'deactivate';
-
     public const UPDATE_NICKNAME = 'update_nickname';
-
     public const REMOVE_MEMBER = 'remove_member';
 
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
-        // replace with your own logic
-        // https://symfony.com/doc/current/security/voters.html
         return in_array($attribute, [
             self::VIEW_SETTINGS, self::VIEW, self::VIEW_MEMBERS, self::CREATE_EVENT, self::CREATE_REMINDER, self::SYNC_DISCORD_CHANNELS, self::PROMOTE, self::DEMOTE, self::CREATE_RECURRING_EVENT, self::DEACTIVATE, self::UPDATE_NICKNAME, self::REMOVE_MEMBER, self::VIEW_PAST_EVENTS,
             ], true)
-            && $subject instanceof \App\Entity\DiscordGuild;
+            && $subject instanceof DiscordGuild;
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
-        // if the user is anonymous, do not grant access
-        if (!$user instanceof UserInterface) {
+        if (!$user instanceof User) {
             return false;
         }
 
-        // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
             case self::VIEW:
                 return $this->canView($subject, $user);

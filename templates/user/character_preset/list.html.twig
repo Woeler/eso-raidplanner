@@ -42,7 +42,7 @@
                             </td>
                             <td style="vertical-align: middle" width="20%">
                                 {% for set in preset.sets %}
-                                    <a href="https://eso-sets.com/set/{{ set.slug }}" target="_blank">{{ set.name }}</a>
+                                    <a href="https://eso-hub.com/en/sets/{{ set.slug }}" target="_blank">{{ set.name }}</a>
                                     <br>
                                 {% endfor %}
                             </td>
@@ -67,4 +67,12 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block css %}
+    <link rel="stylesheet" href="https://eso-hub.com/css/external/tooltips.css" />
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://eso-hub.com/js/external/tooltips.js"></script>
 {% endblock %}

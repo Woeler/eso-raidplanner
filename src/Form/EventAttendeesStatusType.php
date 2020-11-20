@@ -19,17 +19,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class EventAttendeesStatusType extends AbstractType
 {
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
+    private UrlGeneratorInterface $router;
 
     public function __construct(UrlGeneratorInterface $router)
     {
         $this->router = $router;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         /** @var EventAttendee $attendee */
         foreach ($options['attendees'] as $attendee) {
@@ -81,7 +78,7 @@ class EventAttendeesStatusType extends AbstractType
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'attendees' => [],

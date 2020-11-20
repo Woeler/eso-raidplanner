@@ -15,5 +15,6 @@
     </div>
 {% endblock %}
 {% block javascripts %}
-{{ encore_entry_script_tags('markdown') }}
+    <script src="{{ asset('bundles/tetranzselect2entity/js/select2entity.js') }}"></script>
+    {{ encore_entry_script_tags('markdown') }}
 {% endblock %}

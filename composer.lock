@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "da9622fba503cf3c5380a58f042f14e7",
+    "content-hash": "1ff5b04c72cc619729735d9ed0b21073",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -2883,52 +2883,6 @@
                 }
             ],
             "time": "2020-11-16T02:50:07+00:00"
-        },
-        {
-            "name": "pathfindermediagroup/api-library",
-            "version": "1.3.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/PathfinderMediaGroup/api-library.git",
-                "reference": "7ce2df7e466e857838adcc939eb9b00baeb945bd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/PathfinderMediaGroup/api-library/zipball/7ce2df7e466e857838adcc939eb9b00baeb945bd",
-                "reference": "7ce2df7e466e857838adcc939eb9b00baeb945bd",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-json": "*",
-                "php": ">=7.2.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.14",
-                "phpunit/phpunit": "^7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "PathfinderMediaGroup\\ApiLibrary\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-3.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Woeler",
-                    "email": "woeler@woeler.eu"
-                }
-            ],
-            "description": "A library that helps to interact with the PMG API",
-            "support": {
-                "issues": "https://github.com/PathfinderMediaGroup/api-library/issues",
-                "source": "https://github.com/PathfinderMediaGroup/api-library/tree/master"
-            },
-            "time": "2020-07-14T17:25:36+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",

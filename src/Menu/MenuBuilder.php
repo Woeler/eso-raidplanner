@@ -11,79 +11,28 @@ namespace App\Menu;
 
 use App\Entity\GuildMembership;
 use App\Entity\User;
-use App\Repository\DiscordGuildRepository;
 use Knp\Menu\FactoryInterface;
-use Knp\Menu\Matcher\MatcherInterface;
-use Knp\Menu\MenuFactory;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Knp\Menu\ItemInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MenuBuilder
 {
-    /**
-     * @var ContainerInterface
-     */
-    private $container;
+    private FactoryInterface $factory;
+    private AuthorizationCheckerInterface $authorizationChecker;
+    private TokenStorageInterface $tokenStorage;
 
-    /**
-     * @var MenuFactory
-     */
-    private $factory;
-
-    /**
-     * @var MatcherInterface
-     */
-    private $matcher;
-
-    /**
-     * @var AuthorizationCheckerInterface
-     */
-    private $authorizationChecker;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    private $discordGuildRepository;
-
-    /**
-     * @param ContainerInterface $container
-     * @param FactoryInterface $factory
-     * @param MatcherInterface $matcher
-     * @param AuthorizationCheckerInterface $authorizationChecker
-     * @param TokenStorageInterface $tokenStorage
-     * @param TranslatorInterface $translator
-     */
     public function __construct(
-        ContainerInterface $container,
         FactoryInterface $factory,
-        MatcherInterface $matcher,
         AuthorizationCheckerInterface $authorizationChecker,
-        TokenStorageInterface $tokenStorage,
-        TranslatorInterface $translator,
-        DiscordGuildRepository $discordGuildRepository
+        TokenStorageInterface $tokenStorage
     ) {
-        $this->container = $container;
         $this->factory = $factory;
-        $this->matcher = $matcher;
         $this->authorizationChecker = $authorizationChecker;
         $this->tokenStorage = $tokenStorage;
-        $this->translator = $translator;
-        $this->discordGuildRepository = $discordGuildRepository;
     }
 
-    /**
-     * @param array $options
-     */
-    public function mainDefault(array $options)
+    public function mainDefault(array $options): ItemInterface
     {
         $menu = $this->factory->createItem('root');
 
@@ -198,10 +147,7 @@ class MenuBuilder
         return $menu;
     }
 
-    /**
-     * @param array $options
-     */
-    public function mainProfile(array $options)
+    public function mainProfile(array $options): ItemInterface
     {
         $menu = $this->factory->createItem('root');
         /** @var User $user */
@@ -275,13 +221,8 @@ class MenuBuilder
         return $menu;
     }
 
-    /**
-     * @param array $options
-     */
-    public function mainFooter(array $options)
+    public function mainFooter(array $options): ItemInterface
     {
-        $menu = $this->factory->createItem('root');
-
-        return $menu;
+        return $this->factory->createItem('root');
     }
 }

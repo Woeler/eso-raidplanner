@@ -26,7 +26,7 @@ class ArmorSetRepository extends ServiceEntityRepository
         parent::__construct($registry, ArmorSet::class);
     }
 
-    public function searchByName(string $query)
+    public function searchByName(string $query): array
     {
         return $this->createQueryBuilder('a')
             ->andWhere('a.name LIKE :word')

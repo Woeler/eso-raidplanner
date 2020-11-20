@@ -13,14 +13,8 @@ namespace App\Utility;
 use DateTime;
 use DateTimeZone;
 
-/**
- * Helper class for time formatting
- */
 class TimezoneUtility
 {
-    /**
-     * @return array
-     */
     public static function timeZones(): array
     {
         static $regions = [

@@ -18,20 +18,9 @@ use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
 
 class ReminderService
 {
-    /**
-     * @var Event
-     */
-    private $event;
-
-    /**
-     * @var string
-     */
-    private $appUrl;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
+    private Event $event;
+    private string $appUrl;
+    private UrlGeneratorInterface $router;
 
     public function __construct(string $appUrl, UrlGeneratorInterface $router)
     {

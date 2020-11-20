@@ -96,12 +96,6 @@ services:
       arguments:
         $appUrl: '%env(APP_URL)%'
 
-    App\Command\FetchSetsCommand:
-      class: App\Command\FetchSetsCommand
-      public: true
-      arguments:
-        $pmgToken: '%env(BEAST_TOKEN)%'
-
     GuzzleHttp\Client:
       class: GuzzleHttp\Client
 
@@ -110,6 +104,15 @@ services:
       arguments:
         $config:
           base_uri: 'https://discordapp.com/api/'
+
+    App\Client\EsoHubClient:
+      class: App\Client\EsoHubClient
+      arguments:
+        $config:
+          base_uri: 'https://eso-hub.com/api/'
+          headers:
+            Authorization: 'Bearer %env(ESO_HUB_TOKEN)%'
+            User-Agent: 'ESO Raidplanner'
 
     App\EventListener\CalendarListener:
       tags:

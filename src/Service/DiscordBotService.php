@@ -21,16 +21,9 @@ use Woeler\DiscordPhp\Message\DiscordTextMessage;
 class DiscordBotService
 {
     private string $botToken;
-
     private DiscordClient $client;
-
     private string $botId;
 
-    /**
-     * @param string $botToken
-     * @param string $botId
-     * @param DiscordClient $client
-     */
     public function __construct(string $botToken, string $botId, DiscordClient $client)
     {
         $this->botToken = $botToken;

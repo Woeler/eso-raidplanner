@@ -34,20 +34,9 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class GuildController extends AbstractController
 {
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
+    private DiscordGuildRepository $discordGuildRepository;
+    private EntityManagerInterface $entityManager;
+    private EventRepository $eventRepository;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,

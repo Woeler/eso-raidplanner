@@ -36,7 +36,7 @@ class EventRepository extends ServiceEntityRepository
      * @param DateTime $dateTime
      * @return Event[]
      */
-    public function findFutureEvents(DateTime $dateTime)
+    public function findFutureEvents(DateTime $dateTime): array
     {
         return $this->createQueryBuilder('e')
             ->andWhere('e.start > :now')
@@ -69,7 +69,7 @@ class EventRepository extends ServiceEntityRepository
      * @param RecurringEvent $recurringEvent
      * @return Event[]
      */
-    public function findFutureEventsByRecurring(RecurringEvent $recurringEvent)
+    public function findFutureEventsByRecurring(RecurringEvent $recurringEvent): array
     {
         $dt = new DateTime();
 

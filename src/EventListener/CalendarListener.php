@@ -19,25 +19,9 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class CalendarListener
 {
-    /**
-     * @var JiraService
-     */
-    private $jiraService;
-
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
+    private EventRepository $eventRepository;
+    private TokenStorageInterface $tokenStorage;
+    private UrlGeneratorInterface $router;
 
     public function __construct(
         EventRepository $eventRepository,

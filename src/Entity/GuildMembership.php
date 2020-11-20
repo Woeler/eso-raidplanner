@@ -18,9 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class GuildMembership
 {
     public const ROLE_BANNED = 0;
-
     public const ROLE_MEMBER = 1;
-
     public const ROLE_ADMIN = 2;
 
     public const ROLES = [
@@ -33,39 +31,35 @@ class GuildMembership
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="User", inversedBy="guildMemberships", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     * @var User
      */
-    private $user;
+    private User $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="DiscordGuild", inversedBy="members", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
-     * @var DiscordGuild
      */
-    private $guild;
+    private DiscordGuild $guild;
 
     /**
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $role;
+    private int $role = self::ROLE_MEMBER;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $nickname;
+    private ?string $nickname = null;
 
     /**
      * @ORM\Column(type="boolean", options={"default":1})
      */
-    private $showOnCalendar = true;
+    private bool $showOnCalendar = true;
 
     /**
      * @ORM\Column(type="string", length=255, options={"default":"3788d8"})
@@ -73,74 +67,45 @@ class GuildMembership
      * @Assert\NotBlank
      * @Assert\NotNull
      */
-    private $colour = '3788d8';
+    private string $colour = '3788d8';
 
-    public function __construct()
-    {
-        $this->role = self::ROLE_MEMBER;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     * @return GuildMembership
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getUser(): User
     {
         return $this->user;
     }
 
-    /**
-     * @param mixed $user
-     * @return GuildMembership
-     */
-    public function setUser($user)
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getGuild()
+    public function getGuild(): DiscordGuild
     {
         return $this->guild;
     }
 
-    /**
-     * @param mixed $guild
-     * @return GuildMembership
-     */
-    public function setGuild($guild)
+    public function setGuild(DiscordGuild $guild): self
     {
         $this->guild = $guild;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getRole()
+    public function getRole(): int
     {
         return $this->role;
     }
@@ -150,18 +115,14 @@ class GuildMembership
         return self::ROLES[$this->role];
     }
 
-    /**
-     * @param mixed $role
-     * @return GuildMembership
-     */
-    public function setRole($role)
+    public function setRole(int $role): self
     {
         $this->role = $role;
 
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->user->getUsername().'#'.$this->user->getDiscordDiscriminator().' ('.$this->guild->getName().')';
     }
@@ -190,7 +151,7 @@ class GuildMembership
         return $this;
     }
 
-    public function getColour(): ?string
+    public function getColour(): string
     {
         return $this->colour;
     }

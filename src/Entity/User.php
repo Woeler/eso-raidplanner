@@ -27,13 +27,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 class User implements UserInterface
 {
     public const PATREON_NONE = 0;
-
     public const PATREON_BRONZE = 1;
-
     public const PATREON_SILVER = 2;
-
     public const PATREON_GOLD = 3;
-
     public const PATREON_RUBY = 4;
 
     public const PATREON = [
@@ -48,96 +44,83 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string
      */
-    private $username;
+    private string $username = '';
 
     /**
      * @ORM\Column(type="string", length=40)
-     * @var string
-     */
-    private $discordDiscriminator;
+=     */
+    private string $discordDiscriminator = '';
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string
      */
-    private $avatar;
+    private string $avatar = 'unknown';
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string
      */
-    private $discordId;
+    private string $discordId = '';
 
     /**
      * @OneToMany(targetEntity="DiscordGuild", mappedBy="owner")
-     * @var Collection|DiscordGuild[]
      */
-    private $discordGuilds;
+    private Collection $discordGuilds;
 
     /**
      * @ORM\OneToMany(targetEntity="GuildMembership", mappedBy="user")
-     * @var Collection|GuildMembership[]
      */
-    private $guildMemberships;
+    private Collection $guildMemberships;
 
     /**
      * @ORM\OneToMany(targetEntity="EventAttendee", mappedBy="user")
-     * @var Collection|EventAttendee[]
      */
-    private $events;
+    private Collection $events;
 
     /**
      * @ORM\Column(type="integer")
-     * @var int
      * @Assert\NotNull()
      * @Assert\Positive()
      */
-    private $clock = 24;
+    private int $clock = 24;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string
      * @Assert\NotNull()
      * @Assert\NotBlank()
      */
-    private $timezone = 'UTC';
+    private string $timezone = 'UTC';
 
     /**
      * @ORM\Column(type="boolean")
-     * @var bool
      * @Assert\NotNull()
      */
-    private $darkmode = false;
+    private bool $darkmode = false;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string
      */
-    private $discordToken;
+    private ?string $discordToken = null;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @var string
      */
-    private $discordRefreshToken;
+    private ?string $discordRefreshToken = null;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $discordTokenExpirationDate;
+    private ?\DateTimeInterface $discordTokenExpirationDate = null;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $patreonMembership = 0;
+    private int $patreonMembership = 0;
 
     /**
      * @ORM\Column(type="integer")
@@ -145,23 +128,23 @@ class User implements UserInterface
      * @Assert\PositiveOrZero()
      * 1 defaults to Monday, 0 is Sunday
      */
-    private $firstDayOfWeek = 1;
+    private int $firstDayOfWeek = 1;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\CharacterPreset", mappedBy="user", orphanRemoval=true)
      * @OrderBy({"name" = "ASC"})
      */
-    private $characterPresets;
+    private Collection $characterPresets;
 
     /**
      * @ORM\Column(type="json")
      */
-    private $roles = [];
+    private array $roles = [];
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $icalId;
+    private ?string $icalId = null;
 
     public function __construct()
     {
@@ -171,15 +154,11 @@ class User implements UserInterface
         $this->characterPresets = new ArrayCollection();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->username.'#'.$this->discordDiscriminator;
     }
 
-    /**
-     * @param array $roles
-     * @return $this
-     */
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -187,55 +166,36 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->roles;
     }
 
-    /**
-     * @return string|null The encoded password if any
-     */
-    public function getPassword()
+    public function getPassword(): ?string
     {
         return null;
     }
 
-    /**
-     * @return string|null The salt
-     */
-    public function getSalt()
+    public function getSalt(): ?string
     {
         return null;
     }
 
-    /**
-     * @return string The username
-     */
-    public function getUsername()
+    public function getUsername(): string
     {
         return $this->username;
     }
 
-    public function eraseCredentials()
+    public function eraseCredentials(): void
     {
         return;
     }
 
-    /**
-     * @return int
-     */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     * @return User
-     */
     public function setId(int $id): self
     {
         $this->id = $id;
@@ -243,18 +203,11 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getDiscordDiscriminator(): string
     {
         return $this->discordDiscriminator;
     }
 
-    /**
-     * @param string $discordDiscriminator
-     * @return User
-     */
     public function setDiscordDiscriminator(string $discordDiscriminator): self
     {
         $this->discordDiscriminator = $discordDiscriminator;
@@ -262,17 +215,11 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getAvatar(): ?string
+    public function getAvatar(): string
     {
         return $this->avatar;
     }
 
-    /**
-     * @return string
-     */
     public function getFullAvatarUrl(): string
     {
         if (null !== $this->avatar && 'unknown' !== $this->avatar) {
@@ -282,10 +229,6 @@ class User implements UserInterface
         return '/build/images/default_avatar.png';
     }
 
-    /**
-     * @param string $avatar
-     * @return User
-     */
     public function setAvatar(string $avatar): self
     {
         $this->avatar = $avatar;
@@ -293,18 +236,11 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getDiscordId(): string
     {
         return $this->discordId;
     }
 
-    /**
-     * @param string $discordId
-     * @return User
-     */
     public function setDiscordId(string $discordId): self
     {
         $this->discordId = $discordId;
@@ -312,10 +248,6 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @param string $username
-     * @return User
-     */
     public function setUsername(string $username): self
     {
         $this->username = $username;
@@ -323,57 +255,36 @@ class User implements UserInterface
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDarkmode()
+    public function getDarkmode(): bool
     {
         return $this->darkmode;
     }
 
-    /**
-     * @param mixed $darkmode
-     * @return User
-     */
-    public function setDarkmode($darkmode)
+    public function setDarkmode(bool $darkmode): self
     {
         $this->darkmode = $darkmode;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDiscordToken(): string
+    public function getDiscordToken(): ?string
     {
         return $this->discordToken;
     }
 
-    /**
-     * @param string $discordToken
-     * @return User
-     */
-    public function setDiscordToken(string $discordToken): User
+    public function setDiscordToken(?string $discordToken): User
     {
         $this->discordToken = $discordToken;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDiscordRefreshToken(): string
+    public function getDiscordRefreshToken(): ?string
     {
         return $this->discordRefreshToken;
     }
 
-    /**
-     * @param string $discordRefreshToken
-     * @return User
-     */
-    public function setDiscordRefreshToken(string $discordRefreshToken): User
+    public function setDiscordRefreshToken(?string $discordRefreshToken): User
     {
         $this->discordRefreshToken = $discordRefreshToken;
 
@@ -381,7 +292,7 @@ class User implements UserInterface
     }
 
     /**
-     * @return Collection
+     * @return Collection|DiscordGuild[]
      */
     public function getDiscordGuilds(): Collection
     {
@@ -389,7 +300,7 @@ class User implements UserInterface
     }
 
     /**
-     * @return Collection
+     * @return Collection|DiscordGuild[]
      */
     public function getActiveDiscordGuilds(): Collection
     {
@@ -398,10 +309,6 @@ class User implements UserInterface
         });
     }
 
-    /**
-     * @param Collection $discordGuilds
-     * @return User
-     */
     public function setDiscordGuilds(Collection $discordGuilds): self
     {
         $this->discordGuilds = $discordGuilds;
@@ -418,7 +325,7 @@ class User implements UserInterface
     }
 
     /**
-     * @return Collection
+     * @return Collection|GuildMembership[]
      */
     public function getActiveGuildMemberships(): Collection
     {
@@ -446,10 +353,6 @@ class User implements UserInterface
         return $active->first()->getNickname();
     }
 
-    /**
-     * @param Collection $guildMemberships
-     * @return User
-     */
     public function setGuildMemberships(Collection $guildMemberships): self
     {
         $this->guildMemberships = $guildMemberships;
@@ -458,67 +361,45 @@ class User implements UserInterface
     }
 
     /**
-     * @return mixed
+     * @return Collection|Event[]
      */
-    public function getEvents()
+    public function getEvents(): Collection
     {
         return $this->events;
     }
 
-    /**
-     * @param mixed $events
-     * @return User
-     */
-    public function setEvents($events)
+    public function setEvents(Collection $events): self
     {
         $this->events = $events;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getClock()
+    public function getClock(): int
     {
         return $this->clock;
     }
 
-    /**
-     * @param mixed $clock
-     * @return User
-     */
-    public function setClock($clock)
+    public function setClock(int $clock): self
     {
         $this->clock = $clock;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getTimezone()
+    public function getTimezone(): string
     {
         return $this->timezone;
     }
 
-    /**
-     * @param mixed $timezone
-     * @return User
-     */
-    public function setTimezone($timezone)
+    public function setTimezone(string $timezone): self
     {
         $this->timezone = $timezone;
 
         return $this;
     }
 
-    /**
-     * @param DateTime $dateTime
-     * @return string
-     */
-    public function toUserTimeString(DateTime $dateTime): string
+    public function toUserTimeString(\DateTimeInterface $dateTime): string
     {
         $dateTime->setTimezone(new DateTimeZone($this->timezone ?? 'UTC'));
 
@@ -529,18 +410,11 @@ class User implements UserInterface
         return $dateTime->format('F jS H:i');
     }
 
-    /**
-     * @param DateTimeInterface $dateTime
-     * @return DateTimeInterface
-     */
     public function toUserTime(DateTimeInterface $dateTime): DateTimeInterface
     {
         return $dateTime->setTimezone(new DateTimeZone($this->timezone ?? 'UTC'));
     }
 
-    /**
-     * @return string
-     */
     public function getDiscordMention(): string
     {
         return '<@'.$this->getDiscordId().'>';
@@ -558,7 +432,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getPatreonMembership(): ?int
+    public function getPatreonMembership(): int
     {
         return $this->patreonMembership;
     }
@@ -570,7 +444,7 @@ class User implements UserInterface
         return $this;
     }
 
-    public function getFirstDayOfWeek(): ?int
+    public function getFirstDayOfWeek(): int
     {
         return $this->firstDayOfWeek;
     }

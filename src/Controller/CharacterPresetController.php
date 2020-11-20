@@ -25,15 +25,8 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class CharacterPresetController extends AbstractController
 {
-    /**
-     * @var CharacterPresetRepository
-     */
-    private $characterPresetRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private CharacterPresetRepository $characterPresetRepository;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(CharacterPresetRepository $characterPresetRepository, EntityManagerInterface $entityManager)
     {

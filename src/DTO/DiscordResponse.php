@@ -13,35 +13,20 @@ namespace App\DTO;
 final class DiscordResponse
 {
     private ?string $content = null;
-
     private ?string $title = null;
-
     private ?string $description = null;
-
     private ?string $url = null;
-
     private ?int $color = 7506394;
-
     private ?\DateTimeInterface $timestamp = null;
-
     private ?string $footer_icon = 'https://esoraidplanner.com/build/images/favicon/apple-icon.png';
-
     private ?string $footer_text = 'ESORaidplanner.com by Woeler';
-
     private ?string $thumbnail = null;
-
     private ?string $image = null;
-
     private ?string $author_name = null;
-
     private ?string $author_url = null;
-
     private ?string $author_icon = null;
-
     private array $fields = [];
-
     private bool $tts = false;
-
     private bool $onlyText = false;
 
     public function jsonSerialize(): array

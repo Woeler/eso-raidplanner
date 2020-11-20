@@ -26,218 +26,159 @@ class Event
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @var string
      * @Assert\NotNull()
      * @Assert\NotBlank()
      * @Assert\Length(min=1,max=200)
      */
-    private $name;
+    private string $name = '';
 
     /**
      * @ORM\Column(type="datetime")
-     * @var DateTime
      * @Assert\NotNull()
      * @Assert\DateTime
      * @Assert\GreaterThan("yesterday")
      */
-    private $start;
+    private ?\DateTimeInterface $start = null;
 
     /**
      * @ORM\Column(type="text", nullable=true)
-     * @var string|null
      * @Assert\Length(max=2000)
      */
-    private $description;
+    private ?string $description = null;
 
     /**
      * @ManyToOne(targetEntity="DiscordGuild", inversedBy="events")
      * @ORM\JoinColumn(onDelete="CASCADE")
-     * @var DiscordGuild
      */
-    private $guild;
+    private DiscordGuild $guild;
 
     /**
      * @ORM\Column(type="boolean")
-     * @var bool
      */
-    private $locked;
+    private bool $locked = false;
 
     /**
      * @ORM\Column(type="json")
-     * @var array
      */
-    private $tags;
+    private array $tags = [];
 
     /**
      * @ORM\OneToMany(targetEntity="EventAttendee", mappedBy="event")
-     * @var Collection|EventAttendee[]
      */
-    private $attendees;
+    private Collection $attendees;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\RecurringEvent")
      * @ORM\JoinColumn(onDelete="SET NULL")
      */
-    private $recurringParent;
+    private ?RecurringEvent $recurringParent = null;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="event", orphanRemoval=true)
      * @OrderBy({"createdAt" = "ASC"})
      */
-    private $comments;
+    private Collection $comments;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
      * @Assert\GreaterThan(propertyPath="start")
      */
-    private $end;
+    private ?\DateTimeInterface $end = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\DiscordChannel")
      * @ORM\JoinColumn(onDelete="SET NULL")
      */
-    private $reminderRerouteChannel;
+    private ?DiscordChannel $reminderRerouteChannel = null;
 
     public function __construct()
     {
-        $this->locked = false;
-        $this->tags = [];
         $this->comments = new ArrayCollection();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     * @return Event
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param mixed $name
-     * @return Event
-     */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * @return DateTime
-     */
-    public function getStart()
+    public function getStart(): ?\DateTimeInterface
     {
         return $this->start;
     }
 
-    /**
-     * @param mixed $start
-     * @return Event
-     */
-    public function setStart($start)
+    public function setStart(?\DateTimeInterface $start): self
     {
         $this->start = $start;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * @param mixed $description
-     * @return Event
-     */
-    public function setDescription($description)
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    /**
-     * @return DiscordGuild
-     */
-    public function getGuild()
+    public function getGuild(): DiscordGuild
     {
         return $this->guild;
     }
 
-    /**
-     * @param mixed $guild
-     * @return Event
-     */
-    public function setGuild($guild)
+    public function setGuild(DiscordGuild $guild): self
     {
         $this->guild = $guild;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getLocked()
+    public function getLocked(): bool
     {
         return $this->locked;
     }
 
-    /**
-     * @param mixed $locked
-     * @return Event
-     */
-    public function setLocked($locked)
+    public function setLocked(bool $locked): self
     {
         $this->locked = $locked;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getTags()
+    public function getTags(): array
     {
         return $this->tags;
     }
 
-    /**
-     * @param mixed $tags
-     * @return Event
-     */
-    public function setTags($tags)
+    public function setTags(array $tags): self
     {
         $this->tags = $tags;
 
@@ -245,17 +186,13 @@ class Event
     }
 
     /**
-     * @return EventAttendee[]
+     * @return Collection|EventAttendee[]
      */
-    public function getAttendees()
+    public function getAttendees(): Collection
     {
         return $this->attendees;
     }
 
-    /**
-     * @param User $user
-     * @return bool
-     */
     public function isAttending(User $user): bool
     {
         $attending = $this->attendees->filter(static function (EventAttendee $attendee) use ($user) {
@@ -276,11 +213,7 @@ class Event
         });
     }
 
-    /**
-     * @param mixed $attendees
-     * @return Event
-     */
-    public function setAttendees($attendees)
+    public function setAttendees(Collection $attendees): self
     {
         $this->attendees = $attendees;
 
@@ -330,7 +263,7 @@ class Event
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name.' '.$this->start->format('Y-m-d H:i:s e');
     }

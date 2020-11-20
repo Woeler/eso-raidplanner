@@ -181,9 +181,6 @@
     "pagerfanta/pagerfanta": {
         "version": "v2.1.3"
     },
-    "pathfindermediagroup/api-library": {
-        "version": "v1.2.0"
-    },
     "php": {
         "version": "7.4"
     },

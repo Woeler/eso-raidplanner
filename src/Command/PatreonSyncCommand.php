@@ -25,13 +25,9 @@ class PatreonSyncCommand extends Command
     protected static $defaultName = 'patreon:sync';
 
     private DiscordBotService $discordBotService;
-
     private string $patreonServer;
-
     private array $patreonRoles;
-
     private UserRepository $userRepository;
-
     private EntityManagerInterface $entityManager;
 
     public function __construct(
@@ -47,13 +43,6 @@ class PatreonSyncCommand extends Command
         $this->patreonRoles = $patreonRoles;
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
-    }
-
-    protected function configure(): void
-    {
-        $this
-            ->setDescription('Add a short description for your command')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

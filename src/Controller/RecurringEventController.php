@@ -28,20 +28,9 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class RecurringEventController extends AbstractController
 {
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
-
-    /**
-     * @var RecurringEventRepository
-     */
-    private $recurringEventRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private DiscordGuildRepository $discordGuildRepository;
+    private RecurringEventRepository $recurringEventRepository;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,

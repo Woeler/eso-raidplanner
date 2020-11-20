@@ -19,17 +19,14 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class CommentType extends AbstractType
 {
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
+    private UrlGeneratorInterface $router;
 
     public function __construct(UrlGeneratorInterface $router)
     {
         $this->router = $router;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('text', TextareaType::class, ['required' => true])
@@ -46,7 +43,7 @@ class CommentType extends AbstractType
         ;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Comment::class,

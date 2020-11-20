@@ -13,43 +13,31 @@ use App\Entity\Event;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 class EventVoter extends Voter
 {
     public const VIEW = 'view';
-
     public const UPDATE = 'update';
-
     public const DELETE = 'delete';
-
     public const ATTEND = 'attend';
-
     public const UNATTEND = 'unattend';
-
     public const CHANGE_ATTENDEE_STATUS = 'change_attendee_status';
-
     public const ATTEND_OTHER = 'attend_other';
-
     public const ADD_COMMENT = 'add_comment';
 
-    protected function supports($attribute, $subject)
+    protected function supports($attribute, $subject): bool
     {
-        // replace with your own logic
-        // https://symfony.com/doc/current/security/voters.html
         return in_array($attribute, [self::VIEW, self::UNATTEND, self::UPDATE, self::DELETE, self::ATTEND, self::CHANGE_ATTENDEE_STATUS, self::ATTEND_OTHER, self::ADD_COMMENT], true)
-            && $subject instanceof \App\Entity\Event;
+            && $subject instanceof Event;
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
     {
         $user = $token->getUser();
-        // if the user is anonymous, do not grant access
-        if (!$user instanceof UserInterface) {
+        if (!$user instanceof User) {
             return false;
         }
 
-        // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
             case self::VIEW:
                 return $this->canView($subject, $user);

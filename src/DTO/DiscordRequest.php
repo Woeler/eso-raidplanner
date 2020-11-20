@@ -16,13 +16,9 @@ use App\Entity\User;
 final class DiscordRequest
 {
     private string $channelId;
-
     private DiscordGuild $guild;
-
     private User $user;
-
     private string $args = '';
-
     private ?string $command = null;
 
     public function getChannelId(): string

@@ -14,6 +14,7 @@ use App\Repository\EventRepository;
 use App\Utility\EsoClassUtility;
 use App\Utility\EsoRoleUtility;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -23,9 +24,9 @@ class HomeController extends AbstractController
      * @Route("/", name="home")
      * @param EventRepository $eventRepository
      * @param UrlGeneratorInterface $router
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
-    public function home(EventRepository $eventRepository, UrlGeneratorInterface $router)
+    public function home(EventRepository $eventRepository, UrlGeneratorInterface $router): Response
     {
         if (!$this->isGranted('ROLE_USER')) {
             return $this->render('home.html.twig');
@@ -62,7 +63,7 @@ class HomeController extends AbstractController
     /**
      * @Route("/privacy", name="privacy_policy")
      */
-    public function privacyPolicy()
+    public function privacyPolicy(): Response
     {
         return $this->render('static_pages/privacy_policy_html.twig');
     }
@@ -70,7 +71,7 @@ class HomeController extends AbstractController
     /**
      * @Route("/termsofuse", name="terms_of_use")
      */
-    public function termsOfUse()
+    public function termsOfUse(): Response
     {
         return $this->render('static_pages/terms_of_use.html.twig');
     }
@@ -78,7 +79,7 @@ class HomeController extends AbstractController
     /**
      * @Route("/faq", name="faq")
      */
-    public function faq()
+    public function faq(): Response
     {
         return $this->render('static_pages/faq.html.twig');
     }
@@ -86,7 +87,7 @@ class HomeController extends AbstractController
     /**
      * @Route("/help/discord-bot", name="help_discord_bot")
      */
-    public function helpDiscordBot()
+    public function helpDiscordBot(): Response
     {
         $classes = EsoClassUtility::toArray();
         $roles = EsoRoleUtility::toArray();
@@ -103,7 +104,7 @@ class HomeController extends AbstractController
     /**
      * @Route("/help/recurring-events", name="help_recurring_events")
      */
-    public function helpRecurringEvents()
+    public function helpRecurringEvents(): Response
     {
         return $this->render('static_pages/help/recurring_events.html.twig');
     }
@@ -111,7 +112,7 @@ class HomeController extends AbstractController
     /**
      * @Route("/help/getting-started", name="help_getting_started")
      */
-    public function helpGettingStarted()
+    public function helpGettingStarted(): Response
     {
         return $this->render('static_pages/help/getting_started.html.twig');
     }

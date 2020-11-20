@@ -9,12 +9,11 @@
 
 namespace App\Command;
 
+use App\Client\EsoHubClient;
 use App\Entity\ArmorSet;
 use App\Repository\ArmorSetRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use PathfinderMediaGroup\ApiLibrary\Api\SetApi;
-use PathfinderMediaGroup\ApiLibrary\Auth\TokenAuth;
-use PathfinderMediaGroup\ApiLibrary\Exception\FailedPmgRequestException;
+use GuzzleHttp\Exception\BadResponseException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,58 +22,40 @@ class FetchSetsCommand extends Command
 {
     protected static $defaultName = 'sets:fetch';
 
-    /**
-     * @var ArmorSetRepository
-     */
-    private $armorSetRepository;
+    private ArmorSetRepository $armorSetRepository;
+    private EntityManagerInterface $entityManager;
+    private EsoHubClient $client;
 
-    /**
-     * @var string
-     */
-    private $pmgToken;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    public function __construct(ArmorSetRepository $armorSetRepository, EntityManagerInterface $entityManager, string $pmgToken)
+    public function __construct(ArmorSetRepository $armorSetRepository, EntityManagerInterface $entityManager, EsoHubClient $client)
     {
         parent::__construct();
         $this->armorSetRepository = $armorSetRepository;
-        $this->pmgToken = $pmgToken;
         $this->entityManager = $entityManager;
-    }
-
-    protected function configure()
-    {
-        $this->setDescription('Add a short description for your command');
+        $this->client = $client;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $token = new TokenAuth($this->pmgToken);
-        $api = new SetApi($token);
-
         try {
-            $sets = $api->getAll();
-        } catch (FailedPmgRequestException $e) {
+            $response = $this->client->get('armor-sets');
+            $sets = json_decode((string)$response->getBody(), true, 512, JSON_THROW_ON_ERROR);
+        } catch (BadResponseException | \JsonException $e) {
             return 1;
         }
 
         foreach ($sets as $set) {
-            $entity = $this->armorSetRepository->find($set['id']);
-            if (empty($set['id'])) {
-                continue;
+            $entity = $this->armorSetRepository->findOneBy(['esoHubId' => $set['id']]);
+            if (null === $entity) {
+                $entity = $this->armorSetRepository->findOneBy(['name' => $set['name']]);
             }
             if (null === $entity) {
                 $entity = new ArmorSet();
-                $entity->setId($set['id']);
             }
 
             $entity
                 ->setName($set['name'])
-                ->setSlug($set['slug']);
+                ->setSlug($set['slug'])
+                ->setEsoHubId($set['id']);
 
             $this->entityManager->persist($entity);
         }

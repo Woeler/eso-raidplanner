@@ -38,30 +38,11 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class EventController extends AbstractController
 {
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
-
-    /**
-     * @var EventAttendeeRepository
-     */
-    private $eventAttendeeRepository;
-
-    /**
-     * @var GuildLoggerService
-     */
-    private $guildLoggerService;
+    private DiscordGuildRepository $discordGuildRepository;
+    private EntityManagerInterface $entityManager;
+    private EventRepository $eventRepository;
+    private EventAttendeeRepository $eventAttendeeRepository;
+    private GuildLoggerService $guildLoggerService;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,

@@ -24,25 +24,10 @@ class CreateRecurringEventsCommand extends Command
 {
     protected static $defaultName = 'recurring:create';
 
-    /**
-     * @var RecurringEventRepository
-     */
-    private $recurringEventRepository;
-
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var GuildLoggerService
-     */
-    private $guildLoggerService;
+    private RecurringEventRepository $recurringEventRepository;
+    private EventRepository $eventRepository;
+    private EntityManagerInterface $entityManager;
+    private GuildLoggerService $guildLoggerService;
 
     public function __construct(
         RecurringEventRepository $recurringEventRepository,
@@ -55,13 +40,6 @@ class CreateRecurringEventsCommand extends Command
         $this->eventRepository = $eventRepository;
         $this->entityManager = $entityManager;
         $this->guildLoggerService = $guildLoggerService;
-    }
-
-    protected function configure()
-    {
-        $this
-            ->setDescription('Creates recurring events.')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

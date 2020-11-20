@@ -26,25 +26,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 class IcalController extends AbstractController
 {
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
-
-    /**
-     * @var EventRepository
-     */
-    private $eventRepository;
-
-    /**
-     * @var UrlGeneratorInterface
-     */
-    private $router;
-
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $guildRepository;
+    private UserRepository $userRepository;
+    private EventRepository $eventRepository;
+    private UrlGeneratorInterface $router;
+    private DiscordGuildRepository $guildRepository;
 
     public function __construct(
         UserRepository $userRepository,

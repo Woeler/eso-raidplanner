@@ -27,190 +27,136 @@ class EventAttendee
     use HasEsoRole;
 
     public const STATUS_ATTENDING = 1;
-
     public const STATUS_RESERVE = 2;
-
     public const STATUS_CONFIRMED = 3;
 
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ManyToOne(targetEntity="User", inversedBy="events")
      * @ORM\JoinColumn(onDelete="CASCADE")
-     * @var User
      */
-    private $user;
+    private User $user;
 
     /**
      * @ManyToOne(targetEntity="Event", inversedBy="attendees")
      * @ORM\JoinColumn(onDelete="CASCADE")
-     * @var Event
      */
-    private $event;
+    private Event $event;
 
     /**
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $status;
+    private int $status = self::STATUS_ATTENDING;
 
     /**
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $class;
+    private ?int $class = null;
 
     /**
      * @ORM\Column(type="integer")
-     * @var int
      */
-    private $role;
+    private ?int $role = null;
 
     /**
      * @ORM\ManyToMany(targetEntity="ArmorSet")
-     * @var Collection|ArmorSet[]
      */
-    private $sets;
+    private Collection $sets;
 
-    private $preset;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @var DateTime
-     */
-    private $createdAt;
+    private ?CharacterPreset $preset;
 
     /**
      * @ORM\Column(type="datetime")
-     * @var DateTime
      */
-    private $updatedAt;
+    private ?\DateTimeInterface $createdAt = null;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private ?\DateTimeInterface $updatedAt = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\CharacterPreset")
      */
-    private $characterPreset;
+    private ?CharacterPreset $characterPreset = null;
 
     public function __construct()
     {
-        $this->status = self::STATUS_ATTENDING;
         $this->sets = new ArrayCollection();
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     * @return EventAttendee
-     */
-    public function setId($id)
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
     public function getUser(): ?User
     {
         return $this->user;
     }
 
-    /**
-     * @param mixed $user
-     * @return EventAttendee
-     */
-    public function setUser($user)
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getEvent()
+    public function getEvent(): Event
     {
         return $this->event;
     }
 
-    /**
-     * @param mixed $event
-     * @return EventAttendee
-     */
-    public function setEvent($event)
+    public function setEvent(Event $event): self
     {
         $this->event = $event;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getStatus()
+    public function getStatus(): int
     {
         return $this->status;
     }
 
-    /**
-     * @param mixed $status
-     * @return EventAttendee
-     */
-    public function setStatus($status)
+    public function setStatus(int $status): self
     {
         $this->status = $status;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
     public function getClass(): ?int
     {
         return $this->class;
     }
 
-    /**
-     * @param mixed $class
-     * @return EventAttendee
-     */
-    public function setClass($class)
+    public function setClass(int $class): self
     {
         $this->class = $class;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getRole()
+    public function getRole(): ?int
     {
         return $this->role;
     }
 
-    /**
-     * @param mixed $role
-     * @return EventAttendee
-     */
-    public function setRole($role)
+    public function setRole(int $role): self
     {
         $this->role = $role;
 
@@ -218,65 +164,44 @@ class EventAttendee
     }
 
     /**
-     * @return Collection
+     * @return Collection|ArmorSet[]
      */
     public function getSets(): Collection
     {
         return $this->sets;
     }
 
-    /**
-     * @param array $sets
-     * @return EventAttendee
-     */
-    public function setSets(array $sets)
+    public function setSets(array $sets): self
     {
         $this->sets = new ArrayCollection($sets);
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getCreatedAt()
+    public function getCreatedAt(): ?\DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param mixed $createdAt
-     * @return EventAttendee
-     */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(?\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getUpdatedAt()
+    public function getUpdatedAt(): ?\DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    /**
-     * @param mixed $updatedAt
-     * @return EventAttendee
-     */
-    public function setUpdatedAt($updatedAt)
+    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getStatusEmoji(): string
     {
         if (self::STATUS_CONFIRMED === $this->status) {
@@ -303,7 +228,7 @@ class EventAttendee
         $this->setUpdatedAt(new DateTime('now'));
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->user->getUsername().'#'.$this->user->getDiscordDiscriminator();
     }

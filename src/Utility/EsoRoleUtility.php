@@ -12,13 +12,9 @@ namespace App\Utility;
 class EsoRoleUtility
 {
     public const ROLE_TANK = 1;
-
     public const ROLE_HEALER = 2;
-
     public const ROLE_MAGICKA_DD = 3;
-
     public const ROLE_STAMINA_DD = 4;
-
     public const ROLE_OTHER = 5;
 
     private const ALL = [
@@ -63,7 +59,6 @@ class EsoRoleUtility
             case self::ROLE_HEALER:
                 return 'build/images/roles/healer.png';
             case self::ROLE_MAGICKA_DD:
-                return 'build/images/roles/dd.png';
             case self::ROLE_STAMINA_DD:
                 return 'build/images/roles/dd.png';
             case self::ROLE_OTHER:
@@ -83,10 +78,6 @@ class EsoRoleUtility
         return $array;
     }
 
-    /**
-     * @param string $alias
-     * @return int|null
-     */
     public static function getRoleIdByAlias(string $alias): ?int
     {
         $alias = strtolower(trim($alias));

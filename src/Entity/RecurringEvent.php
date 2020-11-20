@@ -22,7 +22,7 @@ class RecurringEvent
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -30,50 +30,50 @@ class RecurringEvent
      * @Assert\NotBlank()
      * @Assert\Length(min=1,max=200)
      */
-    private $name;
+    private string $name = '';
 
     /**
      * @ORM\Column(type="text", nullable=true)
      * @Assert\Length(max=2000)
      */
-    private $description;
+    private ?string $description = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\DiscordGuild", inversedBy="recurringEvents")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
-    private $guild;
+    private DiscordGuild $guild;
 
     /**
      * @ORM\Column(type="integer")
      * @Assert\NotNull()
      * @Assert\Positive()
      */
-    private $createInAdvanceAmount;
+    private int $createInAdvanceAmount = 1;
 
     /**
      * @ORM\Column(type="datetime")
      * @Assert\NotNull()
      * @Assert\DateTime
      */
-    private $date;
+    private ?\DateTimeInterface $date = null;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $timezone;
+    private string $timezone = 'UTC';
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $lastEventStartDate;
+    private ?\DateTimeInterface $lastEventStartDate = null;
 
     /**
      * @ORM\Column(type="json")
      * @Assert\NotNull()
      * @Assert\Count(min=1)
      */
-    private $days = [];
+    private array $days = [];
 
     /**
      * @ORM\Column(type="integer")
@@ -93,7 +93,7 @@ class RecurringEvent
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -117,19 +117,19 @@ class RecurringEvent
         return $this;
     }
 
-    public function getGuild(): ?DiscordGuild
+    public function getGuild(): DiscordGuild
     {
         return $this->guild;
     }
 
-    public function setGuild(?DiscordGuild $guild): self
+    public function setGuild(DiscordGuild $guild): self
     {
         $this->guild = $guild;
 
         return $this;
     }
 
-    public function getCreateInAdvanceAmount(): ?int
+    public function getCreateInAdvanceAmount(): int
     {
         return $this->createInAdvanceAmount;
     }
@@ -153,7 +153,7 @@ class RecurringEvent
         return $this;
     }
 
-    public function getTimezone(): ?string
+    public function getTimezone(): string
     {
         return $this->timezone;
     }
@@ -165,19 +165,19 @@ class RecurringEvent
         return $this;
     }
 
-    public function getLastEventStartDate(): ?\DateTime
+    public function getLastEventStartDate(): \DateTimeInterface
     {
         return $this->lastEventStartDate;
     }
 
-    public function setLastEventStartDate(\DateTime $lastEventStartDate): self
+    public function setLastEventStartDate(\DateTimeInterface $lastEventStartDate): self
     {
         $this->lastEventStartDate = $lastEventStartDate;
 
         return $this;
     }
 
-    public function getDays(): ?array
+    public function getDays(): array
     {
         return $this->days;
     }
@@ -189,7 +189,7 @@ class RecurringEvent
         return $this;
     }
 
-    public function getWeekInterval(): ?int
+    public function getWeekInterval(): int
     {
         return $this->weekInterval;
     }
@@ -201,7 +201,7 @@ class RecurringEvent
         return $this;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name.' ('.$this->guild->getName().')';
     }

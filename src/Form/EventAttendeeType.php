@@ -26,7 +26,7 @@ use Tetranz\Select2EntityBundle\Form\Type\Select2EntityType;
 
 class EventAttendeeType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if (!$options['addOther'] && 0 < $options['user']->getCharacterPresets()->count()) {
             $builder->add(

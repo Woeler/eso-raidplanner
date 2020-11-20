@@ -33,15 +33,8 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class UserController extends AbstractController
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
-
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
+    private EntityManagerInterface $entityManager;
+    private DiscordGuildRepository $discordGuildRepository;
 
     public function __construct(EntityManagerInterface $entityManager, DiscordGuildRepository $discordGuildRepository)
     {

@@ -22,20 +22,9 @@ class RefreshDiscordTokensCommand extends Command
 {
     protected static $defaultName = 'discord:tokens:refresh';
 
-    /**
-     * @var DiscordOauthService
-     */
-    private $discordOauthService;
-
-    /**
-     * @var UserRepository
-     */
-    private $userRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private DiscordOauthService $discordOauthService;
+    private UserRepository $userRepository;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(DiscordOauthService $discordOauthService, UserRepository $userRepository, EntityManagerInterface $entityManager)
     {
@@ -43,13 +32,6 @@ class RefreshDiscordTokensCommand extends Command
         $this->discordOauthService = $discordOauthService;
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
-    }
-
-    protected function configure()
-    {
-        $this
-            ->setDescription('Refreshes Discord tokens that almost expired')
-        ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

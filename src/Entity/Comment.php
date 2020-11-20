@@ -24,7 +24,7 @@ class Comment
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id = null;
 
     /**
      * @ORM\Column(type="text")
@@ -32,24 +32,24 @@ class Comment
      * @Assert\NotBlank()
      * @Assert\Length(min=1,max=2000)
      */
-    private $text;
+    private ?string $text = null;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
-    private $user;
+    private User $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Event", inversedBy="comments")
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
-    private $event;
+    private Event $event;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $createdAt;
+    private ?\DateTimeInterface $createdAt = null;
 
     public function getId(): ?int
     {
@@ -68,24 +68,24 @@ class Comment
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    public function getEvent(): ?Event
+    public function getEvent(): Event
     {
         return $this->event;
     }
 
-    public function setEvent(?Event $event): self
+    public function setEvent(Event $event): self
     {
         $this->event = $event;
 
@@ -115,7 +115,7 @@ class Comment
         }
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->user->getUsername().'#'.$this->user->getDiscordDiscriminator().' at '.$this->createdAt->format('Y-m-d H:i:s e');
     }

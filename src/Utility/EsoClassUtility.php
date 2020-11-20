@@ -12,15 +12,10 @@ namespace App\Utility;
 class EsoClassUtility
 {
     public const CLASS_DRAGONKNIGHT = 1;
-
     public const CLASS_SORCERER = 2;
-
     public const CLASS_NIGHTBLADE = 3;
-
     public const CLASS_WARDEN = 4;
-
     public const CLASS_NECROMANCER = 5;
-
     public const CLASS_TEMPLAR = 6;
 
     private const ALL = [
@@ -41,10 +36,6 @@ class EsoClassUtility
         self::CLASS_TEMPLAR => ['templar', 'temp', 't'],
     ];
 
-    /**
-     * @param int $classId
-     * @return string
-     */
     public static function getClassName(int $classId): string
     {
         switch ($classId) {
@@ -65,10 +56,6 @@ class EsoClassUtility
         }
     }
 
-    /**
-     * @param int $classId
-     * @return string
-     */
     public static function getClassIcon(int $classId): string
     {
         switch ($classId) {
@@ -89,10 +76,6 @@ class EsoClassUtility
         }
     }
 
-    /**
-     * @param int $classId
-     * @return string
-     */
     public static function getClassDiscordEmoji(int $classId): string
     {
         switch ($classId) {
@@ -113,9 +96,6 @@ class EsoClassUtility
         }
     }
 
-    /**
-     * @return array
-     */
     public static function toArray(): array
     {
         $array = [];
@@ -126,10 +106,6 @@ class EsoClassUtility
         return $array;
     }
 
-    /**
-     * @param string $alias
-     * @return int|null
-     */
     public static function getClassIdByAlias(string $alias): ?int
     {
         $alias = strtolower(trim($alias));

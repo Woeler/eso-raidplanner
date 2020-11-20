@@ -31,20 +31,9 @@ use Woeler\DiscordPhp\Message\DiscordEmbedsMessage;
  */
 class ReminderController extends AbstractController
 {
-    /**
-     * @var DiscordGuildRepository
-     */
-    private $discordGuildRepository;
-
-    /**
-     * @var ReminderRepository
-     */
-    private $reminderRepository;
-
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private DiscordGuildRepository $discordGuildRepository;
+    private ReminderRepository $reminderRepository;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,

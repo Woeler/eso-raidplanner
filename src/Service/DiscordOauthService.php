@@ -14,25 +14,10 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class DiscordOauthService
 {
-    /**
-     * @var DiscordClient
-     */
-    private $client;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @var string
-     */
-    private $clientId;
-
-    /**
-     * @var string
-     */
-    private $clientSecret;
+    private DiscordClient $client;
+    private TokenStorageInterface $tokenStorage;
+    private string $clientId;
+    private string $clientSecret;
 
     public function __construct(
         DiscordClient $client,
@@ -46,17 +31,11 @@ class DiscordOauthService
         $this->clientSecret = $clientSecret;
     }
 
-    /**
-     * @return array
-     */
     public function getMe(): array
     {
         return $this->getRequest('users/@me');
     }
 
-    /**
-     * @return array
-     */
     public function getGuilds(): array
     {
         return $this->getRequest('users/@me/guilds');
@@ -75,10 +54,6 @@ class DiscordOauthService
         );
     }
 
-    /**
-     * @param string $endpoint
-     * @return array
-     */
     private function getRequest(string $endpoint): array
     {
         $response = $this->client->get(
@@ -94,11 +69,6 @@ class DiscordOauthService
         return json_decode((string)$response->getBody(), false) ?? [];
     }
 
-    /**
-     * @param string $endpoint
-     * @param array $data
-     * @return array
-     */
     private function postRequest(string $endpoint, array $data = []): array
     {
         $response = $this->client->post(
