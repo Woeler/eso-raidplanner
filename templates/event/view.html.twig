@@ -30,6 +30,15 @@
                             'danger',
                             'trash'
                         ) }}
+                        {% if event.poll is null %}
+                            <br>
+                            {{ macros.linkbutton(
+                                path('guild_event_poll', {guildId: guild.id, eventId: event.id}),
+                                'Create Poll',
+                                'success mt-1',
+                                'poll'
+                            ) }}
+                        {% endif %}
                     </div>
                 {% endif %}
                 <strong>Starts at:</strong> {{ app.user.toUserTimeString(event.start) }}<br>
@@ -43,6 +52,44 @@
                 <strong>Event ID:</strong> {{ event.id }}
             </div>
         </div>
+        {% if pollForm is not null %}
+            <div class="mt-3"></div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="float-right">
+                        {% if is_granted('manage_poll', event) %}
+                            {{ macros.linkbutton(
+                                path('guild_event_poll', {guildId: guild.id, eventId: event.id}),
+                                'Edit Poll',
+                                'info',
+                                'edit'
+                            ) }}
+                            {{ macros.linkbutton(
+                                path('guild_event_poll_delete', {guildId: guild.id, eventId: event.id}),
+                                'Delete Poll',
+                                'danger',
+                                'trash'
+                            ) }}
+                        {% endif %}
+                    </div>
+                    <strong>Poll</strong>
+                </div>
+                <div class="card-body">
+                    {{ form_start(pollForm, {'action': path('guild_event_poll_vote', {'guildId': event.guild.id, 'eventId': event.id}), 'method': 'POST'}) }}
+                    {% for a in pollForm.pollOption %}
+                        <div class="mb-2">
+                            {{ form_widget(a) }}
+                            <small>{{ a.vars.value|poll_votes|length }} votes</small><br>
+                            {% for vote in a.vars.value|poll_votes %}
+                                <img class="avatar rounded-circle ml-1 mb-3" width="32px" alt="Avatar"
+                                     src="{{ vote.user.fullAvatarUrl }}" title="{{ vote.user.getGuildNickname(guild) }}#{{ vote.user.discordDiscriminator }}"/>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                    {{ form_end(pollForm) }}
+                </div>
+            </div>
+        {% endif %}
         <div class="mt-3"></div>
         {% if event.attendees|length > 0 and guild.isAdmin(app.user) %}
             {{ form_start(attendeeForm) }}
@@ -188,7 +235,7 @@
                     Attending or changing your attendance information for this event is not possible.
                 {% else %}
                     {% if is_granted('attend', event) %}
-                        {{ form_start(form) }}
+                        {{ form_start(form, {'action': path('guild_event_attend_form_post', {'guildId': event.guild.id, 'eventId': event.id}), 'method': 'POST'}) }}
                         {{ form_widget(form) }}
                         {{ form_end(form) }}
                     {% endif %}

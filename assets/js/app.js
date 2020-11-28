@@ -17,7 +17,7 @@ require('./libs/navbar.js');
 require('select2');
 import apiclient from "./libs/apiclient";
 
-$(document).ready(function () {
+document.addEventListener("DOMContentLoaded", function () {
     let presetField = document.getElementById('event_attendee_preset');
     if (presetField) {
         buildAttendanceForm(presetField.value);

@@ -13,19 +13,26 @@ use App\Entity\CharacterPreset;
 use App\Entity\Comment;
 use App\Entity\Event;
 use App\Entity\EventAttendee;
+use App\Entity\Poll;
+use App\Entity\PollOption;
+use App\Entity\PollVote;
 use App\Form\CommentType;
 use App\Form\EventAttendeesStatusType;
 use App\Form\EventAttendeeType;
 use App\Form\EventType;
+use App\Form\PollType;
+use App\Form\PollVoteType;
 use App\Repository\CommentRepository;
 use App\Repository\DiscordGuildRepository;
 use App\Repository\EventAttendeeRepository;
 use App\Repository\EventRepository;
+use App\Repository\PollVoteRepository;
 use App\Security\Voter\CommentVoter;
 use App\Security\Voter\EventVoter;
 use App\Security\Voter\GuildVoter;
 use App\Service\GuildLoggerService;
 use App\Utility\EsoRoleUtility;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,23 +50,29 @@ class EventController extends AbstractController
     private EventRepository $eventRepository;
     private EventAttendeeRepository $eventAttendeeRepository;
     private GuildLoggerService $guildLoggerService;
+    /**
+     * @var PollVoteRepository
+     */
+    private PollVoteRepository $pollVoteRepository;
 
     public function __construct(
         DiscordGuildRepository $discordGuildRepository,
         EntityManagerInterface $entityManager,
         EventRepository $eventRepository,
         EventAttendeeRepository $eventAttendeeRepository,
-        GuildLoggerService $guildLoggerService
+        GuildLoggerService $guildLoggerService,
+        PollVoteRepository $pollVoteRepository
     ) {
         $this->discordGuildRepository = $discordGuildRepository;
         $this->entityManager = $entityManager;
         $this->eventRepository = $eventRepository;
         $this->eventAttendeeRepository = $eventAttendeeRepository;
         $this->guildLoggerService = $guildLoggerService;
+        $this->pollVoteRepository = $pollVoteRepository;
     }
 
     /**
-     * @Route("/{guildId}/event/{eventId}/view", name="event_view")
+     * @Route("/{guildId}/event/{eventId}/view", name="event_view", methods={"GET"})
      * @IsGranted("ROLE_USER")
      *
      * @param string $guildId
@@ -71,6 +84,48 @@ class EventController extends AbstractController
     {
         $event = $this->eventRepository->find($eventId);
         $this->denyAccessUnlessGranted(EventVoter::VIEW, $event);
+
+        $attendee = $this->eventAttendeeRepository->findOneBy(['user' => $this->getUser()->getId(), 'event' => $eventId]);
+        $attending = null !== $attendee;
+        $form = $this->createForm(EventAttendeeType::class, $attendee, ['user' => $this->getUser()]);
+
+        $attendeeForm = $this->createForm(
+            EventAttendeesStatusType::class,
+            null,
+            ['attendees' => $event->getAttendees(), 'event' => $event]
+        );
+
+        if ($event->getPoll()) {
+            $vote = $this->pollVoteRepository->findBy(['user' => $this->getUser(), 'poll' => $event->getPoll()]);
+            $pollForm = $this->createForm(PollVoteType::class, null, ['poll' => $event->getPoll(), 'votes' => $vote]);
+        }
+
+        return $this->render(
+            'event/view.html.twig',
+            [
+                'event' => $event,
+                'guild' => $this->discordGuildRepository->find($guildId),
+                'form' => $form->createView(),
+                'attending' => $attending,
+                'roles' => EsoRoleUtility::toArray(),
+                'attendeeForm' => $attendeeForm->createView(),
+                'commentForm' => $this->createForm(CommentType::class, null, ['event' => $event])->createView(),
+                'pollForm' => ($pollForm ?? null) ? $pollForm->createView() : null,
+            ]
+        );
+    }
+
+    /**
+     * @Route("/{guildId}/event/{eventId}/attend", name="event_attend_form_post", methods={"POST"})
+     * @param string $guildId
+     * @param int $eventId
+     * @param Request $request
+     * @return Response
+     */
+    public function attendEvent(string $guildId, int $eventId, Request $request): Response
+    {
+        $event = $this->eventRepository->find($eventId);
+        $this->denyAccessUnlessGranted(EventVoter::ATTEND, $event);
 
         $attendee = $this->eventAttendeeRepository->findOneBy(['user' => $this->getUser()->getId(), 'event' => $eventId]);
         $attending = true;
@@ -85,7 +140,6 @@ class EventController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->denyAccessUnlessGranted(EventVoter::ATTEND, $event);
             if (!empty($form['preset']) && !empty($form['preset']->getData())) {
                 /** @var CharacterPreset $preset */
                 $preset = $form['preset']->getData();
@@ -106,28 +160,9 @@ class EventController extends AbstractController
                 $this->guildLoggerService->eventAttending($event->getGuild(), $event, $attendee);
             }
             $this->addFlash('success', 'Event attendance updated.');
-
-            return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
         }
 
-        $attendeeForm = $this->createForm(
-            EventAttendeesStatusType::class,
-            null,
-            ['attendees' => $event->getAttendees(), 'event' => $event]
-        );
-
-        return $this->render(
-            'event/view.html.twig',
-            [
-                'event' => $event,
-                'guild' => $this->discordGuildRepository->find($guildId),
-                'form' => $form->createView(),
-                'attending' => $attending,
-                'roles' => EsoRoleUtility::toArray(),
-                'attendeeForm' => $attendeeForm->createView(),
-                'commentForm' => $this->createForm(CommentType::class, null, ['event' => $event])->createView(),
-            ]
-        );
+        return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
     }
 
     /**
@@ -422,5 +457,107 @@ class EventController extends AbstractController
         $this->addFlash('danger', 'Comment removed.');
 
         return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
+    }
+
+    /**
+     * @Route("/{guildId}/event/{eventId}/poll", name="event_poll", methods={"GET", "POST"})
+     * @IsGranted("ROLE_USER")
+     *
+     * @param Request $request
+     * @param string $guildId
+     * @param int $eventId
+     * @return Response
+     */
+    public function poll(Request $request, string $guildId, int $eventId): Response
+    {
+        $event = $this->eventRepository->find($eventId);
+        $this->denyAccessUnlessGranted(EventVoter::MANAGE_POLL, $event);
+        $poll = $event->getPoll() ?? (new Poll())->setEvent($event);
+        $form = $this->createForm(PollType::class, $poll);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $event->setPoll($poll);
+            $this->entityManager->persist($poll);
+            $this->entityManager->persist($event);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Poll added to event');
+
+            return $this->redirectToRoute('guild_event_view', ['guildId' => $guildId, 'eventId' => $eventId]);
+        }
+
+        return $this->render('event/poll/form.html.twig', [
+            'form' => $form->createView(),
+            'event' => $event,
+        ]);
+    }
+
+    /**
+     * @Route("/{guildId}/event/{eventId}/poll/delete", name="event_poll_delete", methods={"GET"})
+     * @IsGranted("ROLE_USER")
+     *
+     * @param string $guildId
+     * @param int $eventId
+     * @return Response
+     */
+    public function deletePoll(string $guildId, int $eventId): Response
+    {
+        $event = $this->eventRepository->find($eventId);
+        $this->denyAccessUnlessGranted(EventVoter::MANAGE_POLL, $event);
+        $poll = $event->getPoll();
+
+        if (null !== $poll) {
+            $this->entityManager->remove($poll);
+            $this->entityManager->flush();
+        }
+
+        return $this->redirectToRoute('guild_event_view', ['eventId' => $eventId, 'guildId' => $guildId]);
+    }
+
+    /**
+     * @Route("/{guildId}/event/{eventId}/poll/vote", name="event_poll_vote", methods={"POST"})
+     * @IsGranted("ROLE_USER")
+     *
+     * @param Request $request
+     * @param string $guildId
+     * @param int $eventId
+     * @return Response
+     */
+    public function pollVote(Request $request, string $guildId, int $eventId): Response
+    {
+        $event = $this->eventRepository->find($eventId);
+        $this->denyAccessUnlessGranted(EventVoter::VOTE_POLL, $event);
+        $pollForm = $this->createForm(PollVoteType::class, null, ['poll' => $event->getPoll()]);
+        $pollForm->handleRequest($request);
+
+        if ($pollForm->isSubmitted() && $pollForm->isValid()) {
+            $collection = new ArrayCollection();
+            if (!$event->getPoll()->isMultipleChoice()) {
+                $choices = [$pollForm['pollOption']->getData()];
+            } else {
+                $choices = $pollForm['pollOption']->getData();
+            }
+            /** @var PollOption $option */
+            foreach ($choices as $option) {
+                $vote = $this->pollVoteRepository->findOneBy(['poll' => $event->getPoll(), 'pollOption' => $option, 'user' => $this->getUser()]);
+                if (null === $vote) {
+                    $vote = new PollVote();
+                }
+                $vote->setUser($this->getUser())
+                    ->setPoll($event->getPoll())
+                    ->setPollOption($option);
+                $this->entityManager->persist($vote);
+                $collection->add($vote);
+            }
+            $votes = $this->pollVoteRepository->findBy(['poll' => $event->getPoll(), 'user' => $this->getUser()]);
+            foreach ($votes as $v) {
+                if (!$collection->contains($v)) {
+                    $this->entityManager->remove($v);
+                }
+            }
+            $this->entityManager->flush();
+        }
+
+        return $this->redirectToRoute('guild_event_view', ['eventId' => $eventId, 'guildId' => $guildId]);
     }
 }

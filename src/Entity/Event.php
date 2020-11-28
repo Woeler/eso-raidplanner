@@ -96,6 +96,12 @@ class Event
      */
     private ?DiscordChannel $reminderRerouteChannel = null;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\Poll", inversedBy="event")
+     * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
+     */
+    private ?Poll $poll = null;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -288,6 +294,18 @@ class Event
     public function setReminderRerouteChannel(?DiscordChannel $reminderRerouteChannel): self
     {
         $this->reminderRerouteChannel = $reminderRerouteChannel;
+
+        return $this;
+    }
+
+    public function getPoll(): ?Poll
+    {
+        return $this->poll;
+    }
+
+    public function setPoll(?Poll $poll): Event
+    {
+        $this->poll = $poll;
 
         return $this;
     }

@@ -24,10 +24,12 @@ class EventVoter extends Voter
     public const CHANGE_ATTENDEE_STATUS = 'change_attendee_status';
     public const ATTEND_OTHER = 'attend_other';
     public const ADD_COMMENT = 'add_comment';
+    public const MANAGE_POLL = 'manage_poll';
+    public const VOTE_POLL = 'vote_poll';
 
     protected function supports($attribute, $subject): bool
     {
-        return in_array($attribute, [self::VIEW, self::UNATTEND, self::UPDATE, self::DELETE, self::ATTEND, self::CHANGE_ATTENDEE_STATUS, self::ATTEND_OTHER, self::ADD_COMMENT], true)
+        return in_array($attribute, [self::VIEW, self::UNATTEND, self::UPDATE, self::DELETE, self::ATTEND, self::CHANGE_ATTENDEE_STATUS, self::ATTEND_OTHER, self::ADD_COMMENT, self::MANAGE_POLL, self::VOTE_POLL], true)
             && $subject instanceof Event;
     }
 
@@ -55,6 +57,10 @@ class EventVoter extends Voter
                 return $this->canAttendOther($subject, $user);
             case self::ADD_COMMENT:
                 return $this->canAddComment($subject, $user);
+            case self::MANAGE_POLL:
+                return $this->canManagePoll($subject, $user);
+            case self::VOTE_POLL:
+                return $this->canVoteOnPoll($subject, $user);
         }
 
         return false;
@@ -102,5 +108,18 @@ class EventVoter extends Voter
     public function canAddComment(Event $event, User $user): bool
     {
         return $event->getGuild()->isMember($user);
+    }
+
+    public function canManagePoll(Event $event, User $user): bool
+    {
+        return $event->getGuild()->isAdmin($user);
+    }
+
+    public function canVoteOnPoll(Event $event, User $user): bool
+    {
+        return $event->getGuild()->isMember($user)
+            && null !== $event->getPoll()
+            && !$event->getLocked()
+            && $event->getStart()->getTimestamp() > (new \DateTime())->getTimestamp();
     }
 }

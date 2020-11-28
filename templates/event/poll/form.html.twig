@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ event.guild.name }} {{ event.name }} Poll{% endblock %}
+{% block javascripts %}
+    {{ encore_entry_script_tags('poll') }}
+{% endblock %}
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                {% if event.guild.icon is not null %}
+                    <img class="avatar rounded-circle"
+                         src="{{ event.guild.getFullIconUrl() }}" width="32"
+                         height="32"/>
+                {% endif %}
+                <a href="{{ path('guild_view', {'guildId': event.guild.id}) }}">
+                    {{ event.guild.name }}
+                </a>
+                - {{ event.name }}
+                - Create poll
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                {{ form_row(form.question) }}
+                {% if form.multipleChoice is defined %}
+                    {{ form_row(form.multipleChoice) }}
+                {% endif %}
+
+                <strong>Poll options</strong>
+                <ul class="options" data-prototype="{{ form_widget(form.options.vars.prototype)|e('html_attr') }}" data-index="{{ form.options|length }}" style="list-style: none">
+                {% for option in form.options %}
+                        <li class="mb-3">{{ form_row(option.value) }}</li>
+                    {% endfor %}
+                </ul>
+                <button type="button" class="add_poll_option_link btn btn-success" data-collection-holder-class="options">Add an option</button>
+                <br>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

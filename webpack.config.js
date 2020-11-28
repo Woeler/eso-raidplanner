@@ -6,6 +6,7 @@ Encore
     .addEntry('app', './assets/js/app.js')
     .addEntry('calendar', './assets/js/calendar.js')
     .addEntry('markdown', './assets/js/markdown.js')
+    .addEntry('poll', './assets/js/poll.js')
     .addStyleEntry('darkmode', './assets/css/darkmode.scss')
     .autoProvidejQuery()
     .splitEntryChunks()
