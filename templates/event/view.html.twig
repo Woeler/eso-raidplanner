@@ -82,7 +82,8 @@
                             <small>{{ a.vars.value|poll_votes|length }} votes</small><br>
                             {% for vote in a.vars.value|poll_votes %}
                                 <img class="avatar rounded-circle ml-1 mb-3" width="32px" alt="Avatar"
-                                     src="{{ vote.user.fullAvatarUrl }}" title="{{ vote.user.getGuildNickname(guild) }}#{{ vote.user.discordDiscriminator }}"/>
+                                     src="{{ vote.user.fullAvatarUrl }}"
+                                     title="{{ vote.user.getGuildNickname(guild) }}#{{ vote.user.discordDiscriminator }}"/>
                             {% endfor %}
                         </div>
                     {% endfor %}
@@ -91,7 +92,7 @@
             </div>
         {% endif %}
         <div class="mt-3"></div>
-        {% if event.attendees|length > 0 and guild.isAdmin(app.user) %}
+        {% if guild.isAdmin(app.user) %}
             {{ form_start(attendeeForm) }}
             <div class="card">
                 <div class="card-header">
@@ -105,17 +106,20 @@
                     </div>
                     Admin actions
                 </div>
-                <div class="card-body">
-                    You may check the checkboxes of event attendees and then click one of these buttons to apply actions
-                    to them. This feature is entirely optional, but may come in handy for guilds that have too many
-                    attendees.
-                    <div class="text-center">
-                        {{ form_widget(attendeeForm.confirm) }}
-                        {{ form_widget(attendeeForm.reserve) }}
-                        {{ form_widget(attendeeForm.reset) }}
-                        {{ form_widget(attendeeForm.delete) }}
+                {% if event.attendees|length > 0 %}
+                    <div class="card-body">
+                        You may check the checkboxes of event attendees and then click one of these buttons to apply
+                        actions
+                        to them. This feature is entirely optional, but may come in handy for guilds that have too many
+                        attendees.
+                        <div class="text-center">
+                            {{ form_widget(attendeeForm.confirm) }}
+                            {{ form_widget(attendeeForm.reserve) }}
+                            {{ form_widget(attendeeForm.reset) }}
+                            {{ form_widget(attendeeForm.delete) }}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
             </div>
             <div class="mt-3"></div>
         {% endif %}
@@ -139,7 +143,8 @@
                                                 title="{{ constant('App\\Entity\\User::PATREON')[attendee.user.patreonMembership] }} Supporter"></li>
                                         {% endif %}
                                         {% if attendee.characterPreset and attendee.characterPreset.notesHtml %}
-                                            <span class="character-preset-notes-button" data-user="{{ attendee.user.id }}">
+                                            <span class="character-preset-notes-button"
+                                                  data-user="{{ attendee.user.id }}">
                                                 <i class="fa fa-sticky-note" title="View notes"></i>
                                             </span>
                                         {% endif %}
@@ -171,7 +176,7 @@
                                     {% endif %}
                                 </tr>
                                 {% if attendee.characterPreset and attendee.characterPreset.notesHtml %}
-                                    <tr style="display: none" id="notes-{{ attendee.user.id }}" >
+                                    <tr style="display: none" id="notes-{{ attendee.user.id }}">
                                         <td colspan="100%">
                                             <div class="character-preset-notes">
                                                 {{ attendee.characterPreset.notesHtml|raw }}
@@ -254,7 +259,7 @@
 {% endblock %}
 
 {% block css %}
-    <link rel="stylesheet" href="https://eso-hub.com/css/external/tooltips.css" />
+    <link rel="stylesheet" href="https://eso-hub.com/css/external/tooltips.css"/>
 {% endblock %}
 
 {% block javascripts %}

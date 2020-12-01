@@ -116,7 +116,7 @@ class EventController extends AbstractController
     }
 
     /**
-     * @Route("/{guildId}/event/{eventId}/attend", name="event_attend_form_post", methods={"POST"})
+     * @Route("/{guildId}/event/{eventId}/attend-self", name="event_attend_form_post", methods={"POST"})
      * @param string $guildId
      * @param int $eventId
      * @param Request $request
