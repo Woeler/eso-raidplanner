@@ -25,7 +25,7 @@
         "@fullcalendar/bootstrap": "^4.3.0",
         "@fullcalendar/core": "^4.3.1",
         "@fullcalendar/daygrid": "^4.3.0",
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "easymde": "^2.9.0",
         "select2": "^4.0.10"
     }
