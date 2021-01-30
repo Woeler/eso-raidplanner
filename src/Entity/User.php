@@ -404,10 +404,10 @@ class User implements UserInterface
         $dateTime->setTimezone(new DateTimeZone($this->timezone ?? 'UTC'));
 
         if (12 === $this->clock) {
-            return $dateTime->format('F jS g:ia');
+            return $dateTime->format('D F jS g:ia');
         }
 
-        return $dateTime->format('F jS H:i');
+        return $dateTime->format('D F jS H:i');
     }
 
     public function toUserTime(DateTimeInterface $dateTime): DateTimeInterface
