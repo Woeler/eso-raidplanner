@@ -75,6 +75,8 @@
                     <strong>Poll</strong>
                 </div>
                 <div class="card-body">
+                    <strong>{{ event.poll.question }}</strong>
+                    <hr>
                     {{ form_start(pollForm, {'action': path('guild_event_poll_vote', {'guildId': event.guild.id, 'eventId': event.id}), 'method': 'POST'}) }}
                     {% for a in pollForm.pollOption %}
                         <div class="mb-2">
