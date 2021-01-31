@@ -89,7 +89,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         $class = 'App\BotCommand\\'.ucfirst($commandString ?? '').'BotCommand';
 
         foreach ($this->commands as $command) {
-            if (get_class($command) === $class) {
+            if ($class === get_class($command) || str_ends_with($class, '\\'.explode('_', get_class($command))[0])) {
                 return JsonResponse::create($command->handle($discordRequest)->jsonSerialize(), Response::HTTP_OK);
             }
         }

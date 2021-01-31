@@ -31,7 +31,11 @@ class EventsBotCommand implements BotCommandInterface
         $response = new DiscordResponse();
         $events = $this->eventRepository->findFutureEventsForGuild($request->getGuild());
         $desc = '';
+        $i = 0;
         foreach ($events as $event) {
+            if (5 === $i) {
+                break;
+            }
             $eventUrl = $this->router->generate(
                 'guild_event_view',
                 ['guildId' => $request->getGuild()->getId(), 'eventId' => $event->getId()],
@@ -39,6 +43,7 @@ class EventsBotCommand implements BotCommandInterface
             );
             $eventName = '['.$event->getName().']('.$eventUrl.')';
             $desc .= $event->getId().': **'.$eventName.'**'.PHP_EOL.$request->getUser()->toUserTimeString($event->getStart()).PHP_EOL.PHP_EOL;
+            $i++;
         }
 
         $response
