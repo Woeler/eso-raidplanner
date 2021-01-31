@@ -52,7 +52,7 @@ class EventBotCommand implements BotCommandInterface
                 ))
                 ->setAuthorIcon('https://cdn.discordapp.com/icons/' . $request->getGuild()->getId() . '/' . $request->getGuild()->getIcon() . '.png')
                 ->setAuthorName($request->getGuild()->getName())
-                ->setDescription($event->getDescription() ?? '')
+                ->setDescription(substr($event->getDescription() ?? '', 0, 1000))
                 ->addField(
                     'Date and Time',
                     $request->getUser()->toUserTimeString($event->getStart()) . PHP_EOL . '(in your timezone: ' . $request->getUser()->getTimezone() . ')'
