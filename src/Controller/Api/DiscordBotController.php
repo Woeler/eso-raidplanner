@@ -20,6 +20,7 @@ use App\Repository\GuildMembershipRepository;
 use App\Repository\UserRepository;
 use App\Service\DiscordBotService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,11 +43,13 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
     private EntityManagerInterface $entityManager;
     private array $defaultRoles;
     private iterable $commands;
+    private LoggerInterface $logger;
 
     public function __construct(
         DiscordRequestFactory $requestFactory,
         DiscordBotService $discordBotService,
         EntityManagerInterface $entityManager,
+        LoggerInterface $logger,
         array $defaultRoles,
         iterable $commands
     ) {
@@ -55,6 +58,7 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
         $this->entityManager = $entityManager;
         $this->defaultRoles = $defaultRoles;
         $this->commands = $commands;
+        $this->logger = $logger;
     }
 
     /**
@@ -79,6 +83,10 @@ class DiscordBotController extends AbstractController implements TalksWithDiscor
             } else {
                 return Response::create('', Response::HTTP_BAD_REQUEST);
             }
+        } catch (\JsonException $e) {
+            $this->logger->error('JSON problem with bot request', ['content' => (string)$request->getContent()]);
+
+            return Response::create('', Response::HTTP_BAD_REQUEST);
         }
 
         if (!$discordRequest->getGuild()->isMember($discordRequest->getUser())) {
