@@ -19,8 +19,7 @@ module.exports = (client, message) => {
         userId: message.author.id,
         channelId: message.channel.id,
         guildId: message.guild.id,
-        args: message.content,
-        userNick: encodeURI(message.guild.member(message.author).displayName)
+        args: message.content
     };
 
     const requestData = JSON.stringify(data);
