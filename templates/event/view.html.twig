@@ -81,7 +81,9 @@
                     {% for a in pollForm.pollOption %}
                         <div class="mb-2">
                             {{ form_widget(a) }}
-                            <small>{{ a.vars.value|poll_votes|length }} votes</small><br>
+                            <div class="progress mb-2">
+                                <div class="progress-bar" role="progressbar" style="width: {{ a.vars.value|poll_votes_percentage }}%" aria-valuenow="{{ a.vars.value|poll_votes_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ a.vars.value|poll_votes_percentage }}% ({{ a.vars.value|poll_votes|length }} votes)</div>
+                            </div>
                             {% for vote in a.vars.value|poll_votes %}
                                 <img class="avatar rounded-circle ml-1 mb-3" width="32px" alt="Avatar"
                                      src="{{ vote.user.fullAvatarUrl }}"

@@ -28,6 +28,7 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFilter('poll_votes', [$this, 'pollVotes']),
+            new TwigFilter('poll_votes_percentage', [$this, 'pollVotesPercentage']),
         ];
     }
 
@@ -36,5 +37,12 @@ class AppExtension extends AbstractExtension
         $option  = $this->pollOptionRepository->find($pollOptionId);
 
         return $option->getVotes();
+    }
+
+    public function pollVotesPercentage(int $pollOptionId): float
+    {
+        $option  = $this->pollOptionRepository->find($pollOptionId);
+
+        return $option->getPoll()->getVotes()->count() === 0 ? 0 : round(($option->getVotes()->count() / $option->getPoll()->getVotes()->count()) * 100);
     }
 }
