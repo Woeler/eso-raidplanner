@@ -75,7 +75,7 @@ class CalendarListener
                 $colour = $user->getActiveGuildMemberships()->filter(static function (GuildMembership $m) use ($guild) {
                     return $m->getGuild()->getId() === $guild->getId();
                 });
-                $colour = $colour->first()->getColour();
+                $colour = $colour->first() ? $colour->first()->getColour() : '007bff';
                 $calendarEvent->addOption('backgroundColor', '#'.$colour);
                 $calendarEvent->addOption('borderColor', '#'.$colour);
 
