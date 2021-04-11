@@ -120,6 +120,7 @@ class EventVoter extends Voter
         return $event->getGuild()->isMember($user)
             && null !== $event->getPoll()
             && !$event->getLocked()
-            && $event->getStart()->getTimestamp() > (new \DateTime())->getTimestamp();
+            && $event->getStart()->getTimestamp() > (new \DateTime())->getTimestamp()
+            && $event->isAttending($user);
     }
 }

@@ -97,7 +97,7 @@ class EventController extends AbstractController
 
         if ($event->getPoll()) {
             $vote = $this->pollVoteRepository->findBy(['user' => $this->getUser(), 'poll' => $event->getPoll()]);
-            $pollForm = $this->createForm(PollVoteType::class, null, ['poll' => $event->getPoll(), 'votes' => $vote]);
+            $pollForm = $this->createForm(PollVoteType::class, null, ['poll' => $event->getPoll(), 'votes' => $vote, 'user' => $this->getUser()]);
         }
 
         return $this->render(
@@ -527,7 +527,7 @@ class EventController extends AbstractController
     {
         $event = $this->eventRepository->find($eventId);
         $this->denyAccessUnlessGranted(EventVoter::VOTE_POLL, $event);
-        $pollForm = $this->createForm(PollVoteType::class, null, ['poll' => $event->getPoll()]);
+        $pollForm = $this->createForm(PollVoteType::class, null, ['poll' => $event->getPoll(), 'user' => $this->getUser()]);
         $pollForm->handleRequest($request);
 
         if ($pollForm->isSubmitted() && $pollForm->isValid()) {

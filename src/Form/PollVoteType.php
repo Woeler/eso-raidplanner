@@ -22,7 +22,6 @@ class PollVoteType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-
         /** @var Poll $poll */
         $poll = $options['poll'];
         $builder
@@ -34,7 +33,7 @@ class PollVoteType extends AbstractType
                 'choices' => $poll->getOptions(),
                 'multiple' => $poll->isMultipleChoice(),
                 'expanded' => true,
-                'disabled' => new \DateTime() > $poll->getEvent()->getStart(),
+                'disabled' => new \DateTime() > $poll->getEvent()->getStart() || !$poll->getEvent()->isAttending($options['user'] ?? new \App\Entity\User()),
                 'data' => $poll->isMultipleChoice() ? array_map(static function (PollVote $v) {
                     return $v->getPollOption();
                 }, $options['votes']) : (isset($options['votes'][0]) ? $options['votes'][0]->getPollOption() : null),
@@ -52,6 +51,7 @@ class PollVoteType extends AbstractType
         $resolver->setDefaults([
             'poll' => null,
             'votes' => [],
+            'user' => null
         ]);
     }
 }
