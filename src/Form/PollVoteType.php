@@ -51,7 +51,7 @@ class PollVoteType extends AbstractType
         $resolver->setDefaults([
             'poll' => null,
             'votes' => [],
-            'user' => null
+            'user' => null,
         ]);
     }
 }

@@ -43,6 +43,6 @@ class AppExtension extends AbstractExtension
     {
         $option  = $this->pollOptionRepository->find($pollOptionId);
 
-        return $option->getPoll()->getVotes()->count() === 0 ? 0 : round(($option->getVotes()->count() / $option->getPoll()->getVotes()->count()) * 100);
+        return 0 === $option->getPoll()->getVotes()->count() ? 0 : round(($option->getVotes()->count() / $option->getPoll()->getVotes()->count()) * 100);
     }
 }
