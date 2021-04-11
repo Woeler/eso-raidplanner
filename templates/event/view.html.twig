@@ -80,15 +80,22 @@
                     {{ form_start(pollForm, {'action': path('guild_event_poll_vote', {'guildId': event.guild.id, 'eventId': event.id}), 'method': 'POST'}) }}
                     {% for a in pollForm.pollOption %}
                         <div class="mb-2">
-                            {{ form_widget(a) }}
-                            <div class="progress mb-2">
-                                <div class="progress-bar" role="progressbar" style="width: {{ a.vars.value|poll_votes_percentage }}%" aria-valuenow="{{ a.vars.value|poll_votes_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ a.vars.value|poll_votes_percentage }}% ({{ a.vars.value|poll_votes|length }} votes)</div>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    {{ form_widget(a) }}
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="progress" style="height: 1.2rem">
+                                        <div class="progress-bar" role="progressbar" style="width: {{ a.vars.value|poll_votes_percentage }}%" aria-valuenow="{{ a.vars.value|poll_votes_percentage }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        <div class="progress-bar-title">{{ a.vars.value|poll_votes_percentage }}% ({{ a.vars.value|poll_votes|length }} votes)</div>
+                                    </div>
+                                </div>
                             </div>
-                            {% for vote in a.vars.value|poll_votes %}
-                                <img class="avatar rounded-circle ml-1 mb-3" width="32px" alt="Avatar"
-                                     src="{{ vote.user.fullAvatarUrl }}"
-                                     title="{{ vote.user.getGuildNickname(guild) }}#{{ vote.user.discordDiscriminator }}"/>
-                            {% endfor %}
+{#                            {% for vote in a.vars.value|poll_votes %}#}
+{#                                <img class="avatar rounded-circle ml-1 mb-3" width="32px" alt="Avatar"#}
+{#                                     src="{{ vote.user.fullAvatarUrl }}"#}
+{#                                     title="{{ vote.user.getGuildNickname(guild) }}#{{ vote.user.discordDiscriminator }}"/>#}
+{#                            {% endfor %}#}
                         </div>
                     {% endfor %}
                     {{ form_end(pollForm) }}
