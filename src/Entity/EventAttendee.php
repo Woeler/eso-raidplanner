@@ -83,6 +83,7 @@ class EventAttendee
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\CharacterPreset")
+     * @ORM\JoinColumn(onDelete="SET NULL")
      */
     private ?CharacterPreset $characterPreset = null;
 

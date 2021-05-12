@@ -35,9 +35,9 @@ class Reminder
 
     /**
      * @ManyToOne(targetEntity="DiscordChannel")
-     * @ORM\JoinColumn(name="discord_channel_id", referencedColumnName="id", nullable=true,onDelete="SET NULL")
+     * @ORM\JoinColumn(name="discord_channel_id", referencedColumnName="id", nullable=true, onDelete="SET NULL")
      */
-    private DiscordChannel $channel;
+    private ?DiscordChannel $channel = null;
 
     /**
      * @ManyToOne(targetEntity="DiscordGuild", inversedBy="reminders")
