@@ -9,6 +9,7 @@
         "node-sass": "^4.12.0",
         "popper.js": "^1.15.0",
         "postcss-loader": "^3.0.0",
+        "postcss": "^8.2.10",
         "regenerator-runtime": "^0.13.3",
         "sass-loader": "^7.1.0",
         "webpack-notifier": "^1.6.0"
