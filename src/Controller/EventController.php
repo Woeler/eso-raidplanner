@@ -296,6 +296,13 @@ class EventController extends AbstractController
         if (null !== $attendee) {
             $this->guildLoggerService->eventUnattending($guid, $event, $attendee);
             $this->entityManager->remove($attendee);
+            if (null !== $event->getPoll()) {
+                foreach ($event->getPoll()->getVotes() as $vote) {
+                    if ($vote->getUser()->getId() === $attendee->getUser()->getId()) {
+                        $this->entityManager->remove($vote);
+                    }
+                }
+            }
             $this->entityManager->flush();
 
             $this->addFlash('success', 'You are no longer attending this event.');
@@ -393,6 +400,13 @@ class EventController extends AbstractController
                 if ($delete) {
                     $this->guildLoggerService->eventUnattending($event->getGuild(), $event, $attendee);
                     $this->entityManager->remove($attendee);
+                    if (null !== $event->getPoll()) {
+                        foreach ($event->getPoll()->getVotes() as $vote) {
+                            if ($vote->getUser()->getId() === $attendee->getUser()->getId()) {
+                                $this->entityManager->remove($vote);
+                            }
+                        }
+                    }
                 } else {
                     $attendee->setStatus($status);
                     $this->entityManager->persist($attendee);
