@@ -48,6 +48,13 @@ class UnattendBotCommand implements BotCommandInterface
             if (null !== $attendee) {
                 $this->guildLoggerService->eventUnattending($request->getGuild(), $event, $attendee);
                 $this->entityManager->remove($attendee);
+                if (null !== $event->getPoll()) {
+                    foreach ($event->getPoll()->getVotes() as $vote) {
+                        if ($vote->getUser()->getId() === $attendee->getUser()->getId()) {
+                            $this->entityManager->remove($vote);
+                        }
+                    }
+                }
                 $this->entityManager->flush();
             }
             $response->setContent($request->getUser()->getDiscordMention().' you are no longer attending '.$event->getName());
